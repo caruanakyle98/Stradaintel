@@ -30,10 +30,13 @@ export async function GET(request) {
   const url = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
   const mode = (url.searchParams.get('mode') || process.env.PROPERTY_DATA_MODE || '').toLowerCase();
 
+  let localModeWarning = null;
+
   if (mode === 'local') {
+    const { readFile } = await import('node:fs/promises');
+    const pathMod = await import('node:path');
+
     try {
-      const { readFile } = await import('node:fs/promises');
-      const pathMod = await import('node:path');
 
       const csvPathEnv = process.env.PROPERTY_SALES_CSV_PATH;
       const csvPath = csvPathEnv
@@ -132,6 +135,10 @@ export async function GET(request) {
         return { evidenceDate, allDev: allDev || community, segment, unitType, priceAed, psfAed };
       }).filter(r => r.evidenceDate && r.priceAed);
 
+      if (!records.length) {
+        throw new Error('No valid rows were parsed from the CSV. Check header names and date/price formats.');
+      }
+
       const weekRecs = records.filter(r => inRange(r.evidenceDate, weekStart, weekEnd));
       const prevRecs = records.filter(r => inRange(r.evidenceDate, prevStart, prevEnd));
 
@@ -224,7 +231,7 @@ export async function GET(request) {
         sources_used: [sourceLabel],
       });
     } catch (err) {
-      return Response.json({ ok: false, error: `Local property data failed: ${err.message}` }, { status: 500 });
+      localModeWarning = `Local property data failed: ${err.message}`;
     }
   }
 
@@ -487,6 +494,7 @@ RULES:
     return Response.json({
       ok: true,
       ...clean,
+      ...(localModeWarning ? { local_mode_warning: localModeWarning } : {}),
       weekly: {
         ...clean.weekly,
         ...txMeta,
@@ -496,6 +504,30 @@ RULES:
     });
 
   } catch (err) {
+    if (localModeWarning) {
+      return Response.json({
+        ok: true,
+        local_mode_warning: localModeWarning,
+        fallback_warning: `Live property intelligence unavailable: ${err.message}`,
+        weekly: {
+          sale_volume: { value: 'N/A', chg_wow: 'N/A', chg_yoy: 'N/A', trend: 'flat', period: thisWeek, source: 'Fallback' },
+          sale_value_aed: { value: 'N/A', chg_wow: 'N/A', chg_yoy: 'N/A', trend: 'flat', period: thisWeek, source: 'Fallback' },
+          rent_volume: { value: 'N/A', chg_wow: 'N/A', chg_yoy: 'N/A', trend: 'flat', period: thisWeek, source: 'Fallback' },
+          period_label: `Weekly — ${thisWeek}`,
+        },
+        prices: { apt_psf_aed: 'N/A', villa_psf_aed: 'N/A', apt_avg_aed: 'N/A', villa_avg_aed: 'N/A', price_index_chg_yoy: 'N/A', price_period: `Weekly — ${thisWeek}`, price_source: 'Fallback' },
+        market_split: { offplan_pct: 'N/A', secondary_pct: 'N/A', offplan_chg_yoy: 'N/A', dominant_segment: 'N/A', split_period: `Weekly — ${thisWeek}`, note: 'No valid property data source was available for this request.' },
+        top_areas: [],
+        yields: { apt_gross_yield: 'N/A', villa_gross_yield: 'N/A', apt_net_yield: 'N/A', villa_net_yield: 'N/A', best_yield_area: 'N/A', best_yield_pct: 'N/A', yield_vs_mortgage: 'N/A', yield_source: 'Fallback', yield_period: `Weekly — ${thisWeek}` },
+        supply: { pipeline_units_2025_26: 'N/A', completions_ytd: 'N/A', new_launches_this_month: 'N/A', absorption_rate: 'N/A', oversupply_risk: 'N/A', notable_launches: 'N/A', supply_source: 'Fallback' },
+        rental: { apt_1br_avg_aed: 'N/A', apt_2br_avg_aed: 'N/A', villa_3br_avg_aed: 'N/A', rental_index_chg_yoy: 'N/A', ejari_registrations_weekly: 'N/A', vacancy_rate: 'N/A', landlord_vs_tenant: 'balanced', note: 'No rental feed available.', rental_source: 'Fallback', rental_period: `Weekly — ${thisWeek}` },
+        mortgage: { typical_rate_pct: 'N/A', rate_type: 'variable', ltv_max_pct: 'N/A', avg_loan_size_aed: 'N/A', mortgage_share_of_sales_pct: 'N/A', financing_conditions: 'N/A', mortgage_source: 'Fallback' },
+        owner_briefing: 'Property data could not be loaded from either local CSV or live intelligence source. Check CSV path/format and API credentials.',
+        data_freshness: `Weekly — ${thisWeek}`,
+        sources_used: ['Fallback'],
+      });
+    }
+
     return Response.json({ ok: false, error: err.message }, { status: 500 });
   }
 }
