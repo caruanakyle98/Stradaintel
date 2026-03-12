@@ -7,6 +7,32 @@ export const dynamic = 'force-dynamic';
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
 
+function buildUnavailablePropertyPayload({ thisWeek, detail, source = 'Property API fallback' }) {
+  const period = `Weekly — ${thisWeek}`;
+  const msg = detail || 'Live property feed unavailable. Provide ANTHROPIC_API_KEY or enable PROPERTY_DATA_MODE=local with data/property/sales.csv.';
+
+  return {
+    ok: true,
+    weekly: {
+      sale_volume: { value: 'N/A', chg_wow: 'N/A', chg_yoy: 'N/A', trend: 'flat', period, source },
+      sale_value_aed: { value: 'N/A', chg_wow: 'N/A', chg_yoy: 'N/A', trend: 'flat', period, source },
+      rent_volume: { value: 'N/A', chg_wow: 'N/A', chg_yoy: 'N/A', trend: 'flat', period, source },
+      rent_value_aed: { value: 'N/A', chg_wow: 'N/A', chg_yoy: 'N/A', trend: 'flat', period, source },
+      period_label: period,
+    },
+    prices: { apt_psf_aed: 'N/A', villa_psf_aed: 'N/A', apt_avg_aed: 'N/A', villa_avg_aed: 'N/A', price_index_chg_yoy: 'N/A', price_period: period, price_source: source },
+    market_split: { offplan_pct: 'N/A', secondary_pct: 'N/A', offplan_chg_yoy: 'N/A', dominant_segment: 'N/A', split_period: period, note: msg },
+    top_areas: [],
+    yields: { apt_gross_yield: 'N/A', villa_gross_yield: 'N/A', apt_net_yield: 'N/A', villa_net_yield: 'N/A', best_yield_area: 'N/A', best_yield_pct: 'N/A', yield_vs_mortgage: 'N/A', yield_source: source, yield_period: period },
+    supply: { pipeline_units_2025_26: 'N/A', completions_ytd: 'N/A', new_launches_this_month: 'N/A', absorption_rate: 'N/A', oversupply_risk: 'N/A', notable_launches: 'N/A', supply_source: source },
+    rental: { apt_1br_avg_aed: 'N/A', apt_2br_avg_aed: 'N/A', villa_3br_avg_aed: 'N/A', rental_index_chg_yoy: 'N/A', ejari_registrations_weekly: 'N/A', vacancy_rate: 'N/A', landlord_vs_tenant: 'balanced', note: msg, rental_source: source, rental_period: period },
+    mortgage: { typical_rate_pct: 'N/A', rate_type: 'N/A', ltv_max_pct: 'N/A', avg_loan_size_aed: 'N/A', mortgage_share_of_sales_pct: 'N/A', financing_conditions: msg, mortgage_source: source },
+    owner_briefing: msg,
+    data_freshness: period,
+    sources_used: [source],
+  };
+}
+
 export async function GET(request) {
   // ── Compute current week and reference periods ───────────
   const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
@@ -224,8 +250,19 @@ export async function GET(request) {
         sources_used: [sourceLabel],
       });
     } catch (err) {
-      return Response.json({ ok: false, error: `Local property data failed: ${err.message}` }, { status: 500 });
+      return Response.json(buildUnavailablePropertyPayload({
+        thisWeek,
+        source: 'Local property CSV fallback',
+        detail: `Local property mode failed: ${err.message}`,
+      }));
     }
+  }
+
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return Response.json(buildUnavailablePropertyPayload({
+      thisWeek,
+      detail: 'ANTHROPIC_API_KEY is not configured. Set it or switch to PROPERTY_DATA_MODE=local with data/property/sales.csv.',
+    }));
   }
 
   const prompt = `
@@ -496,6 +533,9 @@ RULES:
     });
 
   } catch (err) {
-    return Response.json({ ok: false, error: err.message }, { status: 500 });
+    return Response.json(buildUnavailablePropertyPayload({
+      thisWeek,
+      detail: `Live property data request failed: ${err.message}`,
+    }));
   }
 }
