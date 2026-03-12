@@ -316,8 +316,9 @@ export default function Page() {
   const [loadProp,  setLoadProp]  = useState(false);
   const [error,     setError]     = useState(null);
   const [propError, setPropError] = useState(null);
-  const [ts,        setTs]        = useState(null);
-  const [showData,  setShowData]  = useState(false); // Supporting data collapsed by default
+  const [ts,          setTs]          = useState(null);
+  const [showData,    setShowData]    = useState(false); // Supporting data collapsed by default
+  const [salesCsvPath,setSalesCsvPath]= useState('');
 
   const refreshIntel = useCallback(async () => {
     setLoadIntel(true); setError(null);
@@ -334,14 +335,18 @@ export default function Page() {
   const refreshProp = useCallback(async () => {
     setLoadProp(true); setPropError(null);
     try {
-      const r = await fetch('/api/property');
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const d = await r.json();
-      if (!d.ok) throw new Error(d.error);
+      const customPath = salesCsvPath.trim();
+      const propUrl = customPath ? `/api/property?salesCsv=${encodeURIComponent(customPath)}` : '/api/property';
+      const r = await fetch(propUrl);
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.ok) {
+        const msg = d?.detail ? `${d.error || `HTTP ${r.status}`} (${d.detail})` : (d?.error || `HTTP ${r.status}`);
+        throw new Error(msg);
+      }
       setProp(d);
     } catch(e) { setPropError(e.message); }
     finally { setLoadProp(false); }
-  }, []);
+  }, [salesCsvPath]);
 
   const refreshAll = useCallback(async () => {
     await Promise.all([refreshIntel(), refreshProp()]);
@@ -389,6 +394,18 @@ export default function Page() {
               <button onClick={refreshProp} disabled={loadProp} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadProp?'wait':'pointer' }}>
                 {loadProp?'…':'Property data only'}
               </button>
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6, width:'min(460px,100%)' }}>
+              <input
+                value={salesCsvPath}
+                onChange={(e)=>setSalesCsvPath(e.target.value)}
+                onKeyDown={(e)=>{ if (e.key === 'Enter') refreshProp(); }}
+                placeholder="Optional CSV path override (sales only)"
+                style={{ width:'100%', padding:'8px 10px', background:C.surf, color:C.t1, border:`1px solid ${C.border}`, borderRadius:2, fontFamily:'monospace', fontSize:10 }}
+              />
+              <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>
+                Off-plan is inferred from <span style={{ color:C.ga }}>Select Data Points = Oqood</span>. Active source: {prop?.sources_used?.[0] || 'default sales.csv path'}
+              </div>
             </div>
             <div style={{ fontFamily:'monospace', fontSize:9, color:C.tm }}>
               {ts?`LAST UPDATED · ${ts} GST`:'PRESS "GET LATEST INTELLIGENCE" TO BEGIN'}
