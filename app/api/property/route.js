@@ -65,19 +65,6 @@ function parseCsv(text) {
 function parseDubaiEvidenceDate(s) {
   if (!s) return null;
   const t = String(s).trim();
-  const iso = new Date(t);
-  if (!Number.isNaN(iso.getTime())) return iso;
-
-  const slash = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
-  if (slash) {
-    const d = parseInt(slash[1], 10);
-    const m = parseInt(slash[2], 10) - 1;
-    let y = parseInt(slash[3], 10);
-    if (y < 100) y += 2000;
-    const dt = new Date(Date.UTC(y, m, d, 12, 0, 0));
-    return new Date(new Date(dt).toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
-  }
-
   const m = t.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
   if (!m) return null;
   const day = parseInt(m[1], 10);
@@ -88,30 +75,6 @@ function parseDubaiEvidenceDate(s) {
   if (month === undefined) return null;
   const approx = new Date(Date.UTC(year, month, day, 12, 0, 0));
   return new Date(new Date(approx).toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
-}
-
-function normalizeKey(s) {
-  return String(s || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
-}
-
-function pickColumn(headers, aliases) {
-  const byNorm = new Map(headers.map(h => [normalizeKey(h), h]));
-  for (const alias of aliases) {
-    const direct = byNorm.get(normalizeKey(alias));
-    if (direct) return direct;
-  }
-  return null;
-}
-
-function getWithAliases(row, aliases) {
-  for (const a of aliases) {
-    const v = row[a];
-    if (v !== undefined && String(v).trim() !== '') return v;
-  }
-  return '';
 }
 
 function parseNumber(n) {
@@ -341,12 +304,9 @@ export async function GET(request) {
   const pathMod = await import('node:path');
   const url = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
 
-  const csvPathFromQuery = url.searchParams.get('salesCsv') || url.searchParams.get('csvPath');
-  const csvPath = csvPathFromQuery
-    ? pathMod.resolve(csvPathFromQuery)
-    : process.env.PROPERTY_SALES_CSV_PATH
-      ? process.env.PROPERTY_SALES_CSV_PATH
-      : pathMod.resolve(process.cwd(), 'data/property/sales.csv');
+  const csvPath = process.env.PROPERTY_SALES_CSV_PATH
+    ? process.env.PROPERTY_SALES_CSV_PATH
+    : pathMod.resolve(process.cwd(), 'data/property/sales.csv');
 
   const forceLive = (url.searchParams.get('mode') || '').toLowerCase() === 'live';
 
@@ -354,33 +314,21 @@ export async function GET(request) {
     try {
       await access(csvPath);
       const csvRaw = await readFile(csvPath, 'utf8');
-      const rows = parseCsv(csvRaw);
-      const headers = Object.keys(rows[0] || {});
-
-      const columnMap = {
-        evidenceDate: pickColumn(headers, ['Evidence Date', 'Date', 'Transaction Date', 'Sale Date']),
-        area: pickColumn(headers, ['All Developments', 'Community/Building', 'Community', 'Area', 'Project Name']),
-        segment: pickColumn(headers, ['Select Data Points', 'Data Point', 'Transaction Type', 'Registration Type']),
-        unitType: pickColumn(headers, ['Unit Type', 'Property Type', 'Unit Category', 'Type']),
-        priceAed: pickColumn(headers, ['Price (AED)', 'Price AED', 'Sale Price', 'Amount', 'Value']),
-        psfAed: pickColumn(headers, ['Price (AED/sq ft)', 'Price per sq ft', 'Price psf', 'AED/sqft']),
-      };
-
-      const records = rows.map(r => {
-        const unitTypeRaw = String(getWithAliases(r, [columnMap.unitType]) || '').toLowerCase();
-        const select = String(getWithAliases(r, [columnMap.segment]) || '').trim().toLowerCase();
+      const records = parseCsv(csvRaw).map(r => {
+        const unitTypeRaw = String(r['Unit Type'] || '').toLowerCase();
+        const select = String(r['Select Data Points'] || '').trim().toLowerCase();
 
         const unitType = unitTypeRaw.includes('villa') || unitTypeRaw.includes('townhouse') ? 'villa'
           : unitTypeRaw.includes('apartment') || unitTypeRaw.includes('hotel apartment') ? 'apt'
           : 'other';
 
         return {
-          evidenceDate: parseDubaiEvidenceDate(getWithAliases(r, [columnMap.evidenceDate])),
-          area: String(getWithAliases(r, [columnMap.area])).trim() || 'Unknown',
-          segment: select.includes('oqood') ? 'offplan' : select.includes('title deed') ? 'secondary' : 'unknown',
+          evidenceDate: parseDubaiEvidenceDate(r['Evidence Date']),
+          area: String(r['All Developments'] || r['Community/Building'] || '').trim() || 'Unknown',
+          segment: select === 'oqood' ? 'offplan' : select === 'title deed' ? 'secondary' : 'unknown',
           unitType,
-          priceAed: parseNumber(getWithAliases(r, [columnMap.priceAed])),
-          psfAed: parseNumber(getWithAliases(r, [columnMap.psfAed])),
+          priceAed: parseNumber(r['Price (AED)']),
+          psfAed: parseNumber(r['Price (AED/sq ft)']),
         };
       }).filter(r => r.evidenceDate && r.priceAed);
 
