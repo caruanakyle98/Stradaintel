@@ -1,0 +1,49 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STRADA INTELLIGENCE TRACKER — DEPLOY GUIDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ARCHITECTURE
+────────────
+Market prices  → Yahoo Finance API (free, no key needed)
+News/narrative → Claude Haiku + web search
+Property data  → Claude Haiku + web search (DLD-scoped)
+
+ONLY ONE API KEY IS REQUIRED: your Anthropic key.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DATA SOURCES BY INSTRUMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Instrument          Yahoo Finance symbol
+─────────────────── ────────────────────
+DFM General Index   DFMGI.AE
+Emaar Properties    EMAAR.AE
+Emirates NBD        ENBD.AE
+Dubai Islamic Bank  DIB.AE
+Brent Crude         BZ=F
+Gold Spot           GC=F
+S&P 500             ^GSPC
+VIX Fear Index      ^VIX
+US 10Y Yield        ^TNX
+
+Note: DFM stocks trade Mon–Fri 10:00–14:45 GST.
+Outside trading hours, the last close price is shown.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEPLOY STEPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. In Vercel → your project → Settings → Environment Variables
+   Ensure ANTHROPIC_API_KEY is set (your existing key)
+   No other keys needed.
+
+2. Push to GitHub or run: npx vercel --prod
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STATUS BADGE (top of dashboard)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+● LIVE PRICES · Yahoo Finance (9/9 live)   = all good
+● LIVE PRICES · Yahoo Finance (7/9 live)   = minor issue
+⚠ Yahoo Finance (partial)                  = some failed
+
