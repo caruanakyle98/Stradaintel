@@ -447,7 +447,7 @@ export default function Page() {
                 value={salesCsvPath}
                 onChange={(e)=>setSalesCsvPath(e.target.value)}
                 onKeyDown={(e)=>{ if (e.key === 'Enter') refreshProp(); }}
-                placeholder="Optional CSV path override (sales only)"
+                placeholder="Optional server path (local only). Hosted: set PROPERTY_SALES_CSV_URL"
                 style={{ width:'100%', padding:'8px 10px', background:C.surf, color:C.t1, border:`1px solid ${C.border}`, borderRadius:2, fontFamily:'monospace', fontSize:10 }}
               />
               <label style={{ width:'100%', display:'block', fontFamily:'monospace', fontSize:9, color:C.t2 }}>
@@ -461,7 +461,7 @@ export default function Page() {
                 />
               </label>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>
-                {uploadingCsv ? 'Reading CSV…' : 'Large files: parsed in your browser (avoids HTTP 413). Server paths only work where the app can read disk.'}
+                {uploadingCsv ? 'Reading CSV…' : 'Hosted: use PROPERTY_SALES_CSV_URL + PROPERTY_RENTAL_CSV_URL (no upload). File picker = local parse. See data/property/HOSTING.md.'}
               </div>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>
                 Off-plan is inferred from <span style={{ color:C.ga }}>Select Data Points = Oqood</span>. Active source: {prop?.sources_used?.[0] || 'default sales.csv path'}

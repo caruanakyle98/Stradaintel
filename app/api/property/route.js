@@ -1,10 +1,10 @@
-// Property data from self-hosted sales CSV; optional AI interpretation.
-// Large uploads: use client-side parse (see page.js) — Vercel rejects bodies > ~4.5MB (HTTP 413).
+// Property data: optional metrics JSON URL, sales/rental CSV URLs (HTTPS), or local path.
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
 import { buildPayloadFromCsvText } from '../../../lib/salesCsvPayload.js';
+import { mergeRentalIntoPayload } from '../../../lib/rentalCsvPayload.js';
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
 
@@ -36,7 +36,7 @@ function safeJsonFromText(text) {
 async function aiInterpretSales(stats, key) {
   if (!key) return null;
   try {
-    const prompt = `You are interpreting Dubai sales transactions data only (no rentals/listings available).
+    const prompt = `You are interpreting Dubai property data (sales + optional rental counts).
 Return ONLY valid JSON:
 {
   "owner_briefing": "2 sentences for a property owner with one actionable watchpoint",
@@ -73,62 +73,112 @@ Use this data:\n${JSON.stringify(stats, null, 2)}`;
   }
 }
 
-async function buildPayloadFromCsvPath(csvPath) {
-  const { access, readFile } = await import('node:fs/promises');
-  await access(csvPath);
-  const csvRaw = await readFile(csvPath, 'utf8');
-  const result = buildPayloadFromCsvText(csvRaw, csvPath);
+async function fetchText(url) {
+  const r = await fetch(url, {
+    headers: { 'User-Agent': 'Stradaintel/1' },
+    cache: 'no-store',
+  });
+  if (!r.ok) throw new Error(`GET ${url} → HTTP ${r.status}`);
+  return r.text();
+}
+
+async function buildFromSalesText(csvRaw, label) {
+  const result = buildPayloadFromCsvText(csvRaw, label);
   if (!result.ok) return result;
   const payload = { ...result.body };
+  const windows = result.windows;
   const ai = await aiInterpretSales(payload._stats_for_ai, process.env.ANTHROPIC_API_KEY);
   if (ai?.owner_briefing) payload.owner_briefing = ai.owner_briefing;
   if (ai?.market_note) payload.market_split.note = ai.market_note;
   if (ai?.demand_signal) payload.rental.landlord_vs_tenant = ai.demand_signal;
   delete payload._stats_for_ai;
-  return { ok: true, status: 200, body: payload };
+  return { ok: true, status: 200, body: payload, windows };
+}
+
+async function buildPayloadFromCsvPath(csvPath) {
+  const { access, readFile } = await import('node:fs/promises');
+  await access(csvPath);
+  const csvRaw = await readFile(csvPath, 'utf8');
+  return buildFromSalesText(csvRaw, csvPath);
 }
 
 function localPathHint(path) {
   if (!path) return null;
   if (path.startsWith('/Users/') || path.startsWith('C:\\')) {
-    return 'Server cannot read your Mac/PC path. Choose the CSV file again — it loads in your browser (no upload size limit).';
+    return 'Set PROPERTY_SALES_CSV_URL (HTTPS) on Vercel, or use the file picker. Server cannot read your Mac/PC path.';
   }
   return null;
 }
 
 export async function GET(request) {
   const pathMod = await import('node:path');
-  const url = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
+  const reqUrl = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
 
-  const csvPathFromQuery = url.searchParams.get('salesCsv') || url.searchParams.get('csvPath');
-  const csvPath = csvPathFromQuery
-    ? pathMod.resolve(csvPathFromQuery)
-    : process.env.PROPERTY_SALES_CSV_PATH
-      ? process.env.PROPERTY_SALES_CSV_PATH
-      : pathMod.resolve(process.cwd(), 'data/property/sales.csv');
+  const metricsUrl = process.env.PROPERTY_METRICS_JSON_URL;
+  if (metricsUrl && !reqUrl.searchParams.get('noSnapshot')) {
+    try {
+      const text = await fetchText(metricsUrl);
+      const json = JSON.parse(text);
+      if (json && typeof json === 'object' && json.ok !== false) {
+        return Response.json(json.ok === undefined ? { ok: true, ...json } : json);
+      }
+    } catch {
+      /* fall through to CSV URLs */
+    }
+  }
 
-  const forceLive = (url.searchParams.get('mode') || '').toLowerCase() === 'live';
-  if (forceLive) {
+  const csvPathFromQuery = reqUrl.searchParams.get('salesCsv') || reqUrl.searchParams.get('csvPath');
+  const salesUrlEnv = process.env.PROPERTY_SALES_CSV_URL;
+  const rentalUrlEnv = process.env.PROPERTY_RENTAL_CSV_URL;
+
+  const forceLive = (reqUrl.searchParams.get('mode') || '').toLowerCase() === 'live';
+  if (forceLive && !salesUrlEnv && !csvPathFromQuery) {
     return Response.json({
       ok: false,
-      error: `No sales CSV data found. Set PROPERTY_SALES_CSV_PATH or place sales.csv at ${csvPath}.`,
+      error: 'Set PROPERTY_SALES_CSV_URL to an HTTPS CSV URL, or PROPERTY_METRICS_JSON_URL for a snapshot.',
     }, { status: 500 });
   }
 
   try {
-    const result = await buildPayloadFromCsvPath(csvPath);
-    return Response.json(result.body, { status: result.status });
+    let result;
+
+    if (salesUrlEnv && !csvPathFromQuery) {
+      const csvRaw = await fetchText(salesUrlEnv);
+      result = await buildFromSalesText(csvRaw, salesUrlEnv);
+    } else {
+      const csvPath = csvPathFromQuery
+        ? pathMod.resolve(csvPathFromQuery)
+        : process.env.PROPERTY_SALES_CSV_PATH
+          ? process.env.PROPERTY_SALES_CSV_PATH
+          : pathMod.resolve(process.cwd(), 'data/property/sales.csv');
+      result = await buildPayloadFromCsvPath(csvPath);
+    }
+
+    if (!result.ok) {
+      return Response.json(result.body, { status: result.status });
+    }
+
+    if (rentalUrlEnv && result.windows) {
+      try {
+        const rentalRaw = await fetchText(rentalUrlEnv);
+        mergeRentalIntoPayload(result.body, rentalRaw, rentalUrlEnv, result.windows);
+      } catch (e) {
+        result.body.rental = result.body.rental || {};
+        result.body.rental.note = `Rental URL failed: ${e?.message || e}. Sales data still shown.`;
+      }
+    }
+
+    return Response.json(result.body, { status: 200 });
   } catch (e) {
     return Response.json({
       ok: false,
-      error: `Unable to read sales CSV at path: ${csvPath}`,
-      detail: e?.message || 'Unknown filesystem error.',
-      hint: localPathHint(csvPath),
+      error: 'Failed to load property data',
+      detail: e?.message || String(e),
+      hint: localPathHint(csvPathFromQuery || ''),
     }, { status: 500 });
   }
 }
 
-/** Small uploads only — Vercel returns 413 before this runs if body > ~4.5MB. */
 export async function POST(request) {
   const { mkdir, writeFile } = await import('node:fs/promises');
   const pathMod = await import('node:path');
@@ -142,7 +192,7 @@ export async function POST(request) {
     if (buf.length > 4_000_000) {
       return Response.json({
         ok: false,
-        error: 'File too large for server upload (HTTP 413 on Vercel). Choose the same file again — dashboard parses it in your browser.',
+        error: 'File too large for server upload. Use file picker or PROPERTY_SALES_CSV_URL.',
       }, { status: 413 });
     }
     const safeName = String(file.name || 'sales.csv').replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -155,13 +205,6 @@ export async function POST(request) {
     await writeFile(fullPath, buf);
     return Response.json({ ok: true, csv_path: fullPath });
   } catch (e) {
-    const msg = String(e?.message || '');
-    if (msg.includes('413') || msg.includes('too large')) {
-      return Response.json({
-        ok: false,
-        error: 'Upload too large for hosting. Use file picker — CSV is parsed in your browser (no limit).',
-      }, { status: 413 });
-    }
-    return Response.json({ ok: false, error: 'Upload failed.', detail: msg }, { status: 500 });
+    return Response.json({ ok: false, error: 'Upload failed.', detail: String(e?.message || e) }, { status: 500 });
   }
 }
