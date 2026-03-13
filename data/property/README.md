@@ -10,6 +10,10 @@ This folder is where you can place self-hosted property datasets (CSV exports) f
 - **Override by env var**: set `PROPERTY_SALES_CSV_PATH` to an absolute path
 - **Override from the UI/API call**: pass `salesCsv=/absolute/or/relative/path.csv` (same as `csvPath`)
 
+### Rolling windows (sales)
+
+Counts and AED totals use **today’s date in Dubai (GST)**: **last 7 calendar days including today**, compared to the **previous 7 calendar days** (for % change). Rows outside those ranges are ignored for the headline cards.
+
 ### CSV mapping rules
 
 The API now auto-maps common column name variants so your file does not need an exact schema match.
