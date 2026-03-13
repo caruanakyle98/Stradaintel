@@ -2,6 +2,7 @@
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 import { buildPayloadFromCsvText, deriveAnalysisWindows } from '../../../lib/salesCsvPayload.js';
 import { mergeRentalIntoPayload } from '../../../lib/rentalCsvPayload.js';
@@ -91,15 +92,27 @@ async function fetchText(url) {
   throw new Error(`GET ${url} → HTTP ${lastStatus}`);
 }
 
+function blobReadWriteToken() {
+  return (
+    process.env.BLOB_READ_WRITE_TOKEN ||
+    process.env.vercel_blob_rw_token ||
+    process.env.VERCEL_BLOB_READ_WRITE_TOKEN ||
+    ''
+  ).trim();
+}
+
 /**
- * Load sales CSV. Token-first: avoids dead public URLs (503) when PROPERTY_SALES_CSV_URL is stale.
- * Upload uses the same pathname (default stradaintel/sales.csv) + same token → always hits current store.
+ * Load sales CSV. Order: (1) Blob token + pathname (2) each HTTPS URL in PROPERTY_SALES_CSV_URL (comma/newline separated; put WORKING URL first).
  */
 async function loadSalesCsvText() {
-  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  const token = blobReadWriteToken();
   const pathname = process.env.BLOB_SALES_PATHNAME || 'stradaintel/sales.csv';
-  const salesUrl = process.env.PROPERTY_SALES_CSV_URL?.trim();
-  let urlErr = null;
+  const rawUrls = process.env.PROPERTY_SALES_CSV_URL || '';
+  const urlList = rawUrls
+    .split(/[,\n\r]+/)
+    .map((s) => s.trim())
+    .filter((u) => u.startsWith('http'));
+  let urlErrs = [];
 
   if (token) {
     try {
@@ -109,33 +122,37 @@ async function loadSalesCsvText() {
         const text = await new Response(out.stream).text();
         if (text.length > 100) return { text, label: `blob:${pathname}` };
       }
-    } catch {
-      /* try public URL below */
-    }
-  }
-
-  if (salesUrl) {
-    try {
-      return { text: await fetchText(salesUrl), label: salesUrl };
     } catch (e) {
-      urlErr = e?.message || String(e);
+      urlErrs.push(`token+pathname: ${e?.message || e}`);
     }
   }
 
-  if (!token) {
-    throw new Error(
-      `${urlErr || 'No sales source'}. Fix: Vercel → Project → Settings → Environment Variables → add BLOB_READ_WRITE_TOKEN (Read/Write token from the SAME Blob store you used for upload). Scope: Production. Redeploy. Optional: set PROPERTY_SALES_CSV_URL to the URL printed after upload.`,
-    );
+  for (const u of urlList) {
+    try {
+      return { text: await fetchText(u), label: u };
+    } catch (e) {
+      urlErrs.push(`${u.slice(0, 48)}… → ${e?.message || e}`);
+    }
   }
-  throw new Error(
-    `Blob store has no file at pathname "${pathname}" (or token store mismatch). ${urlErr ? `Public URL also failed: ${urlErr}` : ''} Re-run: npm run upload:sales-blob -- /path/to/sales.csv — then redeploy with BLOB_READ_WRITE_TOKEN set for Production.`,
-  );
+
+  const hasToken = !!token;
+  const hint =
+    urlList.length === 0
+      ? 'Set PROPERTY_SALES_CSV_URL to the full URL printed after `npm run upload:sales-blob` (starts with https://….public.blob.vercel-storage.com).'
+      : 'Your URL(s) all failed (503 = dead link). After upload, copy the NEW URL from the terminal and REPLACE PROPERTY_SALES_CSV_URL with that single URL—or put the new URL first, then a comma, then the old one.';
+  const tokenHint = hasToken
+    ? ''
+    : ' No BLOB_READ_WRITE_TOKEN visible to Production (name must be exact). Add it, enable Production, Redeploy, no quotes around token.';
+  throw new Error(`${hint}${tokenHint} Details: ${urlErrs.join(' | ') || 'no URLs'}`);
 }
 
 async function loadRentalCsvText() {
-  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  const token = blobReadWriteToken();
   const pathname = process.env.BLOB_RENTAL_PATHNAME || 'stradaintel/rentals.csv';
-  const rentalUrl = process.env.PROPERTY_RENTAL_CSV_URL?.trim();
+  const rentalUrls = (process.env.PROPERTY_RENTAL_CSV_URL || '')
+    .split(/[,\n\r]+/)
+    .map((s) => s.trim())
+    .filter((u) => u.startsWith('http'));
   let urlErr = null;
 
   if (token) {
@@ -150,7 +167,7 @@ async function loadRentalCsvText() {
       /* fall through */
     }
   }
-  if (rentalUrl) {
+  for (const rentalUrl of rentalUrls) {
     try {
       return { text: await fetchText(rentalUrl), label: rentalUrl };
     } catch (e) {
@@ -230,7 +247,7 @@ export async function GET(request) {
   }
 
   const forceLive = (reqUrl.searchParams.get('mode') || '').toLowerCase() === 'live';
-  if (forceLive && !salesUrlEnv && !csvPathFromQuery && !process.env.BLOB_READ_WRITE_TOKEN) {
+  if (forceLive && !salesUrlEnv && !csvPathFromQuery && !blobReadWriteToken()) {
     return Response.json({
       ok: false,
       error:
@@ -246,7 +263,7 @@ export async function GET(request) {
       skipAi: areaFilterActive,
     };
 
-    if ((salesUrlEnv || process.env.BLOB_READ_WRITE_TOKEN) && !csvPathFromQuery) {
+    if ((salesUrlEnv || blobReadWriteToken()) && !csvPathFromQuery) {
       const { text: csvRaw, label: salesLabel } = await loadSalesCsvText();
       result = await buildFromSalesText(csvRaw, salesLabel, buildOpts);
     } else {
