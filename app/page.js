@@ -1,6 +1,7 @@
 'use client';
 import { useState, useCallback, useRef } from 'react';
 import { buildPayloadFromCsvText } from '../lib/salesCsvPayload.js';
+import { downloadIntelligencePdf } from '../lib/intelligencePdfDocument.jsx';
 
 const C = {
   bg:'#080a08', surf:'#0f130f', card:'#141a14', border:'#1c261c',
@@ -409,6 +410,7 @@ export default function Page() {
   const [showData,    setShowData]    = useState(false); // Supporting data collapsed by default
   const [salesCsvPath,setSalesCsvPath]= useState('');
   const [uploadingCsv,setUploadingCsv]= useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
   const [area, setArea] = useState('');
   const uploadedCsvTextRef = useRef(null);
 
@@ -548,6 +550,24 @@ export default function Page() {
             <div style={{ display:'flex', flexWrap:'wrap', gap:8, alignItems:'center' }}>
               <button onClick={refreshIntel} disabled={loadIntel} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadIntel?'wait':'pointer' }}>
                 {loadIntel?'…':'Market signals only'}
+              </button>
+              <button
+                type="button"
+                disabled={loadIntel || pdfBusy || !intel?.ok}
+                onClick={async () => {
+                  if (!intel?.ok) return;
+                  setPdfBusy(true);
+                  try {
+                    await downloadIntelligencePdf(intel);
+                  } catch (e) {
+                    setError(e?.message || 'PDF failed');
+                  } finally {
+                    setPdfBusy(false);
+                  }
+                }}
+                style={{ padding:'7px 13px', background:C.surf, border:`1px solid ${C.gm}`, borderRadius:2, color:C.ga, fontFamily:'monospace', fontSize:9, cursor:loadIntel||pdfBusy||!intel?.ok?'wait':'pointer' }}
+              >
+                {pdfBusy ? 'PDF…' : 'Download PDF snapshot'}
               </button>
               <button onClick={() => refreshProp()} disabled={loadProp} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadProp?'wait':'pointer' }}>
                 {loadProp?'…':'Property data only'}
