@@ -799,8 +799,16 @@ export default function Page() {
           {(prop?.top_areas||loadProp) && (
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
               <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
-                <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:4, letterSpacing:'.1em' }}>MOST ACTIVE AREAS THIS WEEK</div>
-                <div style={{ fontFamily:'monospace', fontSize:8, color:C.td, marginBottom:12 }}>Ranked by number of deals</div>
+                <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:4, letterSpacing:'.1em' }}>
+                  {prop?.top_areas_mode === 'sub_community'
+                    ? 'MOST ACTIVE SUB-COMMUNITIES / BUILDINGS'
+                    : 'MOST ACTIVE AREAS THIS WEEK'}
+                </div>
+                <div style={{ fontFamily:'monospace', fontSize:8, color:C.td, marginBottom:12 }}>
+                  {prop?.top_areas_mode === 'sub_community'
+                    ? `Inside ${prop?.filter_area || 'selected area'} · ranked by deals`
+                    : 'Ranked by number of deals'}
+                </div>
                 {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={32} mb={8}/>):
                   prop?.top_areas?.slice(0,5).map((a,i)=>(
                     <AreaRow key={i} rank={`#${i+1}`} area={na(a.area)} vol={na(a.vol)} psf={na(a.avg_psf||a.psf)} trend={a.trend} maxVol={maxVol} last={i===Math.min((prop.top_areas?.length||1),5)-1}/>
