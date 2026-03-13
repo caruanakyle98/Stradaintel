@@ -103,7 +103,14 @@ function SectionHead({ n, title, desc }) {
 // ── Property transaction card ─────────────────────────────────
 function TxCard({ label, value, wowChg, yoyChg, trend, loading, period, source }) {
   const tc = trendCol(trend);
-  const isMonthly = period&&(period.toLowerCase().includes('month')||/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(period));
+  const hasMonthWord = !!(period && period.toLowerCase().includes('month'));
+  const hasMonthAbbr = !!(period && /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(period));
+  const isMonthly = period && (hasMonthWord || hasMonthAbbr);
+  // #region agent log
+  if (period && isMonthly) {
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '13de73' }, body: JSON.stringify({ sessionId: '13de73', location: 'page.js:TxCard', message: 'monthly_flag', data: { label, periodSlice: period.slice(0, 120), hasMonthWord, hasMonthAbbr }, timestamp: Date.now(), hypothesisId: 'H1' }) }).catch(() => {});
+  }
+  // #endregion
   return (
     <div style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${tc}`, borderRadius:2, padding:'16px 18px' }}>
       <Tag>{label}</Tag>
