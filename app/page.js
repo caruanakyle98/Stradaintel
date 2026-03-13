@@ -1,7 +1,7 @@
 'use client';
 import { useState, useCallback, useRef } from 'react';
 import { buildPayloadFromCsvText } from '../lib/salesCsvPayload.js';
-import { downloadIntelligencePdf } from '../lib/intelligencePdfDocument.jsx';
+import html2canvas from 'html2canvas';
 
 const C = {
   bg:'#080a08', surf:'#0f130f', card:'#141a14', border:'#1c261c',
@@ -410,7 +410,8 @@ export default function Page() {
   const [showData,    setShowData]    = useState(false); // Supporting data collapsed by default
   const [salesCsvPath,setSalesCsvPath]= useState('');
   const [uploadingCsv,setUploadingCsv]= useState(false);
-  const [pdfBusy, setPdfBusy] = useState(false);
+  const [captureBusy, setCaptureBusy] = useState(false);
+  const dashboardRef = useRef(null);
   const [area, setArea] = useState('');
   const uploadedCsvTextRef = useRef(null);
 
@@ -524,8 +525,67 @@ export default function Page() {
   const eiborRate= parseFloat(intel?.eibor?.rate_pct||0);
   const pmiVal   = parseFloat(intel?.uae_pmi?.headline||0);
 
+  const downloadDashboardJpg = useCallback(async () => {
+    const root = dashboardRef.current;
+    if (!root) {
+      setError('Dashboard not ready');
+      return;
+    }
+    setCaptureBusy(true);
+    setShowData(true);
+    await new Promise(r => setTimeout(r, 500));
+    try {
+      await document.fonts?.ready?.catch?.(() => {});
+      const w = root.scrollWidth;
+      const h = root.scrollHeight;
+      const canvas = await html2canvas(root, {
+        scale: Math.min(2, 8192 / Math.max(w, h)),
+        backgroundColor: C.bg,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        width: w,
+        height: h,
+        windowWidth: w,
+        windowHeight: h,
+        scrollX: 0,
+        scrollY: -window.scrollY,
+        onclone(clonedDoc) {
+          const spin = clonedDoc.querySelectorAll('[style*="spin"]');
+          spin.forEach(n => { n.style.display = 'none'; });
+        },
+      });
+      await new Promise((resolve, reject) => {
+        canvas.toBlob(
+          blob => {
+            if (!blob) {
+              reject(new Error('Could not create image'));
+              return;
+            }
+            const a = document.createElement('a');
+            const name = `Strada-Dashboard-${(ts || new Date().toISOString().slice(0, 16)).replace(/[/:,\s]+/g, '-')}.jpg`;
+            a.href = URL.createObjectURL(blob);
+            a.download = name;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            resolve();
+          },
+          'image/jpeg',
+          0.92,
+        );
+      });
+    } catch (e) {
+      setError(e?.message || 'Screenshot failed — try collapsing browser zoom to 100%');
+    } finally {
+      setCaptureBusy(false);
+    }
+  }, [ts]);
+
   return (
-    <div style={{ background:C.bg, minHeight:'100vh', color:C.t1, fontFamily:'-apple-system,"Segoe UI",sans-serif', fontWeight:300, fontSize:14 }}>
+    <div
+      ref={dashboardRef}
+      style={{ background:C.bg, minHeight:'100vh', color:C.t1, fontFamily:'-apple-system,"Segoe UI",sans-serif', fontWeight:300, fontSize:14 }}
+    >
       <style>{css}</style>
 
       {/* ── HEADER ──────────────────────────────────────── */}
@@ -553,21 +613,11 @@ export default function Page() {
               </button>
               <button
                 type="button"
-                disabled={loadIntel || pdfBusy || !intel?.ok}
-                onClick={async () => {
-                  if (!intel?.ok) return;
-                  setPdfBusy(true);
-                  try {
-                    await downloadIntelligencePdf(intel, prop);
-                  } catch (e) {
-                    setError(e?.message || 'PDF failed');
-                  } finally {
-                    setPdfBusy(false);
-                  }
-                }}
-                style={{ padding:'7px 13px', background:C.surf, border:`1px solid ${C.gm}`, borderRadius:2, color:C.ga, fontFamily:'monospace', fontSize:9, cursor:loadIntel||pdfBusy||!intel?.ok?'wait':'pointer' }}
+                disabled={captureBusy}
+                onClick={() => downloadDashboardJpg()}
+                style={{ padding:'7px 13px', background:C.surf, border:`1px solid ${C.gm}`, borderRadius:2, color:C.ga, fontFamily:'monospace', fontSize:9, cursor:captureBusy?'wait':'pointer' }}
               >
-                {pdfBusy ? 'PDF…' : 'Download PDF snapshot'}
+                {captureBusy ? 'Capturing…' : 'Download dashboard (JPG)'}
               </button>
               <button onClick={() => refreshProp()} disabled={loadProp} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadProp?'wait':'pointer' }}>
                 {loadProp?'…':'Property data only'}
