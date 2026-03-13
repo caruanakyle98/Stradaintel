@@ -724,9 +724,31 @@ export default function Page() {
             <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
               <TxCard label="Properties Sold" value={prop?.weekly?.sale_volume?.value} wowChg={prop?.weekly?.sale_volume?.chg_wow} yoyChg={prop?.weekly?.sale_volume?.chg_yoy} trend={prop?.weekly?.sale_volume?.trend} period={prop?.weekly?.sale_volume?.period} source={prop?.weekly?.sale_volume?.source} loading={loadProp}/>
               <TxCard label="Total Sales Value" value={prop?.weekly?.sale_value_aed?.value} wowChg={prop?.weekly?.sale_value_aed?.chg_wow} yoyChg={prop?.weekly?.sale_value_aed?.chg_yoy} trend={prop?.weekly?.sale_value_aed?.trend} period={prop?.weekly?.sale_value_aed?.period} source={prop?.weekly?.sale_value_aed?.source} loading={loadProp}/>
-              <TxCard label="New Rental Contracts" value={prop?.weekly?.rent_volume?.value} wowChg={prop?.weekly?.rent_volume?.chg_wow} yoyChg={prop?.weekly?.rent_volume?.chg_yoy} trend={prop?.weekly?.rent_volume?.trend} period={prop?.weekly?.rent_volume?.period} source={prop?.weekly?.rent_volume?.source} loading={loadProp}/>
-              <TxCard label="Rental Contract Value" value={prop?.weekly?.rent_value_aed?.value} wowChg={prop?.weekly?.rent_value_aed?.chg_wow} yoyChg={prop?.weekly?.rent_value_aed?.chg_yoy} trend={prop?.weekly?.rent_value_aed?.trend} period={prop?.weekly?.rent_value_aed?.period} source={prop?.weekly?.rent_value_aed?.source} loading={loadProp}/>
+              <TxCard label="Rental registrations" value={prop?.weekly?.rent_volume?.value} wowChg={prop?.weekly?.rent_volume?.chg_wow} yoyChg={prop?.weekly?.rent_volume?.chg_yoy} trend={prop?.weekly?.rent_volume?.trend} period={prop?.weekly?.rent_volume?.period} source={prop?.weekly?.rent_volume?.source} loading={loadProp}/>
+              <TxCard label="Annualised rent (week)" value={prop?.weekly?.rent_value_aed?.value} wowChg={prop?.weekly?.rent_value_aed?.chg_wow} yoyChg={prop?.weekly?.rent_value_aed?.chg_yoy} trend={prop?.weekly?.rent_value_aed?.trend} period={prop?.weekly?.rent_value_aed?.period} source={prop?.weekly?.rent_value_aed?.source} loading={loadProp}/>
             </div>
+            {prop?.weekly?.rent_new_vs_renewal && !loadProp && (
+              <div style={{ marginTop:12, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px' }}>
+                <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:10, letterSpacing:'.1em' }}>NEW VS RENEWAL · SAME WEEK (BY REGISTRATION DATE)</div>
+                <div style={{ display:'flex', gap:16, flexWrap:'wrap', alignItems:'center', marginBottom:12 }}>
+                  <div style={{ flex:1, minWidth:140 }}>
+                    <div style={{ fontFamily:'monospace', fontSize:8, color:C.ga, marginBottom:4 }}>NEW CONTRACT</div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:C.ga }}>{prop.weekly.rent_new_vs_renewal.new_count}</div>
+                    <div style={{ fontSize:10, color:C.t2 }}>{prop.weekly.rent_new_vs_renewal.new_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.new_chg_wow}</div>
+                  </div>
+                  <div style={{ flex:1, minWidth:140 }}>
+                    <div style={{ fontFamily:'monospace', fontSize:8, color:C.am, marginBottom:4 }}>RENEWAL</div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:C.am }}>{prop.weekly.rent_new_vs_renewal.renewal_count}</div>
+                    <div style={{ fontSize:10, color:C.t2 }}>{prop.weekly.rent_new_vs_renewal.renewal_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.renewal_chg_wow}</div>
+                  </div>
+                </div>
+                <div style={{ height:8, background:C.border, borderRadius:4, overflow:'hidden', display:'flex' }}>
+                  <div style={{ width:`${prop.weekly.rent_new_vs_renewal.new_pct}%`, background:C.ga, minWidth: Number(prop.weekly.rent_new_vs_renewal.new_count) > 0 ? 2 : 0 }} title="New" />
+                  <div style={{ width:`${prop.weekly.rent_new_vs_renewal.renewal_pct}%`, background:C.am, minWidth: Number(prop.weekly.rent_new_vs_renewal.renewal_count) > 0 ? 2 : 0 }} title="Renewal" />
+                </div>
+                <div style={{ fontFamily:'monospace', fontSize:7, color:C.td, marginTop:8 }}>Split = new + renewal only ({Number(prop.weekly.rent_new_vs_renewal.new_count) + Number(prop.weekly.rent_new_vs_renewal.renewal_count)} of {prop?.weekly?.rent_volume?.value} registrations). Source: {prop.weekly.rent_new_vs_renewal.column}</div>
+              </div>
+            )}
           </div>
 
           {/* Prices & Off-plan split */}

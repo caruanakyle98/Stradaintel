@@ -34,10 +34,11 @@ Priority when calling `GET /api/property`:
 The parser looks for headers similar to:
 
 - **Date**: `Evidence Date`, `Date`, … — PM rental rows may show **`01 Mar 2026 / 28 Feb 2027`**; the **first date** is used for the week bucket.
-- **Annual rent (AED)**: `Annualised Rental Price (AED)`, `Contract Rental Price (AED)`, `Annual Rent (AED)`, `Rent (AED)`, …
+- **Annual rent (AED)**: **`Annualised Rental Price (AED)` only** — contract rent is not used for any metric.
+- **New vs renewal**: `Rent Recurrence` (e.g. `New Contract` vs `Renewal`) drives the weekly split on the dashboard.
 - **Beds**: `Beds`, `Bedrooms`
 
-Each row with a valid date + rent counts toward **weekly rental volume**; averages fill **1BR / 2BR / 3BR** rent cards when beds match.
+Each row with a valid date + annualised rent counts toward **weekly rental volume**; averages fill **1BR / 2BR / 3BR** rent cards when beds match.
 
 ## Updating data
 
