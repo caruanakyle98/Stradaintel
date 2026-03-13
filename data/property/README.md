@@ -29,7 +29,7 @@ Required logical fields:
 Optional fields used for richer cards:
 - Segment marker (e.g. `Select Data Points`) where **`Oqood` = off-plan** and `Title Deed` = secondary
 - **Area (filter):** `All Developments` (or `Area`, `Project Name`, `Community`) — drives the **Area** dropdown and unfiltered “most active areas” list
-- **Drill-down (when filtered):** **`sub community / building.1`** (Property Monitor) — also matches `Community/Building`, `Sub Community / Building`, etc.
+- **Drill-down (when filtered):** **`sub community / building.1`** only — rows with that column empty are omitted from the ranked list (the area name is never used as a stand-in).
 - Unit/property type (used for apartment vs villa splits)
 - Price per sq ft
 
