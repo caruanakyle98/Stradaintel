@@ -3,7 +3,7 @@
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
-import { buildPayloadFromCsvText } from '../../../lib/salesCsvPayload.js';
+import { buildPayloadFromCsvText, deriveAnalysisWindows } from '../../../lib/salesCsvPayload.js';
 import { mergeRentalIntoPayload } from '../../../lib/rentalCsvPayload.js';
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
@@ -119,22 +119,33 @@ export async function GET(request) {
   const areaParam = (reqUrl.searchParams.get('area') || '').trim();
   const areaFilterActive = !!(areaParam && areaParam !== '__all__');
 
+  const csvPathFromQuery = reqUrl.searchParams.get('salesCsv') || reqUrl.searchParams.get('csvPath');
+  const salesUrlEnv = process.env.PROPERTY_SALES_CSV_URL;
+  const rentalUrlEnv = process.env.PROPERTY_RENTAL_CSV_URL;
+
   const metricsUrl = process.env.PROPERTY_METRICS_JSON_URL;
   if (metricsUrl && !reqUrl.searchParams.get('noSnapshot') && !areaFilterActive) {
     try {
       const text = await fetchText(metricsUrl);
       const json = JSON.parse(text);
       if (json && typeof json === 'object' && json.ok !== false) {
-        return Response.json(json.ok === undefined ? { ok: true, ...json } : json);
+        const body = json.ok === undefined ? { ok: true, ...json } : json;
+        if (rentalUrlEnv && body && typeof body === 'object') {
+          try {
+            const rentalRaw = await fetchText(rentalUrlEnv);
+            const windows = deriveAnalysisWindows([]);
+            mergeRentalIntoPayload(body, rentalRaw, rentalUrlEnv, windows);
+          } catch (e) {
+            body.rental = body.rental || {};
+            body.rental.note = `Rental URL failed: ${e?.message || e}.`;
+          }
+        }
+        return Response.json(body);
       }
     } catch {
       /* fall through to CSV URLs */
     }
   }
-
-  const csvPathFromQuery = reqUrl.searchParams.get('salesCsv') || reqUrl.searchParams.get('csvPath');
-  const salesUrlEnv = process.env.PROPERTY_SALES_CSV_URL;
-  const rentalUrlEnv = process.env.PROPERTY_RENTAL_CSV_URL;
 
   const forceLive = (reqUrl.searchParams.get('mode') || '').toLowerCase() === 'live';
   if (forceLive && !salesUrlEnv && !csvPathFromQuery) {
