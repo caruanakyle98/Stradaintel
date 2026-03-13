@@ -91,6 +91,79 @@ async function fetchText(url) {
   throw new Error(`GET ${url} → HTTP ${lastStatus}`);
 }
 
+/**
+ * Load sales CSV. Token-first: avoids dead public URLs (503) when PROPERTY_SALES_CSV_URL is stale.
+ * Upload uses the same pathname (default stradaintel/sales.csv) + same token → always hits current store.
+ */
+async function loadSalesCsvText() {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  const pathname = process.env.BLOB_SALES_PATHNAME || 'stradaintel/sales.csv';
+  const salesUrl = process.env.PROPERTY_SALES_CSV_URL?.trim();
+  let urlErr = null;
+
+  if (token) {
+    try {
+      const { get } = await import('@vercel/blob');
+      const out = await get(pathname, { access: 'public', token });
+      if (out?.stream) {
+        const text = await new Response(out.stream).text();
+        if (text.length > 100) return { text, label: `blob:${pathname}` };
+      }
+    } catch {
+      /* try public URL below */
+    }
+  }
+
+  if (salesUrl) {
+    try {
+      return { text: await fetchText(salesUrl), label: salesUrl };
+    } catch (e) {
+      urlErr = e?.message || String(e);
+    }
+  }
+
+  if (!token) {
+    throw new Error(
+      `${urlErr || 'No sales source'}. Fix: Vercel → Project → Settings → Environment Variables → add BLOB_READ_WRITE_TOKEN (Read/Write token from the SAME Blob store you used for upload). Scope: Production. Redeploy. Optional: set PROPERTY_SALES_CSV_URL to the URL printed after upload.`,
+    );
+  }
+  throw new Error(
+    `Blob store has no file at pathname "${pathname}" (or token store mismatch). ${urlErr ? `Public URL also failed: ${urlErr}` : ''} Re-run: npm run upload:sales-blob -- /path/to/sales.csv — then redeploy with BLOB_READ_WRITE_TOKEN set for Production.`,
+  );
+}
+
+async function loadRentalCsvText() {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  const pathname = process.env.BLOB_RENTAL_PATHNAME || 'stradaintel/rentals.csv';
+  const rentalUrl = process.env.PROPERTY_RENTAL_CSV_URL?.trim();
+  let urlErr = null;
+
+  if (token) {
+    try {
+      const { get } = await import('@vercel/blob');
+      const out = await get(pathname, { access: 'public', token });
+      if (out?.stream) {
+        const text = await new Response(out.stream).text();
+        if (text.length > 50) return { text, label: `blob:${pathname}` };
+      }
+    } catch {
+      /* fall through */
+    }
+  }
+  if (rentalUrl) {
+    try {
+      return { text: await fetchText(rentalUrl), label: rentalUrl };
+    } catch (e) {
+      urlErr = e?.message || String(e);
+    }
+  }
+  throw new Error(
+    token
+      ? `Rental: no file at "${pathname}" and URL failed. ${urlErr || ''}`
+      : `Rental load failed. ${urlErr || 'Set PROPERTY_RENTAL_CSV_URL or BLOB_READ_WRITE_TOKEN + upload rentals to BLOB_RENTAL_PATHNAME.'}`,
+  );
+}
+
 async function buildFromSalesText(csvRaw, label, { area, skipAi } = {}) {
   const result = buildPayloadFromCsvText(csvRaw, label, { area: area || undefined });
   if (!result.ok) return result;
@@ -141,9 +214,9 @@ export async function GET(request) {
         const body = json.ok === undefined ? { ok: true, ...json } : json;
         if (rentalUrlEnv && body && typeof body === 'object') {
           try {
-            const rentalRaw = await fetchText(rentalUrlEnv);
+            const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
             const windows = deriveAnalysisWindows([]);
-            mergeRentalIntoPayload(body, rentalRaw, rentalUrlEnv, windows);
+            mergeRentalIntoPayload(body, rentalRaw, rentalLabel, windows);
           } catch (e) {
             body.rental = body.rental || {};
             body.rental.note = `Rental URL failed: ${e?.message || e}.`;
@@ -157,10 +230,11 @@ export async function GET(request) {
   }
 
   const forceLive = (reqUrl.searchParams.get('mode') || '').toLowerCase() === 'live';
-  if (forceLive && !salesUrlEnv && !csvPathFromQuery) {
+  if (forceLive && !salesUrlEnv && !csvPathFromQuery && !process.env.BLOB_READ_WRITE_TOKEN) {
     return Response.json({
       ok: false,
-      error: 'Set PROPERTY_SALES_CSV_URL to an HTTPS CSV URL, or PROPERTY_METRICS_JSON_URL for a snapshot.',
+      error:
+        'Set PROPERTY_SALES_CSV_URL or BLOB_READ_WRITE_TOKEN (+ upload sales.csv), or PROPERTY_METRICS_JSON_URL.',
     }, { status: 500 });
   }
 
@@ -172,9 +246,9 @@ export async function GET(request) {
       skipAi: areaFilterActive,
     };
 
-    if (salesUrlEnv && !csvPathFromQuery) {
-      const csvRaw = await fetchText(salesUrlEnv);
-      result = await buildFromSalesText(csvRaw, salesUrlEnv, buildOpts);
+    if ((salesUrlEnv || process.env.BLOB_READ_WRITE_TOKEN) && !csvPathFromQuery) {
+      const { text: csvRaw, label: salesLabel } = await loadSalesCsvText();
+      result = await buildFromSalesText(csvRaw, salesLabel, buildOpts);
     } else {
       const csvPath = csvPathFromQuery
         ? pathMod.resolve(csvPathFromQuery)
@@ -190,8 +264,8 @@ export async function GET(request) {
 
     if (rentalUrlEnv && result.windows) {
       try {
-        const rentalRaw = await fetchText(rentalUrlEnv);
-        mergeRentalIntoPayload(result.body, rentalRaw, rentalUrlEnv, result.windows);
+        const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
+        mergeRentalIntoPayload(result.body, rentalRaw, rentalLabel, result.windows);
       } catch (e) {
         result.body.rental = result.body.rental || {};
         result.body.rental.note = `Rental URL failed: ${e?.message || e}. Sales data still shown.`;
@@ -202,8 +276,8 @@ export async function GET(request) {
   } catch (e) {
     const detail = e?.message || String(e);
     const hint503 =
-      detail.includes('503') || detail.includes('502') || detail.includes('504')
-        ? 'Blob/CDN returned 5xx — often transient; retries already attempted. If it persists: Vercel → Storage → Blob → re-upload sales.csv with the same pathname and confirm PROPERTY_SALES_CSV_URL matches the new object URL.'
+      detail.includes('503') || detail.includes('502') || detail.includes('504') || detail.includes('BLOB_READ_WRITE_TOKEN')
+        ? 'Load order is now: BLOB_READ_WRITE_TOKEN + pathname first (ignores dead public URLs). On Vercel add BLOB_READ_WRITE_TOKEN for Production, redeploy. Upload pathname must be stradaintel/sales.csv unless BLOB_SALES_PATHNAME is set.'
         : null;
     return Response.json({
       ok: false,

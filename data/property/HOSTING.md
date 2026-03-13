@@ -16,7 +16,8 @@ Any **stable HTTPS URL** works (including long-lived presigned URLs).
 
 | Variable | Purpose |
 |----------|---------|
-| `PROPERTY_SALES_CSV_URL` | HTTPS URL to **sales** CSV (required for hosted no-upload flow) |
+| `PROPERTY_SALES_CSV_URL` | HTTPS URL to **sales** CSV (optional; old URLs can 503 forever after a store reset) |
+| **`BLOB_READ_WRITE_TOKEN`** | **Required on Vercel for reliable loads.** Same Read/Write token you use for upload. **Environment = Production** (not only Preview). **Redeploy after adding.** The API loads `stradaintel/sales.csv` via this token **before** trying the public URL. |
 | `PROPERTY_RENTAL_CSV_URL` | HTTPS URL to **rental** listings or transactions CSV (optional) |
 | `PROPERTY_METRICS_JSON_URL` | HTTPS URL to **pre-built** dashboard JSON (optional; skips CSV parse on server) |
 | `PROPERTY_SALES_CSV_PATH` | Server filesystem path (local/Docker only) |
@@ -61,8 +62,13 @@ The dashboard always reads **the current file** at `PROPERTY_SALES_CSV_URL`. Aft
    npm run upload:sales-blob -- /full/path/to/sales.csv
    ```
 
-4. **Vercel** → Project → **Settings → Environment Variables** → set **`PROPERTY_SALES_CSV_URL`** to the **URL printed** (only needed the first time, if it matches your existing Blob URL you can skip).
-5. Keep using the **same** `BLOB_SALES_PATHNAME` every run (default: `stradaintel/sales.csv`) so overwrite does not change the link.
+4. **Vercel** → your **app project** (not only Storage) → **Settings → Environment Variables**:
+   - Add **`BLOB_READ_WRITE_TOKEN`** = paste the **same** token. **Check “Production”** (and Preview if you want). Save.
+   - **Redeploy** the project (Deployments → … → Redeploy). New env vars do not apply until redeploy.
+5. Set **`PROPERTY_SALES_CSV_URL`** to the URL from the script if you like (optional once token is set).
+6. Keep the same **`BLOB_SALES_PATHNAME`** every upload (default `stradaintel/sales.csv`).
+
+**If you still see “HTTP 503” on the old Blob URL:** that URL is dead. The app now **ignores** it when **`BLOB_READ_WRITE_TOKEN`** is on the server. If the error persists, the token is missing from **Production** or the deploy did not pick it up—fix that first.
 
 ### Every day (automate)
 
@@ -87,8 +93,9 @@ subprocess.run(
 
 | Env | Purpose |
 |-----|--------|
-| `BLOB_READ_WRITE_TOKEN` | Required |
+| `BLOB_READ_WRITE_TOKEN` | Required for upload; **set on Vercel too** so `/api/property` can read sales/rental by pathname when the public Blob URL returns 503 (dead link after store reset). |
 | `BLOB_SALES_PATHNAME` | Optional; default `stradaintel/sales.csv` |
+| `BLOB_RENTAL_PATHNAME` | Optional; default `stradaintel/rentals.csv` (fallback when `PROPERTY_RENTAL_CSV_URL` fails) |
 | `SALES_CSV_FILE` | Optional default path when argv omitted |
 
 CLI alternative: `vercel blob put ./sales.csv --pathname stradaintel/sales.csv --allow-overwrite`
