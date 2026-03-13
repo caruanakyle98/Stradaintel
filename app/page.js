@@ -1,7 +1,6 @@
 'use client';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { buildPayloadFromCsvText } from '../lib/salesCsvPayload.js';
-import html2canvas from 'html2canvas';
 
 const C = {
   bg:'#080a08', surf:'#0f130f', card:'#141a14', border:'#1c261c',
@@ -58,6 +57,20 @@ const css = `
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:${C.surf}}
   ::-webkit-scrollbar-thumb{background:${C.gm};border-radius:2px}
   .fade-in{animation:fade .5s ease}
+  .no-print{ }
+  .print-only{display:none}
+  @media print{
+    @page{margin:10mm 12mm;size:A4 portrait}
+    html,body{background:#080a08!important;color:#e4ede4!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+    .no-print{display:none!important}
+    .print-only{display:block!important}
+    a{color:#52a352!important;text-decoration:none!important}
+    a[href]:after{content:none!important}
+    *{animation:none!important}
+    .print-avoid-break{break-inside:avoid;page-break-inside:avoid}
+    .print-section{break-inside:avoid-page;page-break-inside:auto}
+    svg{overflow:visible!important}
+  }
 `;
 
 // ── Primitives ───────────────────────────────────────────────
@@ -410,9 +423,8 @@ export default function Page() {
   const [showData,    setShowData]    = useState(false); // Supporting data collapsed by default
   const [salesCsvPath,setSalesCsvPath]= useState('');
   const [uploadingCsv,setUploadingCsv]= useState(false);
-  const [captureBusy, setCaptureBusy] = useState(false);
-  const dashboardRef = useRef(null);
   const [area, setArea] = useState('');
+  const showDataBeforePrintRef = useRef(false);
   const uploadedCsvTextRef = useRef(null);
 
   const refreshIntel = useCallback(async () => {
@@ -525,73 +537,38 @@ export default function Page() {
   const eiborRate= parseFloat(intel?.eibor?.rate_pct||0);
   const pmiVal   = parseFloat(intel?.uae_pmi?.headline||0);
 
-  const downloadDashboardJpg = useCallback(async () => {
-    const root = dashboardRef.current;
-    if (!root) {
-      setError('Dashboard not ready');
-      return;
-    }
-    setCaptureBusy(true);
+  const openPrintPdf = useCallback(() => {
+    showDataBeforePrintRef.current = showData;
     setShowData(true);
-    await new Promise(r => setTimeout(r, 500));
-    try {
-      await document.fonts?.ready?.catch?.(() => {});
-      const w = root.scrollWidth;
-      const h = root.scrollHeight;
-      const canvas = await html2canvas(root, {
-        scale: Math.min(2, 8192 / Math.max(w, h)),
-        backgroundColor: C.bg,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        width: w,
-        height: h,
-        windowWidth: w,
-        windowHeight: h,
-        scrollX: 0,
-        scrollY: -window.scrollY,
-        onclone(clonedDoc) {
-          const spin = clonedDoc.querySelectorAll('[style*="spin"]');
-          spin.forEach(n => { n.style.display = 'none'; });
-        },
-      });
-      await new Promise((resolve, reject) => {
-        canvas.toBlob(
-          blob => {
-            if (!blob) {
-              reject(new Error('Could not create image'));
-              return;
-            }
-            const a = document.createElement('a');
-            const name = `Strada-Dashboard-${(ts || new Date().toISOString().slice(0, 16)).replace(/[/:,\s]+/g, '-')}.jpg`;
-            a.href = URL.createObjectURL(blob);
-            a.download = name;
-            a.click();
-            URL.revokeObjectURL(a.href);
-            resolve();
-          },
-          'image/jpeg',
-          0.92,
-        );
-      });
-    } catch (e) {
-      setError(e?.message || 'Screenshot failed — try collapsing browser zoom to 100%');
-    } finally {
-      setCaptureBusy(false);
-    }
-  }, [ts]);
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        window.print();
+      }, 450);
+    });
+  }, [showData]);
+
+  useEffect(() => {
+    const onAfterPrint = () => setShowData(showDataBeforePrintRef.current);
+    window.addEventListener('afterprint', onAfterPrint);
+    return () => window.removeEventListener('afterprint', onAfterPrint);
+  }, []);
 
   return (
     <div
-      ref={dashboardRef}
       style={{ background:C.bg, minHeight:'100vh', color:C.t1, fontFamily:'-apple-system,"Segoe UI",sans-serif', fontWeight:300, fontSize:14 }}
     >
       <style>{css}</style>
 
       {/* ── HEADER ──────────────────────────────────────── */}
-      <div style={{ padding:'28px 48px 22px', borderBottom:`1px solid ${C.border}` }}>
-        <div style={{ fontFamily:'monospace', fontSize:9, letterSpacing:'.22em', color:C.g, marginBottom:10, display:'flex', alignItems:'center', gap:8 }}>
+      <div style={{ padding:'28px 48px 22px', borderBottom:`1px solid ${C.border}` }} className="print-avoid-break">
+        <div className="print-only" style={{ fontFamily:'monospace', fontSize:9, color:C.tm, marginBottom:8, letterSpacing:'.08em' }}>
+          STRADA INTELLIGENCE · PDF EXPORT · {ts || new Date().toISOString().slice(0, 16).replace('T', ' ')} (GST when live)
+        </div>
+        <div style={{ fontFamily:'monospace', fontSize:9, letterSpacing:'.22em', color:C.g, marginBottom:10, display:'flex', alignItems:'center', gap:8 }} className="no-print">
           <span style={{ width:7, height:7, background:C.g, borderRadius:'50%', animation:'pulse 2s ease-in-out infinite', boxShadow:`0 0 8px ${C.g}` }}/>
+          STRADA REAL ESTATE · DUBAI PROPERTY INTELLIGENCE
+        </div>
+        <div className="print-only" style={{ fontFamily:'monospace', fontSize:8, letterSpacing:'.2em', color:C.g, marginBottom:10 }}>
           STRADA REAL ESTATE · DUBAI PROPERTY INTELLIGENCE
         </div>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', flexWrap:'wrap', gap:14 }}>
@@ -601,7 +578,7 @@ export default function Page() {
             </h1>
             <div style={{ fontFamily:'monospace', fontSize:9, color:C.tm, marginTop:8 }}>EVERYTHING AFFECTING YOUR PROPERTY'S VALUE · UPDATED ON DEMAND</div>
           </div>
-          <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6 }}>
+          <div className="no-print" style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6 }}>
             <button onClick={refreshAll} disabled={loadIntel||loadProp}
               style={{ padding:'12px 22px', background:(loadIntel||loadProp)?C.gd:C.gm, border:`1px solid ${(loadIntel||loadProp)?C.gm:C.g}`, borderRadius:2, color:C.t1, fontFamily:'monospace', fontSize:10, letterSpacing:'.1em', cursor:(loadIntel||loadProp)?'wait':'pointer', display:'flex', alignItems:'center', gap:8 }}>
               {(loadIntel||loadProp)&&<span style={{ width:10, height:10, border:`2px solid ${C.g}`, borderTopColor:'transparent', borderRadius:'50%', animation:'spin .7s linear infinite' }}/>}
@@ -613,11 +590,11 @@ export default function Page() {
               </button>
               <button
                 type="button"
-                disabled={captureBusy}
-                onClick={() => downloadDashboardJpg()}
-                style={{ padding:'7px 13px', background:C.surf, border:`1px solid ${C.gm}`, borderRadius:2, color:C.ga, fontFamily:'monospace', fontSize:9, cursor:captureBusy?'wait':'pointer' }}
+                onClick={openPrintPdf}
+                title="Opens print dialog — choose Save as PDF"
+                style={{ padding:'7px 13px', background:C.surf, border:`1px solid ${C.g}`, borderRadius:2, color:C.ga, fontFamily:'monospace', fontSize:9, cursor:'pointer' }}
               >
-                {captureBusy ? 'Capturing…' : 'Download dashboard (JPG)'}
+                Save as PDF (print)
               </button>
               <button onClick={() => refreshProp()} disabled={loadProp} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadProp?'wait':'pointer' }}>
                 {loadProp?'…':'Property data only'}
@@ -671,9 +648,12 @@ export default function Page() {
               {ts?`LAST UPDATED · ${ts} GST`:'PRESS "GET LATEST INTELLIGENCE" TO BEGIN'}
             </div>
           </div>
+          <div className="print-only" style={{ fontFamily:'monospace', fontSize:9, color:C.tm, textAlign:'right' }}>
+            {ts ? `Data as of · ${ts} GST` : 'Load intelligence before export for full report'}
+          </div>
         </div>
-        {error     && <div style={{ marginTop:10, padding:'9px 14px', background:'#1a0a0a', border:`1px solid ${C.red}30`, borderRadius:2, fontFamily:'monospace', fontSize:10, color:C.red }}>⚠ {error}</div>}
-        {propError && <div style={{ marginTop:6,  padding:'9px 14px', background:'#1a0a0a', border:`1px solid ${C.red}30`, borderRadius:2, fontFamily:'monospace', fontSize:10, color:C.red }}>⚠ {propError}</div>}
+        {error     && <div className="no-print" style={{ marginTop:10, padding:'9px 14px', background:'#1a0a0a', border:`1px solid ${C.red}30`, borderRadius:2, fontFamily:'monospace', fontSize:10, color:C.red }}>⚠ {error}</div>}
+        {propError && <div className="no-print" style={{ marginTop:6,  padding:'9px 14px', background:'#1a0a0a', border:`1px solid ${C.red}30`, borderRadius:2, fontFamily:'monospace', fontSize:10, color:C.red }}>⚠ {propError}</div>}
       </div>
 
       <div style={{ padding:'0 48px 80px' }}>
@@ -1028,8 +1008,9 @@ export default function Page() {
         {/* ══════════════════════════════════════════════ */}
         {/* ── 05 SUPPORTING DATA (collapsed by default) ── */}
         {/* ══════════════════════════════════════════════ */}
-        <div style={{ marginTop:48 }}>
+        <div style={{ marginTop:48 }} className="print-section">
           <div
+            className="no-print"
             onClick={() => setShowData(!showData)}
             style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 18px', background:C.card, border:`1px solid ${C.border}`, borderRadius:2, cursor:'pointer', userSelect:'none' }}>
             <div>
@@ -1041,6 +1022,10 @@ export default function Page() {
               </div>
             </div>
             <span style={{ fontFamily:'monospace', fontSize:11, color:C.gm, marginLeft:16 }}>{showData?'▲ HIDE':'▼ SHOW'}</span>
+          </div>
+          <div className="print-only print-avoid-break" style={{ padding:'14px 18px', background:C.card, border:`1px solid ${C.border}`, borderRadius:2, marginBottom:0 }}>
+            <div style={{ fontFamily:'Georgia,serif', fontSize:15, fontWeight:700, color:C.t1 }}>05 · The Data Behind Our Analysis</div>
+            <div style={{ fontSize:11, color:C.tm, marginTop:4 }}>Supporting data (included in this PDF)</div>
           </div>
 
           {showData && (
