@@ -73,41 +73,16 @@ Use this data:\n${JSON.stringify(stats, null, 2)}`;
   }
 }
 
-async function debugLogProperty(data) {
-  try {
-    const { appendFileSync } = await import('node:fs');
-    const line = JSON.stringify({ sessionId: '13de73', timestamp: Date.now(), ...data }) + '\n';
-    appendFileSync('/Users/kylecaruana/Documents/GitHub/Stradaintel/.cursor/debug-13de73.log', line);
-  } catch {
-    /* local debug file only */
-  }
-}
-
 /** Fetch URL as text; retry 502/503/504 a few times (Blob/CDN blips). */
-async function fetchText(url, label = 'fetch') {
+async function fetchText(url) {
   const max = 4;
   let lastStatus = 0;
-  const host = (() => {
-    try {
-      return new URL(url).hostname;
-    } catch {
-      return 'invalid-url';
-    }
-  })();
   for (let attempt = 1; attempt <= max; attempt++) {
     const r = await fetch(url, {
       headers: { 'User-Agent': 'Stradaintel/1' },
       cache: 'no-store',
     });
     lastStatus = r.status;
-    // #region agent log
-    await debugLogProperty({
-      location: 'api/property/fetchText',
-      message: 'blob_fetch',
-      data: { label, attempt, status: r.status, host, retryable: [502, 503, 504].includes(r.status) },
-      hypothesisId: 'H1',
-    });
-    // #endregion
     if (r.ok) return r.text();
     if (![502, 503, 504].includes(r.status) || attempt === max) {
       throw new Error(`GET ${url} → HTTP ${r.status}`);
