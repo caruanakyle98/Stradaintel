@@ -2,6 +2,8 @@
 
 This folder is where you can place self-hosted property datasets (CSV exports) for the dashboard to read server-side.
 
+**Vercel / no upload:** configure `PROPERTY_SALES_CSV_URL` (and optional `PROPERTY_RENTAL_CSV_URL`) — see [HOSTING.md](./HOSTING.md).
+
 ### Sales transactions (CSV)
 
 - **Default path (if you don’t set an env var)**: `data/property/sales.csv`
