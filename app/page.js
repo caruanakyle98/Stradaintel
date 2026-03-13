@@ -1,5 +1,6 @@
 'use client';
 import { useState, useCallback } from 'react';
+import { buildPayloadFromCsvText } from '../lib/salesCsvPayload.js';
 
 const C = {
   bg:'#080a08', surf:'#0f130f', card:'#141a14', border:'#1c261c',
@@ -353,19 +354,46 @@ export default function Page() {
     if (!file) return;
     setUploadingCsv(true); setPropError(null);
     try {
-      const form = new FormData();
-      form.append('file', file);
-      const res = await fetch('/api/property', { method:'POST', body: form });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok || !body.ok || !body.csv_path) throw new Error(body?.error || `Upload failed (HTTP ${res.status})`);
-      setSalesCsvPath(body.csv_path);
-      await refreshProp(body.csv_path);
+      const text = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result || ''));
+        r.onerror = () => reject(new Error('Could not read file'));
+        r.readAsText(file, 'UTF-8');
+      });
+      const label = file.name || 'sales.csv';
+      const built = buildPayloadFromCsvText(text, label);
+      if (!built.ok) {
+        throw new Error(built.body?.error || 'Could not parse CSV');
+      }
+      const payload = { ...built.body };
+      const stats = payload._stats_for_ai;
+      delete payload._stats_for_ai;
+      setSalesCsvPath(`(browser) ${label}`);
+      setProp(payload);
+      if (stats) {
+        try {
+          const ir = await fetch('/api/property/interpret', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ stats }),
+          });
+          const ai = await ir.json().catch(() => ({}));
+          if (ai?.owner_briefing) {
+            setProp(p => p && ({
+              ...p,
+              owner_briefing: ai.owner_briefing,
+              market_split: { ...p.market_split, note: ai.market_note || p.market_split?.note },
+              rental: { ...p.rental, landlord_vs_tenant: ai.demand_signal || p.rental?.landlord_vs_tenant },
+            }));
+          }
+        } catch { /* AI optional */ }
+      }
     } catch (e) {
       setPropError(e.message);
     } finally {
       setUploadingCsv(false);
     }
-  }, [refreshProp]);
+  }, []);
 
   const refreshAll = useCallback(async () => {
     await Promise.all([refreshIntel(), refreshProp()]);
@@ -433,7 +461,7 @@ export default function Page() {
                 />
               </label>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>
-                {uploadingCsv ? 'Uploading CSV to server...' : 'Tip: local /Users/... paths fail when app runs in Docker/remote. Upload works everywhere.'}
+                {uploadingCsv ? 'Reading CSV…' : 'Large files: parsed in your browser (avoids HTTP 413). Server paths only work where the app can read disk.'}
               </div>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>
                 Off-plan is inferred from <span style={{ color:C.ga }}>Select Data Points = Oqood</span>. Active source: {prop?.sources_used?.[0] || 'default sales.csv path'}
