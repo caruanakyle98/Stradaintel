@@ -20,6 +20,7 @@ const SYMBOLS = {
   // UAE & Gulf equities
   emaar: { symbol: 'EMAAR.AE', dec: 2 },
   dfmgi: { symbol: 'DFMGI.AE', dec: 2 },
+  dfmrei: { symbol: 'DFMREI.AE', dec: 2 }, // DFM Real Estate Index
   enbd:  { symbol: 'ENBD.AE',  dec: 2 },
   dib:   { symbol: 'DIB.AE',   dec: 2 },
   // Energy & safe haven
@@ -324,9 +325,13 @@ export async function GET() {
   narrative.property = { ...narrative.property, score: prpScore, sig: sigOf(prpScore) };
   narrative.aviation = { ...narrative.aviation, score: aviScore, sig: sigOf(aviScore) };
   const oilScore = brent>=88?5 : brent>=78?4 : brent>=68?3 : brent>=58?2 : brent>0?1 : 3;
-  const emaarPct = parseFloat((markets.emaar?.pct||'0%').replace('%',''));
-  const dfmPct   = parseFloat((markets.dfmgi?.pct||'0%').replace('%',''));
-  const eqScore  = ((emaarPct+dfmPct)/2)>1.5?5 : ((emaarPct+dfmPct)/2)>0.3?4 : ((emaarPct+dfmPct)/2)>-0.5?3 : ((emaarPct+dfmPct)/2)>-1.5?2 : 1;
+  const emaarPct = parseFloat((markets.emaar?.pct||'0%').replace('%','')) || 0;
+  const dfmPct   = parseFloat((markets.dfmgi?.pct||'0%').replace('%','')) || 0;
+  const dfmreiPct = parseFloat((markets.dfmrei?.pct||'0%').replace('%',''));
+  const eqBlend = Number.isFinite(dfmreiPct)
+    ? (emaarPct + dfmPct + dfmreiPct) / 3
+    : (emaarPct + dfmPct) / 2;
+  const eqScore  = eqBlend>1.5?5 : eqBlend>0.3?4 : eqBlend>-0.5?3 : eqBlend>-1.5?2 : 1;
   // Macro now incorporates EIBOR — rates + global fear
   const macroBase  = vix>=35?1 : vix>=25?2 : r10>=5.5?2 : r10>=4.5?3 : vix>0?4 : 3;
   const macroScore = Math.round((macroBase * 0.5 + eiborScore * 0.3 + pmiScore * 0.2));
@@ -380,8 +385,8 @@ export async function GET() {
       },
       equities: {
         score:eqScore, sig:sigOf(eqScore), weight:14, title:'UAE & Gulf Equities',
-        headline: `Emaar AED ${markets.emaar?.price||'—'} (${markets.emaar?.pct||'—'}) · DFM ${markets.dfmgi?.price||'—'} (${markets.dfmgi?.pct||'—'})`,
-        bullets: [`Emaar: AED ${markets.emaar?.price||'N/A'} ${markets.emaar?.chg||''}`, `DFMGI: ${markets.dfmgi?.price||'N/A'} ${markets.dfmgi?.chg||''}`, `ENBD: AED ${markets.enbd?.price||'N/A'} · DIB: AED ${markets.dib?.price||'N/A'}`],
+        headline: `Emaar AED ${markets.emaar?.price||'—'} (${markets.emaar?.pct||'—'}) · DFMGI ${markets.dfmgi?.price||'—'} · DFMREI ${markets.dfmrei?.price||'—'} (${markets.dfmrei?.pct||'—'})`,
+        bullets: [`Emaar: AED ${markets.emaar?.price||'N/A'} ${markets.emaar?.chg||''}`, `DFMGI: ${markets.dfmgi?.price||'N/A'} ${markets.dfmgi?.chg||''}`, `DFM Real Estate Index (DFMREI.AE): ${markets.dfmrei?.price||'N/A'} ${markets.dfmrei?.chg||''} ${markets.dfmrei?.pct||''}`, `ENBD: AED ${markets.enbd?.price||'N/A'} · DIB: AED ${markets.dib?.price||'N/A'}`],
         risk:'Emaar stock leads property prices by 60–90 days. Sustained weakness = sell signal.',
         action: eqScore>=4?'Developer stocks bullish — demand confirmed.':eqScore<=2?'Developer stocks weak — reduce off-plan exposure.':'Flat markets — hold, watch for directional break.',
       },

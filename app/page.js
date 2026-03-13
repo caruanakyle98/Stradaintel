@@ -983,6 +983,7 @@ export default function Page() {
                 <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
                   <DataCard label="Emaar Properties (stock)" price={mkt?.emaar?.price?`AED ${mkt.emaar.price}`:null} chg={`${mkt?.emaar?.chg||''} ${mkt?.emaar?.pct||''}`} up={mkt?.emaar?.up} loading={loadIntel} explain="Dubai's biggest developer. A rising stock price leads property prices by 2–3 months."/>
                   <DataCard label="Dubai Stock Market" price={mkt?.dfmgi?.price} chg={`${mkt?.dfmgi?.chg||''} ${mkt?.dfmgi?.pct||''}`} up={mkt?.dfmgi?.up} loading={loadIntel} explain="Overall health of Dubai's public companies."/>
+                  <DataCard label="DFM Real Estate Index (DFMREI.AE)" price={mkt?.dfmrei?.price?`AED ${mkt.dfmrei.price}`:null} chg={`${mkt?.dfmrei?.chg||''} ${mkt?.dfmrei?.pct||''}`} up={mkt?.dfmrei?.up} loading={loadIntel} explain="DFM sector index for listed real estate — tracks how the market prices property stocks on Dubai Financial Market."/>
                   <DataCard label="Emirates NBD Bank" price={mkt?.enbd?.price?`AED ${mkt.enbd.price}`:null} chg={`${mkt?.enbd?.chg||''} ${mkt?.enbd?.pct||''}`} up={mkt?.enbd?.up} loading={loadIntel} explain="Dubai's biggest bank. Rising = better mortgage lending conditions."/>
                   <DataCard label="Dubai Islamic Bank" price={mkt?.dib?.price?`AED ${mkt.dib.price}`:null} chg={`${mkt?.dib?.chg||''} ${mkt?.dib?.pct||''}`} up={mkt?.dib?.up} loading={loadIntel} explain="Main Islamic mortgage lender. Signals end-user demand."/>
                 </div>
