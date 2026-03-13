@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { buildPayloadFromCsvText } from '../lib/salesCsvPayload.js';
 
 const C = {
@@ -409,6 +409,8 @@ export default function Page() {
   const [showData,    setShowData]    = useState(false); // Supporting data collapsed by default
   const [salesCsvPath,setSalesCsvPath]= useState('');
   const [uploadingCsv,setUploadingCsv]= useState(false);
+  const [area, setArea] = useState('');
+  const uploadedCsvTextRef = useRef(null);
 
   const refreshIntel = useCallback(async () => {
     setLoadIntel(true); setError(null);
@@ -422,11 +424,15 @@ export default function Page() {
     finally { setLoadIntel(false); }
   }, []);
 
-  const refreshProp = useCallback(async (forcedPath) => {
+  const refreshProp = useCallback(async (forcedPath, overrideArea) => {
     setLoadProp(true); setPropError(null);
     try {
       const customPath = (forcedPath || salesCsvPath).trim();
-      const propUrl = customPath ? `/api/property?salesCsv=${encodeURIComponent(customPath)}` : '/api/property';
+      const a = (overrideArea !== undefined ? overrideArea : area).trim();
+      const q = new URLSearchParams();
+      if (customPath) q.set('salesCsv', customPath);
+      if (a) q.set('area', a);
+      const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
       const r = await fetch(propUrl);
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.ok) {
@@ -436,6 +442,21 @@ export default function Page() {
       setProp(d);
     } catch(e) { setPropError(e.message); }
     finally { setLoadProp(false); }
+  }, [salesCsvPath, area]);
+
+  const applyAreaClient = useCallback((nextArea) => {
+    const text = uploadedCsvTextRef.current;
+    if (!text) return;
+    const label = salesCsvPath.replace(/^\(browser\)\s*/i, '') || 'uploaded.csv';
+    const built = buildPayloadFromCsvText(text, label, { area: nextArea.trim() || undefined });
+    if (!built.ok) {
+      setPropError(built.body?.error || 'Filter failed');
+      return;
+    }
+    const payload = { ...built.body };
+    delete payload._stats_for_ai;
+    setProp(payload);
+    setPropError(null);
   }, [salesCsvPath]);
 
   const uploadCsv = useCallback(async (file) => {
@@ -449,7 +470,9 @@ export default function Page() {
         r.readAsText(file, 'UTF-8');
       });
       const label = file.name || 'sales.csv';
-      const built = buildPayloadFromCsvText(text, label);
+      uploadedCsvTextRef.current = text;
+      setArea('');
+      const built = buildPayloadFromCsvText(text, label, {});
       if (!built.ok) {
         throw new Error(built.body?.error || 'Could not parse CSV');
       }
@@ -522,13 +545,32 @@ export default function Page() {
               {(loadIntel||loadProp)&&<span style={{ width:10, height:10, border:`2px solid ${C.g}`, borderTopColor:'transparent', borderRadius:'50%', animation:'spin .7s linear infinite' }}/>}
               {(loadIntel||loadProp)?'UPDATING...':'⟳  GET LATEST INTELLIGENCE'}
             </button>
-            <div style={{ display:'flex', gap:8 }}>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:8, alignItems:'center' }}>
               <button onClick={refreshIntel} disabled={loadIntel} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadIntel?'wait':'pointer' }}>
                 {loadIntel?'…':'Market signals only'}
               </button>
-              <button onClick={refreshProp} disabled={loadProp} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadProp?'wait':'pointer' }}>
+              <button onClick={() => refreshProp()} disabled={loadProp} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadProp?'wait':'pointer' }}>
                 {loadProp?'…':'Property data only'}
               </button>
+              <label style={{ display:'flex', alignItems:'center', gap:8, fontFamily:'monospace', fontSize:9, color:C.tm }}>
+                <span style={{ color:C.gm }}>Area</span>
+                <select
+                  value={area}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setArea(v);
+                    if (uploadedCsvTextRef.current) applyAreaClient(v);
+                    else refreshProp(undefined, v);
+                  }}
+                  disabled={loadProp || (!(prop?.area_options?.length) && !uploadedCsvTextRef.current)}
+                  style={{ minWidth:160, maxWidth:220, padding:'6px 8px', background:C.card, border:`1px solid ${C.border}`, borderRadius:2, color:C.t1, fontFamily:'monospace', fontSize:9 }}
+                >
+                  <option value="">All areas</option>
+                  {(prop?.area_options || []).map((a) => (
+                    <option key={a} value={a}>{a.length > 40 ? `${a.slice(0, 37)}…` : a}</option>
+                  ))}
+                </select>
+              </label>
             </div>
             <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6, width:'min(460px,100%)' }}>
               <input

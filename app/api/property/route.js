@@ -82,24 +82,26 @@ async function fetchText(url) {
   return r.text();
 }
 
-async function buildFromSalesText(csvRaw, label) {
-  const result = buildPayloadFromCsvText(csvRaw, label);
+async function buildFromSalesText(csvRaw, label, { area, skipAi } = {}) {
+  const result = buildPayloadFromCsvText(csvRaw, label, { area: area || undefined });
   if (!result.ok) return result;
   const payload = { ...result.body };
   const windows = result.windows;
-  const ai = await aiInterpretSales(payload._stats_for_ai, process.env.ANTHROPIC_API_KEY);
-  if (ai?.owner_briefing) payload.owner_briefing = ai.owner_briefing;
-  if (ai?.market_note) payload.market_split.note = ai.market_note;
-  if (ai?.demand_signal) payload.rental.landlord_vs_tenant = ai.demand_signal;
+  if (!skipAi) {
+    const ai = await aiInterpretSales(payload._stats_for_ai, process.env.ANTHROPIC_API_KEY);
+    if (ai?.owner_briefing) payload.owner_briefing = ai.owner_briefing;
+    if (ai?.market_note) payload.market_split.note = ai.market_note;
+    if (ai?.demand_signal) payload.rental.landlord_vs_tenant = ai.demand_signal;
+  }
   delete payload._stats_for_ai;
   return { ok: true, status: 200, body: payload, windows };
 }
 
-async function buildPayloadFromCsvPath(csvPath) {
+async function buildPayloadFromCsvPath(csvPath, opts) {
   const { access, readFile } = await import('node:fs/promises');
   await access(csvPath);
   const csvRaw = await readFile(csvPath, 'utf8');
-  return buildFromSalesText(csvRaw, csvPath);
+  return buildFromSalesText(csvRaw, csvPath, opts);
 }
 
 function localPathHint(path) {
@@ -114,8 +116,11 @@ export async function GET(request) {
   const pathMod = await import('node:path');
   const reqUrl = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
 
+  const areaParam = (reqUrl.searchParams.get('area') || '').trim();
+  const areaFilterActive = !!(areaParam && areaParam !== '__all__');
+
   const metricsUrl = process.env.PROPERTY_METRICS_JSON_URL;
-  if (metricsUrl && !reqUrl.searchParams.get('noSnapshot')) {
+  if (metricsUrl && !reqUrl.searchParams.get('noSnapshot') && !areaFilterActive) {
     try {
       const text = await fetchText(metricsUrl);
       const json = JSON.parse(text);
@@ -142,16 +147,21 @@ export async function GET(request) {
   try {
     let result;
 
+    const buildOpts = {
+      area: areaParam || undefined,
+      skipAi: areaFilterActive,
+    };
+
     if (salesUrlEnv && !csvPathFromQuery) {
       const csvRaw = await fetchText(salesUrlEnv);
-      result = await buildFromSalesText(csvRaw, salesUrlEnv);
+      result = await buildFromSalesText(csvRaw, salesUrlEnv, buildOpts);
     } else {
       const csvPath = csvPathFromQuery
         ? pathMod.resolve(csvPathFromQuery)
         : process.env.PROPERTY_SALES_CSV_PATH
           ? process.env.PROPERTY_SALES_CSV_PATH
           : pathMod.resolve(process.cwd(), 'data/property/sales.csv');
-      result = await buildPayloadFromCsvPath(csvPath);
+      result = await buildPayloadFromCsvPath(csvPath, buildOpts);
     }
 
     if (!result.ok) {

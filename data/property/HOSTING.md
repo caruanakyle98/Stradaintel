@@ -21,6 +21,8 @@ Any **stable HTTPS URL** works (including long-lived presigned URLs).
 | `PROPERTY_METRICS_JSON_URL` | HTTPS URL to **pre-built** dashboard JSON (optional; skips CSV parse on server) |
 | `PROPERTY_SALES_CSV_PATH` | Server filesystem path (local/Docker only) |
 
+**Area filter (no API credits):** `GET /api/property?area=Exact%20Area%20Name` filters rows by the **All Developments** column (same as dashboard **Area** dropdown). Filtering is server-side CSV only—**Anthropic is not called** when `area` is set. **`PROPERTY_METRICS_JSON_URL`** is ignored whenever `area` is present (snapshot cannot be filtered); use live CSV for filtering.
+
 Priority when calling `GET /api/property`:
 
 1. If `PROPERTY_METRICS_JSON_URL` is set → return that JSON (fastest).
