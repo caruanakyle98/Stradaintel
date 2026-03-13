@@ -28,3 +28,9 @@ If rentals/listings are not connected, the dashboard will explicitly show `N/A` 
 
 The path is resolved on the machine where Next.js is running (server-side).
 If you are deployed remotely, `/Users/...` from your laptop is not readable by the server; use `PROPERTY_SALES_CSV_PATH` on that server or upload/copy the CSV into a server-readable location first.
+
+
+### Uploading local CSV files from the dashboard
+
+If your CSV is on your laptop (for example under `/Users/...`) and the dashboard runs in a container/remote host, that filesystem path will not be readable server-side.
+Use the dashboard's **Upload local CSV directly** control, which sends the file to `/api/property` (POST) and stores it under `data/property/uploads/` for analysis.

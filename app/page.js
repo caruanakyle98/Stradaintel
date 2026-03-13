@@ -319,6 +319,7 @@ export default function Page() {
   const [ts,          setTs]          = useState(null);
   const [showData,    setShowData]    = useState(false); // Supporting data collapsed by default
   const [salesCsvPath,setSalesCsvPath]= useState('');
+  const [uploadingCsv,setUploadingCsv]= useState(false);
 
   const refreshIntel = useCallback(async () => {
     setLoadIntel(true); setError(null);
@@ -332,10 +333,10 @@ export default function Page() {
     finally { setLoadIntel(false); }
   }, []);
 
-  const refreshProp = useCallback(async () => {
+  const refreshProp = useCallback(async (forcedPath) => {
     setLoadProp(true); setPropError(null);
     try {
-      const customPath = salesCsvPath.trim();
+      const customPath = (forcedPath || salesCsvPath).trim();
       const propUrl = customPath ? `/api/property?salesCsv=${encodeURIComponent(customPath)}` : '/api/property';
       const r = await fetch(propUrl);
       const d = await r.json().catch(() => ({}));
@@ -347,6 +348,24 @@ export default function Page() {
     } catch(e) { setPropError(e.message); }
     finally { setLoadProp(false); }
   }, [salesCsvPath]);
+
+  const uploadCsv = useCallback(async (file) => {
+    if (!file) return;
+    setUploadingCsv(true); setPropError(null);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch('/api/property', { method:'POST', body: form });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || !body.ok || !body.csv_path) throw new Error(body?.error || `Upload failed (HTTP ${res.status})`);
+      setSalesCsvPath(body.csv_path);
+      await refreshProp(body.csv_path);
+    } catch (e) {
+      setPropError(e.message);
+    } finally {
+      setUploadingCsv(false);
+    }
+  }, [refreshProp]);
 
   const refreshAll = useCallback(async () => {
     await Promise.all([refreshIntel(), refreshProp()]);
@@ -403,6 +422,19 @@ export default function Page() {
                 placeholder="Optional CSV path override (sales only)"
                 style={{ width:'100%', padding:'8px 10px', background:C.surf, color:C.t1, border:`1px solid ${C.border}`, borderRadius:2, fontFamily:'monospace', fontSize:10 }}
               />
+              <label style={{ width:'100%', display:'block', fontFamily:'monospace', fontSize:9, color:C.t2 }}>
+                Or upload local CSV directly
+                <input
+                  type="file"
+                  accept=".csv,text/csv"
+                  onChange={(e)=>uploadCsv(e.target.files?.[0])}
+                  disabled={uploadingCsv}
+                  style={{ display:'block', width:'100%', marginTop:4, color:C.t1 }}
+                />
+              </label>
+              <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>
+                {uploadingCsv ? 'Uploading CSV to server...' : 'Tip: local /Users/... paths fail when app runs in Docker/remote. Upload works everywhere.'}
+              </div>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>
                 Off-plan is inferred from <span style={{ color:C.ga }}>Select Data Points = Oqood</span>. Active source: {prop?.sources_used?.[0] || 'default sales.csv path'}
               </div>

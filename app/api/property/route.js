@@ -367,8 +367,91 @@ function deriveAnalysisWindows(records) {
   return { weekStart, weekEnd, prevStart, prevEnd };
 }
 
-export async function GET(request) {
+async function buildPayloadFromCsvPath(csvPath) {
   const { access, readFile } = await import('node:fs/promises');
+
+  await access(csvPath);
+  const csvRaw = await readFile(csvPath, 'utf8');
+  const rows = parseCsv(csvRaw);
+  const headers = Object.keys(rows[0] || {});
+
+  const columnMap = {
+    evidenceDate: pickColumn(headers, ['Evidence Date', 'Date', 'Transaction Date', 'Sale Date']),
+    area: pickColumn(headers, ['All Developments', 'Community/Building', 'Community', 'Area', 'Project Name']),
+    segment: pickColumn(headers, ['Select Data Points', 'Data Point', 'Transaction Type', 'Registration Type']),
+    unitType: pickColumn(headers, ['Unit Type', 'Property Type', 'Unit Category', 'Type']),
+    priceAed: pickColumn(headers, ['Price (AED)', 'Price AED', 'Sale Price', 'Amount', 'Value', 'Property Value']),
+    psfAed: pickColumn(headers, ['Price (AED/sq ft)', 'Price per sq ft', 'Price psf', 'AED/sqft']),
+  };
+
+  if (!columnMap.evidenceDate || !columnMap.priceAed) {
+    return {
+      ok: false,
+      status: 400,
+      body: {
+        ok: false,
+        error: 'CSV schema not recognized. Required columns missing: transaction date and/or price.',
+        expected: {
+          evidenceDate: ['Evidence Date', 'Date', 'Transaction Date', 'Sale Date'],
+          priceAed: ['Price (AED)', 'Price AED', 'Sale Price', 'Amount', 'Value'],
+        },
+        detected_headers: headers,
+        csv_path: csvPath,
+      },
+    };
+  }
+
+  const records = rows.map(r => {
+    const unitTypeRaw = String(getWithAliases(r, [columnMap.unitType]) || '').toLowerCase();
+    const select = String(getWithAliases(r, [columnMap.segment]) || '').trim().toLowerCase();
+
+    const unitType = unitTypeRaw.includes('villa') || unitTypeRaw.includes('townhouse') ? 'villa'
+      : unitTypeRaw.includes('apartment') || unitTypeRaw.includes('hotel apartment') ? 'apt'
+      : 'other';
+
+    return {
+      evidenceDate: parseDubaiEvidenceDate(getWithAliases(r, [columnMap.evidenceDate])),
+      area: String(getWithAliases(r, [columnMap.area])).trim() || 'Unknown',
+      segment: select.includes('oqood') ? 'offplan' : select.includes('title deed') ? 'secondary' : 'unknown',
+      unitType,
+      priceAed: parseNumber(getWithAliases(r, [columnMap.priceAed])),
+      psfAed: parseNumber(getWithAliases(r, [columnMap.psfAed])),
+    };
+  }).filter(r => r.evidenceDate && r.priceAed);
+
+  if (!records.length) {
+    return {
+      ok: false,
+      status: 400,
+      body: {
+        ok: false,
+        error: 'CSV was found but no valid sales records could be parsed (date/price may be malformed).',
+        csv_path: csvPath,
+        detected_headers: headers,
+      },
+    };
+  }
+
+  const windows = deriveAnalysisWindows(records);
+  const payload = buildFromSalesRecords({ records, ...windows, csvPath });
+  const ai = await aiInterpretSales(payload._stats_for_ai, process.env.ANTHROPIC_API_KEY);
+  if (ai?.owner_briefing) payload.owner_briefing = ai.owner_briefing;
+  if (ai?.market_note) payload.market_split.note = ai.market_note;
+  if (ai?.demand_signal) payload.rental.landlord_vs_tenant = ai.demand_signal;
+  delete payload._stats_for_ai;
+
+  return { ok: true, status: 200, body: payload };
+}
+
+function localPathHint(path) {
+  if (!path) return null;
+  if (path.startsWith('/Users/') || path.startsWith('C:\\')) {
+    return 'This appears to be a path on your personal computer. The dashboard server cannot read that path unless it is running on the same machine. Use the new CSV upload control, or copy the file into the server/container and reference that server path.';
+  }
+  return null;
+}
+
+export async function GET(request) {
   const pathMod = await import('node:path');
   const url = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
 
@@ -380,82 +463,52 @@ export async function GET(request) {
       : pathMod.resolve(process.cwd(), 'data/property/sales.csv');
 
   const forceLive = (url.searchParams.get('mode') || '').toLowerCase() === 'live';
-
-  if (!forceLive) {
-    try {
-      await access(csvPath);
-      const csvRaw = await readFile(csvPath, 'utf8');
-      const rows = parseCsv(csvRaw);
-      const headers = Object.keys(rows[0] || {});
-
-      const columnMap = {
-        evidenceDate: pickColumn(headers, ['Evidence Date', 'Date', 'Transaction Date', 'Sale Date']),
-        area: pickColumn(headers, ['All Developments', 'Community/Building', 'Community', 'Area', 'Project Name']),
-        segment: pickColumn(headers, ['Select Data Points', 'Data Point', 'Transaction Type', 'Registration Type']),
-        unitType: pickColumn(headers, ['Unit Type', 'Property Type', 'Unit Category', 'Type']),
-        priceAed: pickColumn(headers, ['Price (AED)', 'Price AED', 'Sale Price', 'Amount', 'Value', 'Property Value']),
-        psfAed: pickColumn(headers, ['Price (AED/sq ft)', 'Price per sq ft', 'Price psf', 'AED/sqft']),
-      };
-
-      if (!columnMap.evidenceDate || !columnMap.priceAed) {
-        return Response.json({
-          ok: false,
-          error: 'CSV schema not recognized. Required columns missing: transaction date and/or price.',
-          expected: {
-            evidenceDate: ['Evidence Date', 'Date', 'Transaction Date', 'Sale Date'],
-            priceAed: ['Price (AED)', 'Price AED', 'Sale Price', 'Amount', 'Value'],
-          },
-          detected_headers: headers,
-          csv_path: csvPath,
-        }, { status: 400 });
-      }
-
-      const records = rows.map(r => {
-        const unitTypeRaw = String(getWithAliases(r, [columnMap.unitType]) || '').toLowerCase();
-        const select = String(getWithAliases(r, [columnMap.segment]) || '').trim().toLowerCase();
-
-        const unitType = unitTypeRaw.includes('villa') || unitTypeRaw.includes('townhouse') ? 'villa'
-          : unitTypeRaw.includes('apartment') || unitTypeRaw.includes('hotel apartment') ? 'apt'
-          : 'other';
-
-        return {
-          evidenceDate: parseDubaiEvidenceDate(getWithAliases(r, [columnMap.evidenceDate])),
-          area: String(getWithAliases(r, [columnMap.area])).trim() || 'Unknown',
-          segment: select.includes('oqood') ? 'offplan' : select.includes('title deed') ? 'secondary' : 'unknown',
-          unitType,
-          priceAed: parseNumber(getWithAliases(r, [columnMap.priceAed])),
-          psfAed: parseNumber(getWithAliases(r, [columnMap.psfAed])),
-        };
-      }).filter(r => r.evidenceDate && r.priceAed);
-
-      if (records.length) {
-        const windows = deriveAnalysisWindows(records);
-        const payload = buildFromSalesRecords({ records, ...windows, csvPath });
-        const ai = await aiInterpretSales(payload._stats_for_ai, process.env.ANTHROPIC_API_KEY);
-        if (ai?.owner_briefing) payload.owner_briefing = ai.owner_briefing;
-        if (ai?.market_note) payload.market_split.note = ai.market_note;
-        if (ai?.demand_signal) payload.rental.landlord_vs_tenant = ai.demand_signal;
-        delete payload._stats_for_ai;
-        return Response.json(payload);
-      }
-
-      return Response.json({
-        ok: false,
-        error: 'CSV was found but no valid sales records could be parsed (date/price may be malformed).',
-        csv_path: csvPath,
-        detected_headers: headers,
-      }, { status: 400 });
-    } catch (e) {
-      return Response.json({
-        ok: false,
-        error: `Unable to read sales CSV at path: ${csvPath}`,
-        detail: e?.message || 'Unknown filesystem error.',
-      }, { status: 500 });
-    }
+  if (forceLive) {
+    return Response.json({
+      ok: false,
+      error: `No sales CSV data found. Set PROPERTY_SALES_CSV_PATH or place sales.csv at ${csvPath}.`,
+    }, { status: 500 });
   }
 
-  return Response.json({
-    ok: false,
-    error: `No sales CSV data found. Set PROPERTY_SALES_CSV_PATH or place sales.csv at ${csvPath}.`,
-  }, { status: 500 });
+  try {
+    const result = await buildPayloadFromCsvPath(csvPath);
+    return Response.json(result.body, { status: result.status });
+  } catch (e) {
+    return Response.json({
+      ok: false,
+      error: `Unable to read sales CSV at path: ${csvPath}`,
+      detail: e?.message || 'Unknown filesystem error.',
+      hint: localPathHint(csvPath),
+    }, { status: 500 });
+  }
+}
+
+export async function POST(request) {
+  const { mkdir, writeFile } = await import('node:fs/promises');
+  const pathMod = await import('node:path');
+
+  try {
+    const form = await request.formData();
+    const file = form.get('file');
+    if (!file || typeof file === 'string') {
+      return Response.json({ ok: false, error: 'No file provided. Attach a CSV file under form field "file".' }, { status: 400 });
+    }
+
+    const safeName = String(file.name || 'sales.csv').replace(/[^a-zA-Z0-9._-]/g, '_');
+    if (!safeName.toLowerCase().endsWith('.csv')) {
+      return Response.json({ ok: false, error: 'Only .csv files are supported.' }, { status: 400 });
+    }
+
+    const uploadDir = pathMod.resolve(process.cwd(), 'data/property/uploads');
+    await mkdir(uploadDir, { recursive: true });
+
+    const stamped = `${Date.now()}-${safeName}`;
+    const fullPath = pathMod.join(uploadDir, stamped);
+    const buf = Buffer.from(await file.arrayBuffer());
+    await writeFile(fullPath, buf);
+
+    return Response.json({ ok: true, csv_path: fullPath, message: 'CSV uploaded successfully. Use this path for property refresh.' });
+  } catch (e) {
+    return Response.json({ ok: false, error: 'Failed to upload CSV.', detail: e?.message || 'Unknown upload error.' }, { status: 500 });
+  }
 }
