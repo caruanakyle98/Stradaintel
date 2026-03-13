@@ -338,9 +338,11 @@ export default function Page() {
       const customPath = salesCsvPath.trim();
       const propUrl = customPath ? `/api/property?salesCsv=${encodeURIComponent(customPath)}` : '/api/property';
       const r = await fetch(propUrl);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const d = await r.json();
-      if (!d.ok) throw new Error(d.error);
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.ok) {
+        const msg = d?.detail ? `${d.error || `HTTP ${r.status}`} (${d.detail})` : (d?.error || `HTTP ${r.status}`);
+        throw new Error(msg);
+      }
       setProp(d);
     } catch(e) { setPropError(e.message); }
     finally { setLoadProp(false); }
@@ -397,6 +399,7 @@ export default function Page() {
               <input
                 value={salesCsvPath}
                 onChange={(e)=>setSalesCsvPath(e.target.value)}
+                onKeyDown={(e)=>{ if (e.key === 'Enter') refreshProp(); }}
                 placeholder="Optional CSV path override (sales only)"
                 style={{ width:'100%', padding:'8px 10px', background:C.surf, color:C.t1, border:`1px solid ${C.border}`, borderRadius:2, fontFamily:'monospace', fontSize:10 }}
               />

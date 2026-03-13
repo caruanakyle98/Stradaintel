@@ -6,7 +6,15 @@ export const dynamic = 'force-dynamic';
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
 
+function detectDelimiter(text) {
+  const sample = String(text || '').split('\n').slice(0, 5).join('\n');
+  const commas = (sample.match(/,/g) || []).length;
+  const semicolons = (sample.match(/;/g) || []).length;
+  return semicolons > commas ? ';' : ',';
+}
+
 function parseCsv(text) {
+  const delimiter = detectDelimiter(text);
   const rows = [];
   let row = [];
   let cur = '';
@@ -34,7 +42,7 @@ function parseCsv(text) {
       inQ = true;
       continue;
     }
-    if (ch === ',') {
+    if (ch === delimiter) {
       row.push(cur);
       cur = '';
       continue;
@@ -52,7 +60,7 @@ function parseCsv(text) {
   row.push(cur);
   rows.push(row);
 
-  const header = (rows.shift() || []).map(h => String(h || '').trim());
+  const header = (rows.shift() || []).map(h => String(h || '').replace(/^\uFEFF/, '').trim());
   return rows
     .filter(r => r.some(v => String(v || '').trim() !== ''))
     .map(r => {
@@ -65,16 +73,69 @@ function parseCsv(text) {
 function parseDubaiEvidenceDate(s) {
   if (!s) return null;
   const t = String(s).trim();
-  const m = t.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})$/);
-  if (!m) return null;
-  const day = parseInt(m[1], 10);
-  const mon = m[2].toLowerCase();
-  const year = parseInt(m[3], 10);
-  const months = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
-  const month = months[mon];
-  if (month === undefined) return null;
-  const approx = new Date(Date.UTC(year, month, day, 12, 0, 0));
-  return new Date(new Date(approx).toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
+
+  const iso = new Date(t);
+  if (!Number.isNaN(iso.getTime())) return iso;
+
+  const slashWithTime = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?:\s+\d{1,2}:\d{2}(?::\d{2})?)?$/);
+  if (slashWithTime) {
+    const d = parseInt(slashWithTime[1], 10);
+    const m = parseInt(slashWithTime[2], 10) - 1;
+    let y = parseInt(slashWithTime[3], 10);
+    if (y < 100) y += 2000;
+    const dt = new Date(Date.UTC(y, m, d, 12, 0, 0));
+    if (!Number.isNaN(dt.getTime())) return new Date(new Date(dt).toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
+  }
+
+  const dayMonthWordYear = t.match(/^(\d{1,2})\s+([A-Za-z]{3,9})\s+(\d{4})$/);
+  if (dayMonthWordYear) {
+    const day = parseInt(dayMonthWordYear[1], 10);
+    const mon = dayMonthWordYear[2].slice(0, 3).toLowerCase();
+    const year = parseInt(dayMonthWordYear[3], 10);
+    const months = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+    const month = months[mon];
+    if (month !== undefined) {
+      const approx = new Date(Date.UTC(year, month, day, 12, 0, 0));
+      return new Date(new Date(approx).toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
+    }
+  }
+
+  return null;
+}
+
+function normalizeKey(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function pickColumn(headers, aliases) {
+  const normalizedHeaders = headers.map(h => ({ raw: h, norm: normalizeKey(h) }));
+  const byNorm = new Map(normalizedHeaders.map(h => [h.norm, h.raw]));
+
+  for (const alias of aliases) {
+    const direct = byNorm.get(normalizeKey(alias));
+    if (direct) return direct;
+  }
+
+  for (const alias of aliases) {
+    const a = normalizeKey(alias);
+    const tokens = a.split(' ').filter(Boolean);
+    const partial = normalizedHeaders.find(h => tokens.every(t => h.norm.includes(t)));
+    if (partial) return partial.raw;
+  }
+
+  return null;
+}
+
+function getWithAliases(row, aliases) {
+  for (const a of aliases) {
+    if (!a) continue;
+    const v = row[a];
+    if (v !== undefined && String(v).trim() !== '') return v;
+  }
+  return '';
 }
 
 function parseNumber(n) {
@@ -292,21 +353,31 @@ function buildFromSalesRecords({ records, weekStart, weekEnd, prevStart, prevEnd
   };
 }
 
-export async function GET(request) {
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
-  const dayOfWeek = now.getDay();
-  const weekStart = new Date(now); weekStart.setDate(now.getDate() - dayOfWeek);
-  const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
-  const prevStart = new Date(weekStart); prevStart.setDate(weekStart.getDate() - 7);
-  const prevEnd = new Date(weekEnd); prevEnd.setDate(weekEnd.getDate() - 7);
+function deriveAnalysisWindows(records) {
+  const latest = records.reduce((m, r) => (r.evidenceDate > m ? r.evidenceDate : m), records[0].evidenceDate);
+  const weekEnd = new Date(latest);
+  const weekStart = new Date(weekEnd);
+  weekStart.setDate(weekEnd.getDate() - weekEnd.getDay());
+  weekStart.setHours(0, 0, 0, 0);
+  weekEnd.setHours(23, 59, 59, 999);
+  const prevStart = new Date(weekStart);
+  prevStart.setDate(weekStart.getDate() - 7);
+  const prevEnd = new Date(weekEnd);
+  prevEnd.setDate(weekEnd.getDate() - 7);
+  return { weekStart, weekEnd, prevStart, prevEnd };
+}
 
+export async function GET(request) {
   const { access, readFile } = await import('node:fs/promises');
   const pathMod = await import('node:path');
   const url = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
 
-  const csvPath = process.env.PROPERTY_SALES_CSV_PATH
-    ? process.env.PROPERTY_SALES_CSV_PATH
-    : pathMod.resolve(process.cwd(), 'data/property/sales.csv');
+  const csvPathFromQuery = url.searchParams.get('salesCsv') || url.searchParams.get('csvPath');
+  const csvPath = csvPathFromQuery
+    ? pathMod.resolve(csvPathFromQuery)
+    : process.env.PROPERTY_SALES_CSV_PATH
+      ? process.env.PROPERTY_SALES_CSV_PATH
+      : pathMod.resolve(process.cwd(), 'data/property/sales.csv');
 
   const forceLive = (url.searchParams.get('mode') || '').toLowerCase() === 'live';
 
@@ -314,26 +385,52 @@ export async function GET(request) {
     try {
       await access(csvPath);
       const csvRaw = await readFile(csvPath, 'utf8');
-      const records = parseCsv(csvRaw).map(r => {
-        const unitTypeRaw = String(r['Unit Type'] || '').toLowerCase();
-        const select = String(r['Select Data Points'] || '').trim().toLowerCase();
+      const rows = parseCsv(csvRaw);
+      const headers = Object.keys(rows[0] || {});
+
+      const columnMap = {
+        evidenceDate: pickColumn(headers, ['Evidence Date', 'Date', 'Transaction Date', 'Sale Date']),
+        area: pickColumn(headers, ['All Developments', 'Community/Building', 'Community', 'Area', 'Project Name']),
+        segment: pickColumn(headers, ['Select Data Points', 'Data Point', 'Transaction Type', 'Registration Type']),
+        unitType: pickColumn(headers, ['Unit Type', 'Property Type', 'Unit Category', 'Type']),
+        priceAed: pickColumn(headers, ['Price (AED)', 'Price AED', 'Sale Price', 'Amount', 'Value', 'Property Value']),
+        psfAed: pickColumn(headers, ['Price (AED/sq ft)', 'Price per sq ft', 'Price psf', 'AED/sqft']),
+      };
+
+      if (!columnMap.evidenceDate || !columnMap.priceAed) {
+        return Response.json({
+          ok: false,
+          error: 'CSV schema not recognized. Required columns missing: transaction date and/or price.',
+          expected: {
+            evidenceDate: ['Evidence Date', 'Date', 'Transaction Date', 'Sale Date'],
+            priceAed: ['Price (AED)', 'Price AED', 'Sale Price', 'Amount', 'Value'],
+          },
+          detected_headers: headers,
+          csv_path: csvPath,
+        }, { status: 400 });
+      }
+
+      const records = rows.map(r => {
+        const unitTypeRaw = String(getWithAliases(r, [columnMap.unitType]) || '').toLowerCase();
+        const select = String(getWithAliases(r, [columnMap.segment]) || '').trim().toLowerCase();
 
         const unitType = unitTypeRaw.includes('villa') || unitTypeRaw.includes('townhouse') ? 'villa'
           : unitTypeRaw.includes('apartment') || unitTypeRaw.includes('hotel apartment') ? 'apt'
           : 'other';
 
         return {
-          evidenceDate: parseDubaiEvidenceDate(r['Evidence Date']),
-          area: String(r['All Developments'] || r['Community/Building'] || '').trim() || 'Unknown',
-          segment: select === 'oqood' ? 'offplan' : select === 'title deed' ? 'secondary' : 'unknown',
+          evidenceDate: parseDubaiEvidenceDate(getWithAliases(r, [columnMap.evidenceDate])),
+          area: String(getWithAliases(r, [columnMap.area])).trim() || 'Unknown',
+          segment: select.includes('oqood') ? 'offplan' : select.includes('title deed') ? 'secondary' : 'unknown',
           unitType,
-          priceAed: parseNumber(r['Price (AED)']),
-          psfAed: parseNumber(r['Price (AED/sq ft)']),
+          priceAed: parseNumber(getWithAliases(r, [columnMap.priceAed])),
+          psfAed: parseNumber(getWithAliases(r, [columnMap.psfAed])),
         };
       }).filter(r => r.evidenceDate && r.priceAed);
 
       if (records.length) {
-        const payload = buildFromSalesRecords({ records, weekStart, weekEnd, prevStart, prevEnd, csvPath });
+        const windows = deriveAnalysisWindows(records);
+        const payload = buildFromSalesRecords({ records, ...windows, csvPath });
         const ai = await aiInterpretSales(payload._stats_for_ai, process.env.ANTHROPIC_API_KEY);
         if (ai?.owner_briefing) payload.owner_briefing = ai.owner_briefing;
         if (ai?.market_note) payload.market_split.note = ai.market_note;
@@ -341,7 +438,20 @@ export async function GET(request) {
         delete payload._stats_for_ai;
         return Response.json(payload);
       }
-    } catch {}
+
+      return Response.json({
+        ok: false,
+        error: 'CSV was found but no valid sales records could be parsed (date/price may be malformed).',
+        csv_path: csvPath,
+        detected_headers: headers,
+      }, { status: 400 });
+    } catch (e) {
+      return Response.json({
+        ok: false,
+        error: `Unable to read sales CSV at path: ${csvPath}`,
+        detail: e?.message || 'Unknown filesystem error.',
+      }, { status: 500 });
+    }
   }
 
   return Response.json({
