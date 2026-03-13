@@ -810,10 +810,13 @@ export default function Page() {
                     : 'Ranked by number of deals'}
                 </div>
                 {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={32} mb={8}/>):
-                  prop?.top_areas?.slice(0,5).map((a,i)=>(
-                    <AreaRow key={i} rank={`#${i+1}`} area={na(a.area)} vol={na(a.vol)} psf={na(a.avg_psf||a.psf)} trend={a.trend} maxVol={maxVol} last={i===Math.min((prop.top_areas?.length||1),5)-1}/>
-                  ))
-                }
+                  (prop?.top_areas?.length
+                    ? prop.top_areas.slice(0, 5).map((a, i) => (
+                        <AreaRow key={i} rank={`#${i + 1}`} area={na(a.area)} vol={na(a.vol)} psf={na(a.avg_psf || a.psf)} trend={a.trend} maxVol={maxVol} last={i === Math.min(prop.top_areas.length, 5) - 1} />
+                      ))
+                    : prop?.top_areas_mode === 'sub_community' && prop?.top_areas_empty_hint ? (
+                        <div style={{ fontSize: 10, color: C.tm, lineHeight: 1.5, padding: '8px 0' }}>{prop.top_areas_empty_hint}</div>
+                      ) : null)}
               </div>
               <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:12, letterSpacing:'.1em' }}>SUPPLY & MARKET DYNAMICS</div>
