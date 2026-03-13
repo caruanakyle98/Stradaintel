@@ -558,7 +558,7 @@ export default function Page() {
                   if (!intel?.ok) return;
                   setPdfBusy(true);
                   try {
-                    await downloadIntelligencePdf(intel);
+                    await downloadIntelligencePdf(intel, prop);
                   } catch (e) {
                     setError(e?.message || 'PDF failed');
                   } finally {
