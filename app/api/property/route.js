@@ -138,8 +138,8 @@ async function loadSalesCsvText() {
   const hasToken = !!token;
   const hint =
     urlList.length === 0
-      ? 'Set PROPERTY_SALES_CSV_URL to the full URL printed after `npm run upload:sales-blob` (starts with https://….public.blob.vercel-storage.com).'
-      : 'Your URL(s) all failed (503 = dead link). After upload, copy the NEW URL from the terminal and REPLACE PROPERTY_SALES_CSV_URL with that single URL—or put the new URL first, then a comma, then the old one.';
+      ? 'Set PROPERTY_SALES_CSV_URL to your Blob public CSV URL (same URL every upload if pathname unchanged).'
+      : 'All configured sales URL(s) failed (503/5xx). Blob overwrite does not change the URL—set BLOB_READ_WRITE_TOKEN on Production + redeploy so the API reads by pathname; or retry later if CDN was transient.';
   const tokenHint = hasToken
     ? ''
     : ' No BLOB_READ_WRITE_TOKEN visible to Production (name must be exact). Add it, enable Production, Redeploy, no quotes around token.';
@@ -294,7 +294,7 @@ export async function GET(request) {
     const detail = e?.message || String(e);
     const hint503 =
       detail.includes('503') || detail.includes('502') || detail.includes('504') || detail.includes('BLOB_READ_WRITE_TOKEN')
-        ? 'Load order is now: BLOB_READ_WRITE_TOKEN + pathname first (ignores dead public URLs). On Vercel add BLOB_READ_WRITE_TOKEN for Production, redeploy. Upload pathname must be stradaintel/sales.csv unless BLOB_SALES_PATHNAME is set.'
+        ? 'Prefer BLOB_READ_WRITE_TOKEN + pathname (same file as upload; works when public GET returns 503). Production env + redeploy.'
         : null;
     return Response.json({
       ok: false,

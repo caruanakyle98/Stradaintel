@@ -16,7 +16,7 @@ Any **stable HTTPS URL** works (including long-lived presigned URLs).
 
 | Variable | Purpose |
 |----------|---------|
-| `PROPERTY_SALES_CSV_URL` | HTTPS URL to **sales** CSV (optional; old URLs can 503 forever after a store reset) |
+| `PROPERTY_SALES_CSV_URL` | HTTPS URL to **sales** CSV. With Blob, **same pathname + overwrite → same public URL** (it does not change each upload). |
 | **`BLOB_READ_WRITE_TOKEN`** | **Required on Vercel for reliable loads.** Same Read/Write token you use for upload. **Environment = Production** (not only Preview). **Redeploy after adding.** The API loads `stradaintel/sales.csv` via this token **before** trying the public URL. |
 | `PROPERTY_RENTAL_CSV_URL` | HTTPS URL to **rental** listings or transactions CSV (optional) |
 | `PROPERTY_METRICS_JSON_URL` | HTTPS URL to **pre-built** dashboard JSON (optional; skips CSV parse on server) |
@@ -44,7 +44,7 @@ Each row with a valid date + annualised rent counts toward **weekly rental volum
 ## Updating data
 
 1. Export CSV from Property Monitor (or your pipeline).
-2. Upload/replace the object in Blob/R2/S3 (same URL, or update env to new URL).
+2. Upload/replace the object in Blob/R2/S3 (**Vercel Blob: URL stays the same** when you overwrite the same pathname).
 3. Redeploy not required—next **Property data only** refresh pulls fresh data.
 
 ## Automate Blob upload (recommended)
@@ -68,7 +68,7 @@ The dashboard always reads **the current file** at `PROPERTY_SALES_CSV_URL`. Aft
 5. Set **`PROPERTY_SALES_CSV_URL`** to the URL from the script if you like (optional once token is set).
 6. Keep the same **`BLOB_SALES_PATHNAME`** every upload (default `stradaintel/sales.csv`).
 
-**If you still see “HTTP 503” on the old Blob URL:** that URL is dead. The app now **ignores** it when **`BLOB_READ_WRITE_TOKEN`** is on the server. If the error persists, the token is missing from **Production** or the deploy did not pick it up—fix that first.
+**If you see HTTP 503 on GET** even though the URL is unchanged: public CDN can still glitch; the API can load the same file via **`BLOB_READ_WRITE_TOKEN`** + pathname (no dependency on that GET). Ensure the token is on **Production** and redeploy. Only if you **create a new Blob store** would the public base URL change—then update `PROPERTY_SALES_CSV_URL` once.
 
 ### Every day (automate)
 
