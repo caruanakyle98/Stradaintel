@@ -5,11 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "upload:sales-blob": "node scripts/upload-sales-to-blob.mjs"
   },
   "dependencies": {
-    "next": "14.2.3",
+    "next": "^16.1.6",
     "react": "^18",
     "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@vercel/blob": "^2.3.1"
   }
 }

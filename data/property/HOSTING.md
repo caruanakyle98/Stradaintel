@@ -43,6 +43,53 @@ Each row with a valid date + rent counts toward **weekly rental volume**; averag
 2. Upload/replace the object in Blob/R2/S3 (same URL, or update env to new URL).
 3. Redeploy not required—next **Property data only** refresh pulls fresh data.
 
+## Automate Blob upload (recommended)
+
+The dashboard always reads **the current file** at `PROPERTY_SALES_CSV_URL`. After you merge into local `sales.csv`, run the upload script so Blob holds that file again—**no delete step**; **same pathname + overwrite** keeps the URL stable.
+
+### One-time (you do manually)
+
+1. **Vercel** → **Storage** → open your **Blob** store → copy a **Read/Write** token (or create one).
+2. In the repo: `npm install` (pulls `@vercel/blob`).
+3. Upload once and capture the URL:
+
+   ```bash
+   export BLOB_READ_WRITE_TOKEN="vercel_blob_rw_xxxxxxxx"
+   npm run upload:sales-blob -- /full/path/to/sales.csv
+   ```
+
+4. **Vercel** → Project → **Settings → Environment Variables** → set **`PROPERTY_SALES_CSV_URL`** to the **URL printed** (only needed the first time, if it matches your existing Blob URL you can skip).
+5. Keep using the **same** `BLOB_SALES_PATHNAME` every run (default: `stradaintel/sales.csv`) so overwrite does not change the link.
+
+### Every day (automate)
+
+After Property Monitor + Python append:
+
+```bash
+export BLOB_READ_WRITE_TOKEN="vercel_blob_rw_xxxxxxxx"
+npm run upload:sales-blob -- /full/path/to/sales.csv
+```
+
+Or call the same from Python (after writing `sales.csv`):
+
+```python
+import subprocess, os
+subprocess.run(
+    ["npm", "run", "upload:sales-blob", "--", "/path/to/sales.csv"],
+    cwd="/path/to/Stradaintel",
+    check=True,
+    env={**os.environ, "BLOB_READ_WRITE_TOKEN": os.environ["BLOB_READ_WRITE_TOKEN"]},
+)
+```
+
+| Env | Purpose |
+|-----|--------|
+| `BLOB_READ_WRITE_TOKEN` | Required |
+| `BLOB_SALES_PATHNAME` | Optional; default `stradaintel/sales.csv` |
+| `SALES_CSV_FILE` | Optional default path when argv omitted |
+
+CLI alternative: `vercel blob put ./sales.csv --pathname stradaintel/sales.csv --allow-overwrite`
+
 ## Optional: nightly metrics snapshot (Option C)
 
 See [scripts/build-metrics.mjs](../../scripts/build-metrics.mjs) and [.github/workflows/property-metrics.yml](../../.github/workflows/property-metrics.yml). CI builds a small JSON; upload the artifact to Blob/R2 and set `PROPERTY_METRICS_JSON_URL`.

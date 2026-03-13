@@ -264,138 +264,6 @@ function TrendDualChart({ title, subtitle, daily, ma7, dailyColor, maColor, load
   );
 }
 
-/** Weekly transaction totals (bars) */
-function WeeklyVolumeChart({ title, subtitle, weeks, wowPct, loading }) {
-  const W = 320;
-  const H = 200;
-  const padL = 40;
-  const padR = 12;
-  const padT = 24;
-  const padB = 36;
-  const innerW = W - padL - padR;
-  const innerH = H - padT - padB;
-  if (loading) {
-    return (
-      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
-        <Tag color={C.gm}>{title}</Tag>
-        <Skel h={H - 40} />
-      </div>
-    );
-  }
-  if (!weeks?.length) return null;
-  const maxV = Math.max(...weeks.map(w => w.value), 1);
-  const n = weeks.length;
-  const bw = innerW / n - 4;
-  return (
-    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
-      <Tag color={C.gm}>{title}</Tag>
-      <div style={{ fontSize:9, color:C.tm, marginBottom:4, fontFamily:'monospace' }}>{subtitle}</div>
-      {wowPct != null && Number.isFinite(wowPct) ? (
-        <div style={{ fontSize:9, color:wowPct >= 0 ? C.ga : C.amL, marginBottom:6, fontFamily:'monospace' }}>
-          Latest week vs prior: {wowPct >= 0 ? '+' : ''}{wowPct}%
-        </div>
-      ) : null}
-      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display:'block' }}>
-        <rect x={padL} y={padT} width={innerW} height={innerH} fill={C.surf} rx={2} />
-        {weeks.map((w, i) => {
-          const h = (w.value / maxV) * (innerH - 8);
-          const x = padL + (i / n) * innerW + (innerW / n - bw) / 2;
-          const y = padT + innerH - h;
-          return <rect key={w.date} x={x} y={y} width={Math.max(bw, 8)} height={Math.max(h, 0)} fill={C.ga} opacity={0.85} rx={1} />;
-        })}
-        {weeks.map((w, i) => {
-          const x = padL + (i + 0.5) * (innerW / n);
-          return (
-            <text key={w.date} x={x} y={H - 8} textAnchor="middle" fill={C.t2} fontSize={7} fontFamily="monospace">
-              {w.label.replace(/^Wk\s/, '')}
-            </text>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
-
-/** Weekly median PSF + IQR band */
-function WeeklyPsfChart({ title, subtitle, weeks, wowPct, loading }) {
-  const W = 320;
-  const H = 200;
-  const padL = 40;
-  const padR = 12;
-  const padT = 24;
-  const padB = 36;
-  const innerW = W - padL - padR;
-  const innerH = H - padT - padB;
-  if (loading) {
-    return (
-      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
-        <Tag color={C.gm}>{title}</Tag>
-        <Skel h={H - 40} />
-      </div>
-    );
-  }
-  if (!weeks?.length) return null;
-  const lows = weeks.map(w => w.p25).filter(Number.isFinite);
-  const highs = weeks.map(w => w.p75).filter(Number.isFinite);
-  const meds = weeks.map(w => w.median).filter(Number.isFinite);
-  const minY = Math.min(...lows, ...meds) * 0.98;
-  const maxY = Math.max(...highs, ...meds) * 1.02;
-  const yR = maxY - minY || 1;
-  const n = weeks.length;
-  const xAt = i => padL + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
-  let bandD = '';
-  weeks.forEach((w, i) => {
-    if (w.p25 == null || w.p75 == null) return;
-    const x = xAt(i);
-    const y1 = padT + innerH - ((w.p75 - minY) / yR) * innerH;
-    if (!bandD) bandD = `M ${x} ${y1}`;
-    else bandD += ` L ${x} ${y1}`;
-  });
-  for (let i = weeks.length - 1; i >= 0; i--) {
-    const w = weeks[i];
-    if (w.p25 == null || w.p75 == null) continue;
-    const x = xAt(i);
-    const y0 = padT + innerH - ((w.p25 - minY) / yR) * innerH;
-    bandD += ` L ${x} ${y0}`;
-  }
-  if (bandD) bandD += ' Z';
-  const pathMed = weeks
-    .map((w, i) => {
-      if (w.median == null) return null;
-      const x = xAt(i);
-      const y = padT + innerH - ((w.median - minY) / yR) * innerH;
-      return `${i === 0 || weeks[i - 1].median == null ? 'M' : 'L'} ${x} ${y}`;
-    })
-    .filter(Boolean)
-    .join(' ');
-  return (
-    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
-      <Tag color={C.gm}>{title}</Tag>
-      <div style={{ fontSize:9, color:C.tm, marginBottom:4, fontFamily:'monospace' }}>{subtitle}</div>
-      {wowPct != null && Number.isFinite(wowPct) ? (
-        <div style={{ fontSize:9, color:wowPct >= 0 ? C.ga : C.amL, marginBottom:6, fontFamily:'monospace' }}>
-          Median WoW: {wowPct >= 0 ? '+' : ''}{wowPct}%
-        </div>
-      ) : null}
-      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display:'block' }}>
-        <rect x={padL} y={padT} width={innerW} height={innerH} fill={C.surf} rx={2} />
-        {bandD ? <path d={bandD} fill={C.amL} fillOpacity={0.15} stroke="none" /> : null}
-        <line x1={padL} y1={padT + innerH} x2={padL + innerW} y2={padT + innerH} stroke={C.gm} strokeWidth={1} />
-        <line x1={padL} y1={padT} x2={padL} y2={padT + innerH} stroke={C.gm} strokeWidth={1} />
-        {pathMed ? <path d={pathMed} fill="none" stroke={C.amL} strokeWidth={2.2} strokeLinecap="round" /> : null}
-        {weeks.map((w, i) => {
-          const x = xAt(i);
-          return (
-            <text key={w.date} x={x} y={H - 8} textAnchor="middle" fill={C.t2} fontSize={7} fontFamily="monospace">
-              {w.label.replace(/^Wk\s/, '')}
-            </text>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
-
 function SplitBar({ offplan, secondary, loading }) {
   const op = parseInt(offplan)||0;
   return (
@@ -815,8 +683,7 @@ export default function Page() {
                 MARKET TREND (DUBAI) · {prop?.charts_30d?.window_label || '30 days'}
               </div>
               <div style={{ fontSize:9, color:C.tm, marginBottom:12, maxWidth:720, lineHeight:1.45 }}>
-                Daily lines are noisy (weekends & batch uploads). <strong style={{ color:C.t2 }}>7-day average</strong> shows direction;{' '}
-                <strong style={{ color:C.t2 }}>weekly</strong> bars and median PSF (shaded = middle 50% of deals) summarize the same window.
+                Daily lines are noisy (weekends & batch uploads). <strong style={{ color:C.t2 }}>7-day moving average</strong> highlights direction over the same 30-day window.
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:12 }}>
                 <TrendDualChart
@@ -839,22 +706,37 @@ export default function Page() {
                   loading={loadProp}
                 />
               </div>
-              <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, margin:'14px 0 8px', letterSpacing:'.1em' }}>BY WEEK (SAME 30 DAYS)</div>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:12 }}>
-                <WeeklyVolumeChart
-                  title="Weekly volume"
-                  subtitle="Total transactions Mon–Sun (Dubai)"
-                  weeks={prop?.charts_30d?.sale_volume_weekly || []}
-                  wowPct={prop?.charts_30d?.wow_volume_pct}
-                  loading={loadProp}
-                />
-                <WeeklyPsfChart
-                  title="Weekly PSF"
-                  subtitle="Median line · band = 25th–75th percentile"
-                  weeks={prop?.charts_30d?.psf_weekly || []}
-                  wowPct={prop?.charts_30d?.wow_psf_pct}
-                  loading={loadProp}
-                />
+              <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, margin:'14px 0 8px', letterSpacing:'.1em' }}>WEEKLY PULSE (30-DAY WINDOW · DUBAI MON–SUN)</div>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:12 }}>
+                {loadProp ? (
+                  <>
+                    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}><Tag color={C.gm}>Weekly volume</Tag><Skel h={36} /></div>
+                    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}><Tag color={C.gm}>Weekly PSF</Tag><Skel h={36} /></div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
+                      <Tag color={C.gm}>Weekly volume</Tag>
+                      <div style={{ fontSize:9, color:C.tm, marginTop:6, fontFamily:'monospace' }}>Total transactions Mon–Sun (Dubai)</div>
+                      <div style={{ fontSize:12, fontFamily:'monospace', color:(prop?.charts_30d?.wow_volume_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:8 }}>
+                        Latest week vs prior:{' '}
+                        {prop?.charts_30d?.wow_volume_pct != null && Number.isFinite(prop.charts_30d.wow_volume_pct)
+                          ? `${prop.charts_30d.wow_volume_pct >= 0 ? '+' : ''}${prop.charts_30d.wow_volume_pct}%`
+                          : 'N/A'}
+                      </div>
+                    </div>
+                    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
+                      <Tag color={C.gm}>Weekly PSF</Tag>
+                      <div style={{ fontSize:9, color:C.tm, marginTop:6, fontFamily:'monospace' }}>Median price per sq ft by week</div>
+                      <div style={{ fontSize:12, fontFamily:'monospace', color:(prop?.charts_30d?.wow_psf_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:8 }}>
+                        Median WoW:{' '}
+                        {prop?.charts_30d?.wow_psf_pct != null && Number.isFinite(prop.charts_30d.wow_psf_pct)
+                          ? `${prop.charts_30d.wow_psf_pct >= 0 ? '+' : ''}${prop.charts_30d.wow_psf_pct}%`
+                          : 'N/A'}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
