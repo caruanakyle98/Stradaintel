@@ -73,13 +73,47 @@ Use this data:\n${JSON.stringify(stats, null, 2)}`;
   }
 }
 
-async function fetchText(url) {
-  const r = await fetch(url, {
-    headers: { 'User-Agent': 'Stradaintel/1' },
-    cache: 'no-store',
-  });
-  if (!r.ok) throw new Error(`GET ${url} → HTTP ${r.status}`);
-  return r.text();
+async function debugLogProperty(data) {
+  try {
+    const { appendFileSync } = await import('node:fs');
+    const line = JSON.stringify({ sessionId: '13de73', timestamp: Date.now(), ...data }) + '\n';
+    appendFileSync('/Users/kylecaruana/Documents/GitHub/Stradaintel/.cursor/debug-13de73.log', line);
+  } catch {
+    /* local debug file only */
+  }
+}
+
+/** Fetch URL as text; retry 502/503/504 a few times (Blob/CDN blips). */
+async function fetchText(url, label = 'fetch') {
+  const max = 4;
+  let lastStatus = 0;
+  const host = (() => {
+    try {
+      return new URL(url).hostname;
+    } catch {
+      return 'invalid-url';
+    }
+  })();
+  for (let attempt = 1; attempt <= max; attempt++) {
+    const r = await fetch(url, {
+      headers: { 'User-Agent': 'Stradaintel/1' },
+      cache: 'no-store',
+    });
+    lastStatus = r.status;
+    // #region agent log
+    await debugLogProperty({
+      location: 'api/property/fetchText',
+      message: 'blob_fetch',
+      data: { label, attempt, status: r.status, host, retryable: [502, 503, 504].includes(r.status) },
+      hypothesisId: 'H1',
+    });
+    // #endregion
+    if (r.ok) return r.text();
+    if (![502, 503, 504].includes(r.status) || attempt === max) {
+      throw new Error(`GET ${url} → HTTP ${r.status}`);
+    }
+  }
+  throw new Error(`GET ${url} → HTTP ${lastStatus}`);
 }
 
 async function buildFromSalesText(csvRaw, label, { area, skipAi } = {}) {
@@ -191,11 +225,16 @@ export async function GET(request) {
 
     return Response.json(result.body, { status: 200 });
   } catch (e) {
+    const detail = e?.message || String(e);
+    const hint503 =
+      detail.includes('503') || detail.includes('502') || detail.includes('504')
+        ? 'Blob/CDN returned 5xx — often transient; retries already attempted. If it persists: Vercel → Storage → Blob → re-upload sales.csv with the same pathname and confirm PROPERTY_SALES_CSV_URL matches the new object URL.'
+        : null;
     return Response.json({
       ok: false,
       error: 'Failed to load property data',
-      detail: e?.message || String(e),
-      hint: localPathHint(csvPathFromQuery || ''),
+      detail,
+      hint: hint503 || localPathHint(csvPathFromQuery || ''),
     }, { status: 500 });
   }
 }
