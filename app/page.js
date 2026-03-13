@@ -176,13 +176,27 @@ function YieldGauge({ label, gross, net, loading }) {
   );
 }
 
-/** Rolling 30d line chart — themed SVG */
-function LineChart30({ title, subtitle, series, lineColor, yAxisHint, loading }) {
+function chartPath(series, n, padL, padT, innerW, innerH, yMin, yR) {
+  return series
+    .map((s, i) => {
+      const v = s.value;
+      if (v == null || !Number.isFinite(v)) return null;
+      const x = padL + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
+      const y = padT + innerH - ((v - yMin) / yR) * innerH;
+      return { x, y, i };
+    })
+    .filter(Boolean)
+    .map((pt, idx, arr) => `${idx === 0 ? 'M' : 'L'} ${pt.x} ${pt.y}`)
+    .join(' ');
+}
+
+/** Daily (faint) + 7d MA (bold) on shared scale */
+function TrendDualChart({ title, subtitle, daily, ma7, dailyColor, maColor, loading, yZero }) {
   const W = 620;
-  const H = 240;
+  const H = 248;
   const padL = 48;
   const padR = 16;
-  const padT = 28;
+  const padT = 36;
   const padB = 44;
   const innerW = W - padL - padR;
   const innerH = H - padT - padB;
@@ -194,29 +208,29 @@ function LineChart30({ title, subtitle, series, lineColor, yAxisHint, loading })
       </div>
     );
   }
-  if (!series?.length) return null;
-  const vals = series.map(s => s.value).filter(v => v != null && Number.isFinite(v));
+  if (!daily?.length) return null;
+  const vals = [...daily, ...ma7].map(s => s.value).filter(v => v != null && Number.isFinite(v));
   if (!vals.length) return null;
-  const minY = Math.min(...vals);
-  const maxY = Math.max(...vals);
-  const padY = Math.max((maxY - minY) * 0.06, maxY * 0.02 || 1);
-  const yMin = Math.max(0, minY - padY);
+  let minY = Math.min(...vals);
+  let maxY = Math.max(...vals);
+  if (yZero) minY = Math.min(0, minY);
+  const padY = Math.max((maxY - minY) * 0.08, maxY * 0.03 || 1);
+  const yMin = Math.max(yZero ? 0 : minY - padY, 0);
   const yMax = maxY + padY;
   const yR = yMax - yMin || 1;
-  const n = series.length;
-  const pathD = series
-    .map((s, i) => {
-      const x = padL + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
-      const y = padT + innerH - ((s.value - yMin) / yR) * innerH;
-      return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-    })
-    .join(' ');
+  const n = daily.length;
+  const pathDaily = chartPath(daily, n, padL, padT, innerW, innerH, yMin, yR);
+  const pathMa = chartPath(ma7, n, padL, padT, innerW, innerH, yMin, yR);
   const ticks = [0, Math.floor(n / 4), Math.floor(n / 2), Math.floor((3 * n) / 4), n - 1].filter((v, i, a) => a.indexOf(v) === i);
   const yTicks = 4;
   return (
     <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px' }}>
       <Tag color={C.gm}>{title}</Tag>
-      {subtitle ? <div style={{ fontSize:9, color:C.tm, marginBottom:10, fontFamily:'monospace' }}>{subtitle}</div> : null}
+      {subtitle ? <div style={{ fontSize:9, color:C.tm, marginBottom:8, fontFamily:'monospace' }}>{subtitle}</div> : null}
+      <div style={{ fontSize:8, color:C.t2, marginBottom:6, fontFamily:'monospace' }}>
+        <span style={{ color:dailyColor }}>■</span> daily &nbsp;
+        <span style={{ color:maColor }}>■</span> 7-day moving avg
+      </div>
       <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display:'block' }}>
         <rect x={padL} y={padT} width={innerW} height={innerH} fill={C.surf} rx={2} />
         {[0, 1, 2, 3, 4].map(i => {
@@ -225,12 +239,13 @@ function LineChart30({ title, subtitle, series, lineColor, yAxisHint, loading })
         })}
         <line x1={padL} y1={padT + innerH} x2={padL + innerW} y2={padT + innerH} stroke={C.gm} strokeWidth={1} />
         <line x1={padL} y1={padT} x2={padL} y2={padT + innerH} stroke={C.gm} strokeWidth={1} />
-        <path d={pathD} fill="none" stroke={lineColor} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+        {pathDaily ? <path d={pathDaily} fill="none" stroke={dailyColor} strokeWidth={1.2} strokeLinecap="round" strokeLinejoin="round" opacity={0.35} /> : null}
+        {pathMa ? <path d={pathMa} fill="none" stroke={maColor} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" /> : null}
         {ticks.map(i => {
           const x = padL + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
           return (
             <text key={i} x={x} y={H - 10} textAnchor="middle" fill={C.t2} fontSize={8} fontFamily="monospace">
-              {series[i]?.label || ''}
+              {daily[i]?.label || ''}
             </text>
           );
         })}
@@ -241,7 +256,138 @@ function LineChart30({ title, subtitle, series, lineColor, yAxisHint, loading })
           return (
             <text key={i} x={padL - 6} y={yy + 3} textAnchor="end" fill={C.tm} fontSize={8} fontFamily="monospace">
               {val}
-              {yAxisHint || ''}
+            </text>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+/** Weekly transaction totals (bars) */
+function WeeklyVolumeChart({ title, subtitle, weeks, wowPct, loading }) {
+  const W = 320;
+  const H = 200;
+  const padL = 40;
+  const padR = 12;
+  const padT = 24;
+  const padB = 36;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  if (loading) {
+    return (
+      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
+        <Tag color={C.gm}>{title}</Tag>
+        <Skel h={H - 40} />
+      </div>
+    );
+  }
+  if (!weeks?.length) return null;
+  const maxV = Math.max(...weeks.map(w => w.value), 1);
+  const n = weeks.length;
+  const bw = innerW / n - 4;
+  return (
+    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
+      <Tag color={C.gm}>{title}</Tag>
+      <div style={{ fontSize:9, color:C.tm, marginBottom:4, fontFamily:'monospace' }}>{subtitle}</div>
+      {wowPct != null && Number.isFinite(wowPct) ? (
+        <div style={{ fontSize:9, color:wowPct >= 0 ? C.ga : C.amL, marginBottom:6, fontFamily:'monospace' }}>
+          Latest week vs prior: {wowPct >= 0 ? '+' : ''}{wowPct}%
+        </div>
+      ) : null}
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display:'block' }}>
+        <rect x={padL} y={padT} width={innerW} height={innerH} fill={C.surf} rx={2} />
+        {weeks.map((w, i) => {
+          const h = (w.value / maxV) * (innerH - 8);
+          const x = padL + (i / n) * innerW + (innerW / n - bw) / 2;
+          const y = padT + innerH - h;
+          return <rect key={w.date} x={x} y={y} width={Math.max(bw, 8)} height={Math.max(h, 0)} fill={C.ga} opacity={0.85} rx={1} />;
+        })}
+        {weeks.map((w, i) => {
+          const x = padL + (i + 0.5) * (innerW / n);
+          return (
+            <text key={w.date} x={x} y={H - 8} textAnchor="middle" fill={C.t2} fontSize={7} fontFamily="monospace">
+              {w.label.replace(/^Wk\s/, '')}
+            </text>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+/** Weekly median PSF + IQR band */
+function WeeklyPsfChart({ title, subtitle, weeks, wowPct, loading }) {
+  const W = 320;
+  const H = 200;
+  const padL = 40;
+  const padR = 12;
+  const padT = 24;
+  const padB = 36;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  if (loading) {
+    return (
+      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
+        <Tag color={C.gm}>{title}</Tag>
+        <Skel h={H - 40} />
+      </div>
+    );
+  }
+  if (!weeks?.length) return null;
+  const lows = weeks.map(w => w.p25).filter(Number.isFinite);
+  const highs = weeks.map(w => w.p75).filter(Number.isFinite);
+  const meds = weeks.map(w => w.median).filter(Number.isFinite);
+  const minY = Math.min(...lows, ...meds) * 0.98;
+  const maxY = Math.max(...highs, ...meds) * 1.02;
+  const yR = maxY - minY || 1;
+  const n = weeks.length;
+  const xAt = i => padL + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
+  let bandD = '';
+  weeks.forEach((w, i) => {
+    if (w.p25 == null || w.p75 == null) return;
+    const x = xAt(i);
+    const y1 = padT + innerH - ((w.p75 - minY) / yR) * innerH;
+    if (!bandD) bandD = `M ${x} ${y1}`;
+    else bandD += ` L ${x} ${y1}`;
+  });
+  for (let i = weeks.length - 1; i >= 0; i--) {
+    const w = weeks[i];
+    if (w.p25 == null || w.p75 == null) continue;
+    const x = xAt(i);
+    const y0 = padT + innerH - ((w.p25 - minY) / yR) * innerH;
+    bandD += ` L ${x} ${y0}`;
+  }
+  if (bandD) bandD += ' Z';
+  const pathMed = weeks
+    .map((w, i) => {
+      if (w.median == null) return null;
+      const x = xAt(i);
+      const y = padT + innerH - ((w.median - minY) / yR) * innerH;
+      return `${i === 0 || weeks[i - 1].median == null ? 'M' : 'L'} ${x} ${y}`;
+    })
+    .filter(Boolean)
+    .join(' ');
+  return (
+    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
+      <Tag color={C.gm}>{title}</Tag>
+      <div style={{ fontSize:9, color:C.tm, marginBottom:4, fontFamily:'monospace' }}>{subtitle}</div>
+      {wowPct != null && Number.isFinite(wowPct) ? (
+        <div style={{ fontSize:9, color:wowPct >= 0 ? C.ga : C.amL, marginBottom:6, fontFamily:'monospace' }}>
+          Median WoW: {wowPct >= 0 ? '+' : ''}{wowPct}%
+        </div>
+      ) : null}
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display:'block' }}>
+        <rect x={padL} y={padT} width={innerW} height={innerH} fill={C.surf} rx={2} />
+        {bandD ? <path d={bandD} fill={C.amL} fillOpacity={0.15} stroke="none" /> : null}
+        <line x1={padL} y1={padT + innerH} x2={padL + innerW} y2={padT + innerH} stroke={C.gm} strokeWidth={1} />
+        <line x1={padL} y1={padT} x2={padL} y2={padT + innerH} stroke={C.gm} strokeWidth={1} />
+        {pathMed ? <path d={pathMed} fill="none" stroke={C.amL} strokeWidth={2.2} strokeLinecap="round" /> : null}
+        {weeks.map((w, i) => {
+          const x = xAt(i);
+          return (
+            <text key={w.date} x={x} y={H - 8} textAnchor="middle" fill={C.t2} fontSize={7} fontFamily="monospace">
+              {w.label.replace(/^Wk\s/, '')}
             </text>
           );
         })}
@@ -662,27 +808,51 @@ export default function Page() {
             </div>
           </div>
 
-          {/* 30-day line charts */}
+          {/* 30-day trends: daily + 7d MA + weekly */}
           {(prop?.charts_30d || loadProp) && (
             <div style={{ marginBottom:16 }}>
-              <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:10, letterSpacing:'.1em' }}>
-                ROLLING 30 DAYS (DUBAI) · {prop?.charts_30d?.window_label || 'Sale volume & avg PSF per day'}
+              <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:6, letterSpacing:'.1em' }}>
+                MARKET TREND (DUBAI) · {prop?.charts_30d?.window_label || '30 days'}
+              </div>
+              <div style={{ fontSize:9, color:C.tm, marginBottom:12, maxWidth:720, lineHeight:1.45 }}>
+                Daily lines are noisy (weekends & batch uploads). <strong style={{ color:C.t2 }}>7-day average</strong> shows direction;{' '}
+                <strong style={{ color:C.t2 }}>weekly</strong> bars and median PSF (shaded = middle 50% of deals) summarize the same window.
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:12 }}>
-                <LineChart30
+                <TrendDualChart
                   title="Sale volume"
-                  subtitle="Transactions per day (same CSV)"
-                  series={prop?.charts_30d?.sale_volume || []}
-                  lineColor={C.ga}
-                  yAxisHint=""
+                  subtitle="Transactions per day vs smoothed trend"
+                  daily={prop?.charts_30d?.sale_volume || []}
+                  ma7={prop?.charts_30d?.sale_volume_ma7 || []}
+                  dailyColor={C.ga}
+                  maColor={C.gm}
+                  yZero
                   loading={loadProp}
                 />
-                <LineChart30
-                  title="PSF"
-                  subtitle="Daily average AED/sq ft (forward-filled if sparse)"
-                  series={prop?.charts_30d?.psf || []}
-                  lineColor={C.amL}
-                  yAxisHint=""
+                <TrendDualChart
+                  title="PSF (AED/sq ft)"
+                  subtitle="Daily avg (filled) vs 7-day average"
+                  daily={prop?.charts_30d?.psf || []}
+                  ma7={prop?.charts_30d?.psf_ma7 || []}
+                  dailyColor={C.amL}
+                  maColor="#e8a060"
+                  loading={loadProp}
+                />
+              </div>
+              <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, margin:'14px 0 8px', letterSpacing:'.1em' }}>BY WEEK (SAME 30 DAYS)</div>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:12 }}>
+                <WeeklyVolumeChart
+                  title="Weekly volume"
+                  subtitle="Total transactions Mon–Sun (Dubai)"
+                  weeks={prop?.charts_30d?.sale_volume_weekly || []}
+                  wowPct={prop?.charts_30d?.wow_volume_pct}
+                  loading={loadProp}
+                />
+                <WeeklyPsfChart
+                  title="Weekly PSF"
+                  subtitle="Median line · band = 25th–75th percentile"
+                  weeks={prop?.charts_30d?.psf_weekly || []}
+                  wowPct={prop?.charts_30d?.wow_psf_pct}
                   loading={loadProp}
                 />
               </div>

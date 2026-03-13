@@ -14,6 +14,8 @@ This folder is where you can place self-hosted property datasets (CSV exports) f
 
 Counts and AED totals use **today’s date in Dubai (GST)**: **last 7 calendar days including today**, compared to the **previous 7 calendar days** (for % change). Rows outside those ranges are ignored for the headline cards.
 
+**Charts (30 days):** The API adds `charts_30d`: daily sale counts and PSF, **7-day moving averages**, and **weekly** aggregates (volume totals; PSF **median** plus 25th–75th percentile band). Rebuild metrics snapshots after deploy so JSON includes the new fields.
+
 ### CSV mapping rules
 
 The API now auto-maps common column name variants so your file does not need an exact schema match.
