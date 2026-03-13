@@ -176,6 +176,80 @@ function YieldGauge({ label, gross, net, loading }) {
   );
 }
 
+/** Rolling 30d line chart — themed SVG */
+function LineChart30({ title, subtitle, series, lineColor, yAxisHint, loading }) {
+  const W = 620;
+  const H = 240;
+  const padL = 48;
+  const padR = 16;
+  const padT = 28;
+  const padB = 44;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  if (loading) {
+    return (
+      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px', minHeight:H }}>
+        <Tag color={C.gm}>{title}</Tag>
+        <Skel h={H - 50} />
+      </div>
+    );
+  }
+  if (!series?.length) return null;
+  const vals = series.map(s => s.value).filter(v => v != null && Number.isFinite(v));
+  if (!vals.length) return null;
+  const minY = Math.min(...vals);
+  const maxY = Math.max(...vals);
+  const padY = Math.max((maxY - minY) * 0.06, maxY * 0.02 || 1);
+  const yMin = Math.max(0, minY - padY);
+  const yMax = maxY + padY;
+  const yR = yMax - yMin || 1;
+  const n = series.length;
+  const pathD = series
+    .map((s, i) => {
+      const x = padL + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
+      const y = padT + innerH - ((s.value - yMin) / yR) * innerH;
+      return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
+    })
+    .join(' ');
+  const ticks = [0, Math.floor(n / 4), Math.floor(n / 2), Math.floor((3 * n) / 4), n - 1].filter((v, i, a) => a.indexOf(v) === i);
+  const yTicks = 4;
+  return (
+    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px' }}>
+      <Tag color={C.gm}>{title}</Tag>
+      {subtitle ? <div style={{ fontSize:9, color:C.tm, marginBottom:10, fontFamily:'monospace' }}>{subtitle}</div> : null}
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display:'block' }}>
+        <rect x={padL} y={padT} width={innerW} height={innerH} fill={C.surf} rx={2} />
+        {[0, 1, 2, 3, 4].map(i => {
+          const yy = padT + (i / 4) * innerH;
+          return <line key={i} x1={padL} y1={yy} x2={padL + innerW} y2={yy} stroke={C.border} strokeWidth={0.5} opacity={0.6} />;
+        })}
+        <line x1={padL} y1={padT + innerH} x2={padL + innerW} y2={padT + innerH} stroke={C.gm} strokeWidth={1} />
+        <line x1={padL} y1={padT} x2={padL} y2={padT + innerH} stroke={C.gm} strokeWidth={1} />
+        <path d={pathD} fill="none" stroke={lineColor} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+        {ticks.map(i => {
+          const x = padL + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
+          return (
+            <text key={i} x={x} y={H - 10} textAnchor="middle" fill={C.t2} fontSize={8} fontFamily="monospace">
+              {series[i]?.label || ''}
+            </text>
+          );
+        })}
+        {Array.from({ length: yTicks + 1 }, (_, i) => {
+          const yy = padT + innerH - (i / yTicks) * innerH;
+          const raw = yMin + (i / yTicks) * (yMax - yMin);
+          const val = raw >= 100 ? Math.round(raw) : Number(raw.toFixed(1));
+          return (
+            <text key={i} x={padL - 6} y={yy + 3} textAnchor="end" fill={C.tm} fontSize={8} fontFamily="monospace">
+              {val}
+              {yAxisHint || ''}
+            </text>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 function SplitBar({ offplan, secondary, loading }) {
   const op = parseInt(offplan)||0;
   return (
@@ -587,6 +661,33 @@ export default function Page() {
               )}
             </div>
           </div>
+
+          {/* 30-day line charts */}
+          {(prop?.charts_30d || loadProp) && (
+            <div style={{ marginBottom:16 }}>
+              <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:10, letterSpacing:'.1em' }}>
+                ROLLING 30 DAYS (DUBAI) · {prop?.charts_30d?.window_label || 'Sale volume & avg PSF per day'}
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:12 }}>
+                <LineChart30
+                  title="Sale volume"
+                  subtitle="Transactions per day (same CSV)"
+                  series={prop?.charts_30d?.sale_volume || []}
+                  lineColor={C.ga}
+                  yAxisHint=""
+                  loading={loadProp}
+                />
+                <LineChart30
+                  title="PSF"
+                  subtitle="Daily average AED/sq ft (forward-filled if sparse)"
+                  series={prop?.charts_30d?.psf || []}
+                  lineColor={C.amL}
+                  yAxisHint=""
+                  loading={loadProp}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Rental yields */}
           {(prop?.yields||loadProp) && (
