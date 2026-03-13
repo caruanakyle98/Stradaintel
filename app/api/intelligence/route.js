@@ -128,18 +128,79 @@ async function haikuSearch(system, prompt, anthropicKey, maxTokens = 1200) {
   return stripTags(JSON.parse(match[0]));
 }
 
+// ── Score calibration: narrative must match number (investment-grade consistency) ──
+function pillarText(p) {
+  if (!p || typeof p !== 'object') return '';
+  return [p.headline, ...(Array.isArray(p.bullets) ? p.bullets : []), p.risk, p.action]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+}
+
+/** Security: higher score = calmer for UAE property. Bullets about missiles/strikes → cannot be 5. */
+function calibrateSecurityScore(raw, p) {
+  const t = pillarText(p);
+  const stress = [
+    /\b(missile|drones?|drone\b|airstrike|air strike|retaliat|killed|evacuat)\b/i,
+    /\b(war\b|combat|invasion|bombing)\b/i,
+    /\b(uae|dubai|dxb|emirates|gulf)\b[^.]{0,80}\b(threat|attack|strike|missile|drone)\b/i,
+    /\b(threat|attack|strike)[^.]{0,80}\b(uae|dubai|dxb|airport)\b/i,
+    /\b(instabilit|escalat|conflict intensif)\b/i,
+    /\b(flight cancellations?|airspace|staff ordered out)\b/i,
+  ].reduce((n, rx) => n + (rx.test(t) ? 1 : 0), 0);
+  let s = Math.min(Math.max(parseInt(raw, 10) || 3, 1), 5);
+  if (stress >= 4) s = Math.min(s, 1);
+  else if (stress >= 3) s = Math.min(s, 2);
+  else if (stress >= 2) s = Math.min(s, 3);
+  else if (stress >= 1) s = Math.min(s, 4);
+  return s;
+}
+
+/** Property sentiment: very negative headlines cannot score 5 */
+function calibratePropertyScore(raw, p) {
+  const t = pillarText(p);
+  const bad = [/crash|collapse|freeze|plummet|crisis|halt sales/i].filter(rx => rx.test(t)).length;
+  let s = Math.min(Math.max(parseInt(raw, 10) || 3, 1), 5);
+  if (bad >= 2) s = Math.min(s, 2);
+  else if (bad >= 1) s = Math.min(s, 3);
+  return s;
+}
+
+/** Aviation: widespread cancellations / closures cap score */
+function calibrateAviationScore(raw, p) {
+  const t = pillarText(p);
+  const stress = [/cancel|suspension|closed|disrupt|grounded/i].filter(rx => rx.test(t)).length;
+  let s = Math.min(Math.max(parseInt(raw, 10) || 3, 1), 5);
+  if (stress >= 2) s = Math.min(s, 2);
+  else if (stress >= 1) s = Math.min(s, 4);
+  return s;
+}
+
 // ── Haiku Call A: News pillars ────────────────────────────
 async function fetchNewsNarrative(today, mkt, sp30d, anthropicKey) {
   const ctx = `Brent $${mkt.brent?.price||'N/A'}/bbl | VIX ${mkt.vix?.price||'N/A'} | S&P ${mkt.sp500?.price||'N/A'} (30d:${sp30d?.chgPct||'N/A'})`;
   const prompt = `Today is ${today}. Context: ${ctx}
 
-Search for current news on these 3 topics. Return ONLY this JSON (no markdown, no backticks, no XML):
+Search current news. Return ONLY this JSON (no markdown, no backticks, no XML).
+
+SCORING RULES (mandatory — score MUST match how safe UAE/Dubai feels for property investors):
+- security.score 1–5: 5 = region calm, no material military or terrorism stress to UAE. 4 = elevated noise only. 3 = moderate regional tension, UAE operating normally. 2 = direct threats, evacuations, or military activity near UAE/Gulf. 1 = active conflict affecting Gulf airspace, UAE, or investor exodus narrative. If headline or bullets mention missiles, drones, strikes, evacuations, or airport disruption → score MUST be 1 or 2 only.
+- property.score 1–5: 5 = strong demand/pricing narrative. 1 = severe negative (crash/freeze). Must match bullets.
+- aviation.score 1–5: 5 = DXB/Emirates normal. 1–2 = major cancellations or closures. Must match bullets.
+
+sig must be "positive" only if score>=4, "negative" if score<=2, else "neutral".
+
 {
-  "security": { "score":3, "sig":"neutral", "headline":"One sentence on current Middle East security status", "bullets":["Event with date","Event","Event"], "risk":"Most specific UAE threat", "action":"Investor positioning" },
-  "property":  { "score":4, "sig":"positive","headline":"One sentence on Dubai property this week", "bullets":["Transaction data","Developer/pricing news","Rental signal"], "risk":"Primary property risk", "action":"Buyer or seller action" },
-  "aviation":  { "score":4, "sig":"positive","headline":"One sentence on Emirates or DXB airport", "bullets":["Passenger/flight data","Hotel/tourism metric","Route news"], "risk":"Aviation risk", "action":"Short-let implication" }
+  "security": { "score":3, "sig":"neutral", "headline":"One sentence Middle East / UAE security", "bullets":["Dated fact","Dated fact","Dated fact"], "risk":"Main UAE-specific risk", "action":"What investors should do" },
+  "property": { "score":3, "sig":"neutral", "headline":"One sentence Dubai property", "bullets":["Fact","Fact","Fact"], "risk":"Main property risk", "action":"Buyer/seller tilt" },
+  "aviation": { "score":3, "sig":"neutral", "headline":"One sentence DXB/Emirates", "bullets":["Fact","Fact","Fact"], "risk":"Aviation risk", "action":"Tourism/short-let" }
 }`;
-  return haikuSearch('Dubai real estate analyst. Search news on Middle East security, Dubai property, Emirates/DXB. Return ONLY valid JSON, no markdown, no cite tags.', prompt, anthropicKey, 1200);
+  return haikuSearch(
+    'Dubai real estate analyst. Search Middle East security, Dubai property, Emirates/DXB. Scores must align with threat level — never output security 5 if text describes missiles, strikes, or UAE threats. Return ONLY valid JSON, no markdown, no cite tags.',
+    prompt,
+    anthropicKey,
+    1400,
+  );
 }
 
 // ── Haiku Call B: EIBOR 3M + UAE PMI ─────────────────────
@@ -253,12 +314,15 @@ export async function GET() {
   const buyerScore = buyerRaw > 1.5 ? 5 : buyerRaw > 0.5 ? 4 : buyerRaw > -0.5 ? 3 : buyerRaw > -1.5 ? 2 : 1;
   const buyerSig   = buyerScore >= 4 ? 'positive' : buyerScore <= 2 ? 'negative' : 'neutral';
 
-  // ── Existing pillar scores ────────────────────────────
-  const clamp    = n => Math.min(Math.max(parseInt(n)||3, 1), 5);
-  const sigOf    = n => n>=4 ? 'positive' : n<=2 ? 'negative' : 'neutral';
-  const secScore = clamp(narrative.security?.score);
-  const prpScore = clamp(narrative.property?.score);
-  const aviScore = clamp(narrative.aviation?.score);
+  // ── Existing pillar scores (calibrated so score ↔ narrative ↔ sig align) ──
+  const clamp = n => Math.min(Math.max(parseInt(n, 10) || 3, 1), 5);
+  const sigOf = n => (n >= 4 ? 'positive' : n <= 2 ? 'negative' : 'neutral');
+  const secScore = calibrateSecurityScore(narrative.security?.score, narrative.security);
+  const prpScore = calibratePropertyScore(narrative.property?.score, narrative.property);
+  const aviScore = calibrateAviationScore(narrative.aviation?.score, narrative.aviation);
+  narrative.security = { ...narrative.security, score: secScore, sig: sigOf(secScore) };
+  narrative.property = { ...narrative.property, score: prpScore, sig: sigOf(prpScore) };
+  narrative.aviation = { ...narrative.aviation, score: aviScore, sig: sigOf(aviScore) };
   const oilScore = brent>=88?5 : brent>=78?4 : brent>=68?3 : brent>=58?2 : brent>0?1 : 3;
   const emaarPct = parseFloat((markets.emaar?.pct||'0%').replace('%',''));
   const dfmPct   = parseFloat((markets.dfmgi?.pct||'0%').replace('%',''));
