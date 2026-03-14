@@ -425,8 +425,9 @@ const CLIENT_SECTION_META = [
   { id: 'footer', label: 'Footer & contact' },
 ];
 
+/** All sections on by default so HTML export & print match the full dashboard; users can uncheck in Client pack. */
 const defaultClientSections = () =>
-  Object.fromEntries(CLIENT_SECTION_META.map(({ id }) => [id, id !== 's05']));
+  Object.fromEntries(CLIENT_SECTION_META.map(({ id }) => [id, true]));
 
 function cloneNodeNoNoPrint(el) {
   if (!el) return '';
@@ -1218,7 +1219,13 @@ export default function Page() {
         <div data-client-section="s05" className={`print-section ${secClass('s05')}`} style={{ marginTop:48 }}>
           <div
             className="no-print"
-            onClick={() => setShowData(!showData)}
+            onClick={() => {
+              const next = !showData;
+              // #region agent log
+              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',hypothesisId:'A',location:'page.js:s05-toggle',message:'section05 toggle',data:{next,wasBlockedByS05Gate:false},timestamp:Date.now(),runId:'post-fix'})}).catch(()=>{});
+              // #endregion
+              setShowData(next);
+            }}
             style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 18px', background:C.card, border:`1px solid ${C.border}`, borderRadius:2, cursor:'pointer', userSelect:'none' }}>
             <div>
               <div style={{ fontFamily:'Georgia,serif', fontSize:15, fontWeight:700, color:C.t1 }}>
@@ -1235,8 +1242,8 @@ export default function Page() {
             <div style={{ fontSize:11, color:C.tm, marginTop:4 }}>Supporting data (included in this PDF)</div>
           </div>
 
-          {(showData || printScope) && clientSections.s05 && (
-            <div className="fade-in print-avoid-break" style={{ border:`1px solid ${C.border}`, borderTop: showData ? 'none' : undefined, borderRadius: 2, padding:'24px 20px', background:C.surf }}>
+          {showData && (
+            <div className="fade-in print-avoid-break" style={{ border:`1px solid ${C.border}`, borderTop:'none', borderRadius:'0 0 2px 2px', padding:'24px 20px', background:C.surf }}>
 
               {/* Dubai developers + banks */}
               <div style={{ marginBottom:20 }}>
