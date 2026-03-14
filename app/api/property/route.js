@@ -102,7 +102,7 @@ function blobReadWriteToken() {
 }
 
 /**
- * Load sales CSV. Order: (1) Blob token + pathname (2) each HTTPS URL in PROPERTY_SALES_CSV_URL (comma/newline separated; put WORKING URL first).
+ * Load sales CSV. Order: (1) PROPERTY_SALES_CSV_URL(s) e.g. GitHub raw (2) Blob token + pathname fallback.
  */
 async function loadSalesCsvText() {
   const token = blobReadWriteToken();
@@ -114,9 +114,17 @@ async function loadSalesCsvText() {
     .filter((u) => u.startsWith('http'));
   let urlErrs = [];
 
+  for (const u of urlList) {
+    try {
+      return { text: await fetchText(u), label: u };
+    } catch (e) {
+      urlErrs.push(`${u.slice(0, 48)}… → ${e?.message || e}`);
+    }
+  }
+
   if (token) {
     const { get } = await import('@vercel/blob');
-    for (let attempt = 1; attempt <= 5; attempt++) {
+    for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         const out = await get(pathname, { access: 'public', token });
         if (out?.stream) {
@@ -126,34 +134,20 @@ async function loadSalesCsvText() {
         break;
       } catch (e) {
         const msg = e?.message || String(e);
-        urlErrs.push(`token+pathname: ${msg}`);
-        if (!msg.includes('503') || attempt === 5) break;
-        await new Promise((r) => setTimeout(r, 600 * attempt));
+        if (attempt === 3) urlErrs.push(`blob token+pathname: ${msg}`);
+        if (!msg.includes('503') || attempt === 3) break;
+        await new Promise((r) => setTimeout(r, 400 * attempt));
       }
     }
   }
 
-  for (const u of urlList) {
-    try {
-      return { text: await fetchText(u), label: u };
-    } catch (e) {
-      urlErrs.push(`${u.slice(0, 48)}… → ${e?.message || e}`);
-    }
-  }
-
-  const hasToken = !!token;
-  const blob503 =
-    urlErrs.some((s) => s.includes('token+pathname') && s.includes('503')) &&
-    urlErrs.some((s) => s.includes('GET') && s.includes('503'));
-  const hint = blob503
-    ? 'Vercel Blob returns 503 for both token read and public GET (their side or store). Workaround: host sales.csv on GitHub raw or R2 (any HTTPS 200), set PROPERTY_SALES_CSV_URL to that URL, redeploy. See docs/CSV_WHEN_BLOB_503.md.'
-    : urlList.length === 0
-      ? 'Set PROPERTY_SALES_CSV_URL to an HTTPS CSV URL (Blob, GitHub raw, R2, etc.).'
-      : 'All sales URL(s) failed. If Blob 503 persists, use non-Blob hosting — docs/CSV_WHEN_BLOB_503.md';
-  const tokenHint = hasToken
-    ? ''
-    : ' No BLOB_READ_WRITE_TOKEN on Production — add it, redeploy.';
-  throw new Error(`${hint}${tokenHint} Details: ${urlErrs.join(' | ') || 'no URLs'}`);
+  const hint =
+    urlList.length === 0 && !token
+      ? 'Set PROPERTY_SALES_CSV_URL (e.g. GitHub raw). See docs/GITHUB_CSV.md'
+      : urlList.length > 0
+        ? 'All sales URL(s) failed. Check raw URL in browser (must return 200). docs/GITHUB_CSV.md'
+        : 'Blob read failed. Set PROPERTY_SALES_CSV_URL to GitHub raw, or fix Blob. docs/GITHUB_CSV.md';
+  throw new Error(`${hint} Details: ${urlErrs.join(' | ') || 'no source'}`);
 }
 
 async function loadRentalCsvText() {
@@ -165,6 +159,13 @@ async function loadRentalCsvText() {
     .filter((u) => u.startsWith('http'));
   let urlErr = null;
 
+  for (const rentalUrl of rentalUrls) {
+    try {
+      return { text: await fetchText(rentalUrl), label: rentalUrl };
+    } catch (e) {
+      urlErr = e?.message || String(e);
+    }
+  }
   if (token) {
     try {
       const { get } = await import('@vercel/blob');
@@ -173,21 +174,12 @@ async function loadRentalCsvText() {
         const text = await new Response(out.stream).text();
         if (text.length > 50) return { text, label: `blob:${pathname}` };
       }
-    } catch {
-      /* fall through */
-    }
-  }
-  for (const rentalUrl of rentalUrls) {
-    try {
-      return { text: await fetchText(rentalUrl), label: rentalUrl };
     } catch (e) {
-      urlErr = e?.message || String(e);
+      urlErr = e?.message || String(urlErr || e);
     }
   }
   throw new Error(
-    token
-      ? `Rental: no file at "${pathname}" and URL failed. ${urlErr || ''}`
-      : `Rental load failed. ${urlErr || 'Set PROPERTY_RENTAL_CSV_URL or BLOB_READ_WRITE_TOKEN + upload rentals to BLOB_RENTAL_PATHNAME.'}`,
+    `Rental CSV failed. Set PROPERTY_RENTAL_CSV_URL (GitHub raw). ${urlErr || ''} docs/GITHUB_CSV.md`,
   );
 }
 
@@ -259,6 +251,7 @@ export async function GET(request) {
   const forceLive = (reqUrl.searchParams.get('mode') || '').toLowerCase() === 'live';
   const hasSalesSource =
     !!(salesUrlEnv?.trim() || blobReadWriteToken() || csvPathFromQuery || process.env.PROPERTY_SALES_CSV_PATH);
+  /* GitHub raw: PROPERTY_SALES_CSV_URL alone is enough — no Blob token required */
   if (forceLive && !hasSalesSource) {
     return Response.json({
       ok: false,
@@ -276,10 +269,10 @@ export async function GET(request) {
         detail:
           'Vercel has no PROPERTY_SALES_CSV_URL or BLOB_READ_WRITE_TOKEN. data/property/sales.csv is not on the serverless bundle.',
         setup: [
-          '1) Storage → Create Blob → copy Read/Write token',
-          '2) npm run upload:blob-all -- /path/sales.csv /path/rentals.csv',
-          '3) Project → Env (Production): BLOB_READ_WRITE_TOKEN, PROPERTY_SALES_CSV_URL, PROPERTY_RENTAL_CSV_URL, BLOB_SALES_PATHNAME=stradaintel/sales.csv, BLOB_RENTAL_PATHNAME=stradaintel/rentals.csv',
-          '4) Redeploy — docs/BLOB_SETUP_FROM_SCRATCH.md',
+          '1) Public data repo: push sales.csv + rentals.csv',
+          '2) Raw URLs: https://raw.githubusercontent.com/USER/REPO/BRANCH/sales.csv',
+          '3) Vercel → Env (Production): PROPERTY_SALES_CSV_URL, PROPERTY_RENTAL_CSV_URL → Redeploy',
+          '4) docs/GITHUB_CSV.md',
         ],
       },
       { status: 503 },
@@ -294,7 +287,7 @@ export async function GET(request) {
       skipAi: areaFilterActive,
     };
 
-    if ((salesUrlEnv || blobReadWriteToken()) && !csvPathFromQuery) {
+    if ((salesUrlEnv?.trim() || blobReadWriteToken()) && !csvPathFromQuery) {
       const { text: csvRaw, label: salesLabel } = await loadSalesCsvText();
       result = await buildFromSalesText(csvRaw, salesLabel, buildOpts);
     } else {
@@ -324,8 +317,8 @@ export async function GET(request) {
   } catch (e) {
     const detail = e?.message || String(e);
     const hint503 =
-      detail.includes('503') || detail.includes('502') || detail.includes('504') || detail.includes('BLOB_READ_WRITE_TOKEN')
-        ? 'Prefer BLOB_READ_WRITE_TOKEN + pathname (same file as upload; works when public GET returns 503). Production env + redeploy.'
+      detail.includes('503') || detail.includes('502') || detail.includes('504')
+        ? 'Use GitHub raw for PROPERTY_SALES_CSV_URL if Blob 503. docs/GITHUB_CSV.md'
         : null;
     return Response.json({
       ok: false,

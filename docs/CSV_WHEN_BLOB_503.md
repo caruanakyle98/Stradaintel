@@ -1,34 +1,46 @@
-# When Vercel Blob keeps returning 503 (even with token)
+# When Vercel Blob returns 503 (read fails after upload)
 
-Your logs show **both**:
+## Runtime check (proves it’s not your Next app)
 
-- `token+pathname: … Failed to fetch blob: 503`
-- public `GET …blob.vercel-storage.com… → 503`
+From **any** machine (your laptop):
 
-So the app and token are wired correctly; **Vercel Blob is not serving that object reliably** (store/region/incident or very large object timing out). Easiest fix: **serve the CSV from any other HTTPS URL that returns 200** and point the app there only.
+```bash
+curl -sI "https://YOUR_STORE.public.blob.vercel-storage.com/stradaintel/sales.csv" | head -1
+```
 
-## Option A — GitHub (simple if repo can be public)
+If you see **`HTTP/2 503`** (or `503 Service Unavailable`), **Vercel Blob is not delivering that object over HTTPS**. That matches what the dashboard and `curl` see — it is **not** caused by missing env vars or serverless alone.
 
-1. New **public** repo (e.g. `strada-csv`) or use a folder in an existing public repo.
-2. Commit `sales.csv` (and optionally `rentals.csv`). Stay under GitHub’s file size limits (~100MB per file).
-3. Raw URLs look like:
-   - `https://raw.githubusercontent.com/YOUR_USER/YOUR_REPO/main/sales.csv`
-   - `https://raw.githubusercontent.com/YOUR_USER/YOUR_REPO/main/rentals.csv`
-4. **Vercel → Environment variables (Production):**
+Successful **`put`** + failing **`GET`** on the same URL has been reported; treat it as **Vercel-side** until support confirms otherwise.
+
+## What to do
+
+### A) Vercel Support (keep using Blob long term)
+
+Open a ticket with:
+
+- Blob store name / id  
+- Full public URL  
+- “Upload succeeds; **HEAD/GET returns 503** from browser and curl”  
+- Optional: run `node scripts/verify-blob-read.mjs <publicUrl> stradaintel/sales.csv` and paste output  
+
+### B) Unblock the dashboard now (GitHub raw)
+
+1. Create a **public** repo (or use a folder in one).  
+2. Add `sales.csv` (and `rentals.csv` if needed) and push.  
+3. Raw URLs:
+   - `https://raw.githubusercontent.com/<user>/<repo>/<branch>/sales.csv`
+4. **Vercel → Env (Production):**
    - `PROPERTY_SALES_CSV_URL` = raw sales URL  
-   - `PROPERTY_RENTAL_CSV_URL` = raw rentals URL (if used)  
-5. **Redeploy.** You can leave `BLOB_READ_WRITE_TOKEN` set or not — the API will use these URLs first via normal `GET` (no Blob SDK for that request).
+   - `PROPERTY_RENTAL_CSV_URL` = raw rentals URL  
+5. **Remove or ignore Blob URLs** for these two vars until Blob reads work again.  
+6. **Redeploy.**
 
-## Option B — Cloudflare R2 (good for large files)
+You can **keep uploading to Blob** for backup; the app only needs a URL that returns **200** on GET.
 
-1. R2 bucket → allow **public access** on a custom domain or r2.dev subdomain.
-2. Upload `sales.csv` → copy public object URL.
-3. Set `PROPERTY_SALES_CSV_URL` to that URL → redeploy.
+### C) R2 / S3
 
-## Option C — Wait / Vercel support
-
-503 on **authenticated** Blob reads often means **their** edge or store. Check [vercel-status.com](https://www.vercel-status.com), open a support ticket, or try **new Blob store + re-upload** later.
+Any **stable HTTPS 200** for the CSV works the same way.
 
 ---
 
-**Summary:** `PROPERTY_SALES_CSV_URL` / `PROPERTY_RENTAL_CSV_URL` can be **any** stable HTTPS CSV link. Blob is optional once those URLs work.
+**Summary:** 503 on public Blob URL from `curl` = **read path broken on Blob**. Use GitHub raw (or R2) for `PROPERTY_SALES_CSV_URL` until Vercel fixes the store or tells you what changed.

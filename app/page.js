@@ -639,7 +639,7 @@ export default function Page() {
                 />
               </label>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>
-                {uploadingCsv ? 'Reading CSV…' : 'Hosted: use PROPERTY_SALES_CSV_URL + PROPERTY_RENTAL_CSV_URL (no upload). File picker = local parse. See data/property/HOSTING.md.'}
+                {uploadingCsv ? 'Reading CSV…' : 'Hosted: GitHub raw URLs in Vercel env (docs/GITHUB_CSV.md). File picker = local parse. HOSTING.md.'}
               </div>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>
                 Off-plan is inferred from <span style={{ color:C.ga }}>Select Data Points = Oqood</span>. Active source: {prop?.sources_used?.[0] || 'default sales.csv path'}
