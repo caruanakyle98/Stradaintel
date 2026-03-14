@@ -9,8 +9,17 @@
 //     • Call A: news narrative (security, property, aviation)
 //     • Call B: EIBOR 3-month + UAE PMI (borrowing cost & economic health)
 
+import { appendFileSync } from 'fs';
+import { join } from 'path';
+
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
+
+function dbgLog(payload) {
+  try {
+    appendFileSync(join(process.cwd(), '.cursor', 'debug-13de73.log'), JSON.stringify({ sessionId: '13de73', ...payload, timestamp: Date.now() }) + '\n');
+  } catch { /* ignore */ }
+}
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
 const YF_BASE       = 'https://query2.finance.yahoo.com/v8/finance/chart';
@@ -110,8 +119,39 @@ function stripTags(v) {
   return v;
 }
 
+// ── Extract first balanced JSON object (avoids greedy \{...\} breaking on extra braces) ──
+function parseJsonFromModelText(text) {
+  if (!text || typeof text !== 'string') return null;
+  const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
+  const starts = [];
+  for (let i = 0; i < cleaned.length; i++) if (cleaned[i] === '{') starts.push(i);
+  for (const start of starts) {
+    let depth = 0;
+    for (let i = start; i < cleaned.length; i++) {
+      const c = cleaned[i];
+      if (c === '{') depth++;
+      else if (c === '}') {
+        depth--;
+        if (depth === 0) {
+          const slice = cleaned.slice(start, i + 1);
+          try {
+            const o = JSON.parse(slice);
+            if (o && typeof o === 'object') return o;
+          } catch { /* next candidate */ }
+        }
+      }
+    }
+  }
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  if (match) {
+    try { return JSON.parse(match[0]); } catch { /* fall through */ }
+  }
+  return null;
+}
+
 // ── Haiku call helper ─────────────────────────────────────
 async function haikuSearch(system, prompt, anthropicKey, maxTokens = 1200) {
+  if (!anthropicKey || String(anthropicKey).length < 10) throw new Error('Anthropic key missing');
   const res = await fetch(ANTHROPIC_API, {
     method: 'POST',
     headers: { 'Content-Type':'application/json', 'anthropic-version':'2023-06-01', 'x-api-key': anthropicKey },
@@ -121,12 +161,20 @@ async function haikuSearch(system, prompt, anthropicKey, maxTokens = 1200) {
       messages: [{ role: 'user', content: prompt }],
     }),
   });
-  if (!res.ok) throw new Error(`Anthropic ${res.status}`);
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => '');
+    throw new Error(`Anthropic ${res.status} ${errBody.slice(0, 120)}`);
+  }
   const raw  = await res.json();
   const text = (raw.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error('No JSON in response');
-  return stripTags(JSON.parse(match[0]));
+  // #region agent log
+  const _h = { runId: 'pre-fix', hypothesisId: 'H3-H4', location: 'intelligence/route.js:haikuSearch', message: 'haiku text blocks', data: { textLen: text.length, contentBlocks: (raw.content || []).length, types: (raw.content || []).map(b => b.type) } };
+  dbgLog(_h);
+  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '13de73' }, body: JSON.stringify({ sessionId: '13de73', ..._h, timestamp: Date.now() }) }).catch(() => {});
+  // #endregion
+  const parsed = parseJsonFromModelText(text);
+  if (!parsed) throw new Error('No JSON in response');
+  return stripTags(parsed);
 }
 
 // ── Score calibration: narrative must match number (investment-grade consistency) ──
@@ -196,12 +244,26 @@ sig must be "positive" only if score>=4, "negative" if score<=2, else "neutral".
   "property": { "score":3, "sig":"neutral", "headline":"One sentence Dubai property", "bullets":["Fact","Fact","Fact"], "risk":"Main property risk", "action":"Buyer/seller tilt" },
   "aviation": { "score":3, "sig":"neutral", "headline":"One sentence DXB/Emirates", "bullets":["Fact","Fact","Fact"], "risk":"Aviation risk", "action":"Tourism/short-let" }
 }`;
-  return haikuSearch(
-    'Dubai real estate analyst. Search Middle East security, Dubai property, Emirates/DXB. Scores must align with threat level — never output security 5 if text describes missiles, strikes, or UAE threats. Return ONLY valid JSON, no markdown, no cite tags.',
-    prompt,
-    anthropicKey,
-    1400,
-  );
+  try {
+    return await haikuSearch(
+      'Dubai real estate analyst. Search Middle East security, Dubai property, Emirates/DXB. Scores must align with threat level — never output security 5 if text describes missiles, strikes, or UAE threats. Return ONLY valid JSON, no markdown, no cite tags.',
+      prompt,
+      anthropicKey,
+      1400,
+    );
+  } catch (e1) {
+    // #region agent log
+    const _n = { runId: 'pre-fix', hypothesisId: 'H1-H2', location: 'intelligence/route.js:fetchNewsNarrative', message: 'news call 1 failed', data: { err: String(e1?.message || e1).slice(0, 200) } };
+    dbgLog(_n);
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '13de73' }, body: JSON.stringify({ sessionId: '13de73', ..._n, timestamp: Date.now() }) }).catch(() => {});
+    // #endregion
+    return haikuSearch(
+      'Return ONLY valid JSON. No markdown. Search Middle East, Dubai property, DXB flights. One JSON object with keys security, property, aviation — each score 1-5, sig, headline, bullets[], risk, action.',
+      prompt + '\n\nCRITICAL: Output a single JSON object only. No text before or after.',
+      anthropicKey,
+      1600,
+    );
+  }
 }
 
 // ── Haiku Call B: EIBOR 3M + UAE PMI ─────────────────────
@@ -256,6 +318,12 @@ async function fetchAllNarrative(today, mkt, sp30d, anthropicKey) {
     fetchNewsNarrative(today, mkt, sp30d, anthropicKey),
     fetchRatesAndPMI(today, anthropicKey),
   ]);
+  // #region agent log
+  const newsVal = newsRes.status === 'fulfilled' ? newsRes.value : null;
+  const _a = { runId: 'pre-fix', hypothesisId: 'H1-H5', location: 'intelligence/route.js:fetchAllNarrative', message: 'news+rates settled', data: { newsStatus: newsRes.status, ratesStatus: ratesRes.status, newsErr: newsRes.status === 'rejected' ? String(newsRes.reason?.message || newsRes.reason).slice(0, 180) : null, hasSecurity: !!newsVal?.security?.headline, hasProperty: !!newsVal?.property?.headline, hasAviation: !!newsVal?.aviation?.headline, keyPresent: !!(anthropicKey && String(anthropicKey).length > 10) } };
+  dbgLog(_a);
+  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '13de73' }, body: JSON.stringify({ sessionId: '13de73', ..._a, timestamp: Date.now() }) }).catch(() => {});
+  // #endregion
   const news  = newsRes.status  === 'fulfilled' ? newsRes.value  : {};
   const rates = ratesRes.status === 'fulfilled' ? ratesRes.value : {};
   return {
@@ -270,6 +338,11 @@ async function fetchAllNarrative(today, mkt, sp30d, anthropicKey) {
 // ── Main handler ──────────────────────────────────────────
 export async function GET() {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  // #region agent log
+  const _g = { runId: 'pre-fix', hypothesisId: 'H2', location: 'intelligence/route.js:GET', message: 'intelligence GET', data: { keyPresent: !!(anthropicKey && String(anthropicKey).length > 10) } };
+  dbgLog(_g);
+  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '13de73' }, body: JSON.stringify({ sessionId: '13de73', ..._g, timestamp: Date.now() }) }).catch(() => {});
+  // #endregion
   const now   = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
   const today = now.toLocaleDateString('en-AE', { timeZone:'Asia/Dubai', day:'2-digit', month:'short', year:'numeric' });
   const ts    = now.toLocaleString('en-AE', { timeZone:'Asia/Dubai', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:false });
