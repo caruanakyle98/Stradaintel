@@ -9,7 +9,7 @@
 //     • Call A: news narrative (security, property, aviation)
 //     • Call B: EIBOR 3-month + UAE PMI (borrowing cost & economic health)
 
-import { appendFileSync } from 'fs';
+import { appendFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
 export const maxDuration = 60;
@@ -17,7 +17,9 @@ export const dynamic = 'force-dynamic';
 
 function dbgLog(payload) {
   try {
-    appendFileSync(join(process.cwd(), '.cursor', 'debug-13de73.log'), JSON.stringify({ sessionId: '13de73', ...payload, timestamp: Date.now() }) + '\n');
+    const dir = join(process.cwd(), '.cursor');
+    mkdirSync(dir, { recursive: true });
+    appendFileSync(join(dir, 'debug-13de73.log'), JSON.stringify({ sessionId: '13de73', ...payload, timestamp: Date.now(), cwd: process.cwd() }) + '\n');
   } catch { /* ignore */ }
 }
 
@@ -437,8 +439,13 @@ export async function GET() {
   const totalSyms   = Object.keys(SYMBOLS).length;
   const priceSource = pricesOk >= totalSyms-2 ? `Yahoo Finance (${pricesOk}/${totalSyms} live)` : `Yahoo Finance (partial ${pricesOk}/${totalSyms})`;
 
+  const keyOk = !!(anthropicKey && String(anthropicKey).length > 10);
   return Response.json({
     ok: true, ts, priceSource,
+    anthropic_configured: keyOk,
+    intel_notice: keyOk
+      ? null
+      : 'ANTHROPIC_API_KEY is not set on this server. Region stability, tourism/aviation, property mood, EIBOR & PMI use Claude + web search. Add ANTHROPIC_API_KEY to .env.local (local) or Vercel → Settings → Environment Variables, then restart.',
     markets, sp30d, inr30d, cny30d,
     eibor:   narrative.eibor,
     uae_pmi: narrative.uae_pmi,

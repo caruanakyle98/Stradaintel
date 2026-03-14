@@ -554,6 +554,11 @@ export default function Page() {
     return () => window.removeEventListener('afterprint', onAfterPrint);
   }, []);
 
+  // Load market signals once on mount so scorecards + debug logs run (no button required).
+  useEffect(() => {
+    refreshIntel();
+  }, [refreshIntel]);
+
   return (
     <div
       style={{ background:C.bg, minHeight:'100vh', color:C.t1, fontFamily:'-apple-system,"Segoe UI",sans-serif', fontWeight:300, fontSize:14 }}
@@ -563,7 +568,7 @@ export default function Page() {
       {/* ── HEADER ──────────────────────────────────────── */}
       <div style={{ padding:'28px 48px 22px', borderBottom:`1px solid ${C.border}` }} className="print-avoid-break">
         <div className="print-only" style={{ fontFamily:'monospace', fontSize:9, color:C.tm, marginBottom:8, letterSpacing:'.08em' }}>
-          STRADA INTELLIGENCE · PDF EXPORT · {ts || new Date().toISOString().slice(0, 16).replace('T', ' ')} (GST when live)
+          STRADA INTELLIGENCE · PDF EXPORT · {ts || '—'} (GST when live)
         </div>
         <div style={{ fontFamily:'monospace', fontSize:9, letterSpacing:'.22em', color:C.g, marginBottom:10, display:'flex', alignItems:'center', gap:8 }} className="no-print">
           <span style={{ width:7, height:7, background:C.g, borderRadius:'50%', animation:'pulse 2s ease-in-out infinite', boxShadow:`0 0 8px ${C.g}` }}/>
@@ -653,6 +658,11 @@ export default function Page() {
             {ts ? `Data as of · ${ts} GST` : 'Load intelligence before export for full report'}
           </div>
         </div>
+        {intel?.intel_notice && (
+          <div className="no-print" style={{ marginTop:10, padding:'9px 14px', background:'#1a1408', border:`1px solid ${C.am}40`, borderRadius:2, fontFamily:'monospace', fontSize:10, color:C.amL, lineHeight:1.45 }}>
+            ⚠ AI intel disabled: {intel.intel_notice}
+          </div>
+        )}
         {error     && <div className="no-print" style={{ marginTop:10, padding:'9px 14px', background:'#1a0a0a', border:`1px solid ${C.red}30`, borderRadius:2, fontFamily:'monospace', fontSize:10, color:C.red }}>⚠ {error}</div>}
         {propError && <div className="no-print" style={{ marginTop:6,  padding:'9px 14px', background:'#1a0a0a', border:`1px solid ${C.red}30`, borderRadius:2, fontFamily:'monospace', fontSize:10, color:C.red }}>⚠ {propError}</div>}
       </div>
