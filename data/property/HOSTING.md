@@ -1,5 +1,8 @@
 # Hosting sales & rental data (no browser upload)
 
+**Starting over (503 / token not visible):** follow **[docs/BLOB_SETUP_FROM_SCRATCH.md](../docs/BLOB_SETUP_FROM_SCRATCH.md)** and run `npm run upload:blob-all` for sales + rentals in one step.  
+**Blob still 503 with token?** Use GitHub raw or R2 — **[docs/CSV_WHEN_BLOB_503.md](../docs/CSV_WHEN_BLOB_503.md)**.
+
 Put CSVs (or a pre-built JSON snapshot) on **HTTPS** storage. The app **pulls** them on each refresh—nothing is uploaded through Vercel (avoids HTTP 413).
 
 ## Recommended stores

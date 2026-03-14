@@ -115,15 +115,21 @@ async function loadSalesCsvText() {
   let urlErrs = [];
 
   if (token) {
-    try {
-      const { get } = await import('@vercel/blob');
-      const out = await get(pathname, { access: 'public', token });
-      if (out?.stream) {
-        const text = await new Response(out.stream).text();
-        if (text.length > 100) return { text, label: `blob:${pathname}` };
+    const { get } = await import('@vercel/blob');
+    for (let attempt = 1; attempt <= 5; attempt++) {
+      try {
+        const out = await get(pathname, { access: 'public', token });
+        if (out?.stream) {
+          const text = await new Response(out.stream).text();
+          if (text.length > 100) return { text, label: `blob:${pathname}` };
+        }
+        break;
+      } catch (e) {
+        const msg = e?.message || String(e);
+        urlErrs.push(`token+pathname: ${msg}`);
+        if (!msg.includes('503') || attempt === 5) break;
+        await new Promise((r) => setTimeout(r, 600 * attempt));
       }
-    } catch (e) {
-      urlErrs.push(`token+pathname: ${e?.message || e}`);
     }
   }
 
@@ -136,13 +142,17 @@ async function loadSalesCsvText() {
   }
 
   const hasToken = !!token;
-  const hint =
-    urlList.length === 0
-      ? 'Set PROPERTY_SALES_CSV_URL to your Blob public CSV URL (same URL every upload if pathname unchanged).'
-      : 'All configured sales URL(s) failed (503/5xx). Blob overwrite does not change the URL—set BLOB_READ_WRITE_TOKEN on Production + redeploy so the API reads by pathname; or retry later if CDN was transient.';
+  const blob503 =
+    urlErrs.some((s) => s.includes('token+pathname') && s.includes('503')) &&
+    urlErrs.some((s) => s.includes('GET') && s.includes('503'));
+  const hint = blob503
+    ? 'Vercel Blob returns 503 for both token read and public GET (their side or store). Workaround: host sales.csv on GitHub raw or R2 (any HTTPS 200), set PROPERTY_SALES_CSV_URL to that URL, redeploy. See docs/CSV_WHEN_BLOB_503.md.'
+    : urlList.length === 0
+      ? 'Set PROPERTY_SALES_CSV_URL to an HTTPS CSV URL (Blob, GitHub raw, R2, etc.).'
+      : 'All sales URL(s) failed. If Blob 503 persists, use non-Blob hosting — docs/CSV_WHEN_BLOB_503.md';
   const tokenHint = hasToken
     ? ''
-    : ' No BLOB_READ_WRITE_TOKEN visible to Production (name must be exact). Add it, enable Production, Redeploy, no quotes around token.';
+    : ' No BLOB_READ_WRITE_TOKEN on Production — add it, redeploy.';
   throw new Error(`${hint}${tokenHint} Details: ${urlErrs.join(' | ') || 'no URLs'}`);
 }
 
@@ -247,12 +257,33 @@ export async function GET(request) {
   }
 
   const forceLive = (reqUrl.searchParams.get('mode') || '').toLowerCase() === 'live';
-  if (forceLive && !salesUrlEnv && !csvPathFromQuery && !blobReadWriteToken()) {
+  const hasSalesSource =
+    !!(salesUrlEnv?.trim() || blobReadWriteToken() || csvPathFromQuery || process.env.PROPERTY_SALES_CSV_PATH);
+  if (forceLive && !hasSalesSource) {
     return Response.json({
       ok: false,
       error:
         'Set PROPERTY_SALES_CSV_URL or BLOB_READ_WRITE_TOKEN (+ upload sales.csv), or PROPERTY_METRICS_JSON_URL.',
     }, { status: 500 });
+  }
+
+  /* On Vercel, default repo path is not deployed — ENOENT without Blob/env */
+  if (!hasSalesSource && process.env.VERCEL) {
+    return Response.json(
+      {
+        ok: false,
+        error: 'No sales CSV source configured',
+        detail:
+          'Vercel has no PROPERTY_SALES_CSV_URL or BLOB_READ_WRITE_TOKEN. data/property/sales.csv is not on the serverless bundle.',
+        setup: [
+          '1) Storage → Create Blob → copy Read/Write token',
+          '2) npm run upload:blob-all -- /path/sales.csv /path/rentals.csv',
+          '3) Project → Env (Production): BLOB_READ_WRITE_TOKEN, PROPERTY_SALES_CSV_URL, PROPERTY_RENTAL_CSV_URL, BLOB_SALES_PATHNAME=stradaintel/sales.csv, BLOB_RENTAL_PATHNAME=stradaintel/rentals.csv',
+          '4) Redeploy — docs/BLOB_SETUP_FROM_SCRATCH.md',
+        ],
+      },
+      { status: 503 },
+    );
   }
 
   try {

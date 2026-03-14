@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "upload:sales-blob": "node scripts/upload-sales-to-blob.mjs"
+    "upload:sales-blob": "node scripts/upload-sales-to-blob.mjs",
+    "upload:blob-all": "node scripts/upload-blob-all.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^2.3.1",
