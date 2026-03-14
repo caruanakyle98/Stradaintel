@@ -9,7 +9,7 @@
 //     • Call A: Tavily news → Haiku JSON (security, property, aviation)
 //     • Call B: Tavily EIBOR/PMI → Haiku JSON (optional)
 
-import { appendFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -71,14 +71,6 @@ function resolveAnthropicKey(debug) {
     }
   }
   return (process.env.ANTHROPIC_API_KEY || '').trim() || null;
-}
-
-function dbgLog(payload) {
-  try {
-    const dir = join(process.cwd(), '.cursor');
-    mkdirSync(dir, { recursive: true });
-    appendFileSync(join(dir, 'debug-13de73.log'), JSON.stringify({ sessionId: '13de73', ...payload, timestamp: Date.now(), cwd: process.cwd() }) + '\n');
-  } catch { /* ignore */ }
 }
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
@@ -231,11 +223,6 @@ async function haikuSearch(system, prompt, anthropicKey, maxTokens = 1200, useWe
   }
   const raw  = await res.json();
   const text = (raw.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-  // #region agent log
-  const _h = { runId: 'pre-fix', hypothesisId: 'H3-H4', location: 'intelligence/route.js:haikuSearch', message: 'haiku text blocks', data: { textLen: text.length, contentBlocks: (raw.content || []).length, types: (raw.content || []).map(b => b.type) } };
-  dbgLog(_h);
-  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '13de73' }, body: JSON.stringify({ sessionId: '13de73', ..._h, timestamp: Date.now() }) }).catch(() => {});
-  // #endregion
   const parsed = parseJsonFromModelText(text);
   if (!parsed) throw new Error('No JSON in response');
   return stripTags(parsed);
@@ -309,16 +296,13 @@ async function tavilySearchBlock(queries, topic = 'news') {
           }),
         });
         const d = await r.json().catch(() => ({}));
-        dbgLog({ runId: 'tavily', hypothesisId: 'TAV', location: 'tavilySearchBlock', message: 'tavily response', data: { ok: r.ok, status: r.status, queryLen: query.length, topic: t, resultCount: (d.results || []).length } });
         if (!r.ok) continue;
         for (const x of d.results || []) {
           const c = (x.content || '').replace(/\s+/g, ' ').slice(0, 420);
           lines.push(`• ${x.title || '—'}\n  ${c}`);
         }
         if ((d.results || []).length) break;
-      } catch (e) {
-        dbgLog({ runId: 'tavily', hypothesisId: 'TAV', message: 'tavily err', data: { err: String(e?.message || e).slice(0, 80) } });
-      }
+      } catch { /* next query/topic */ }
     }
   }
   return lines.join('\n\n').slice(0, 14000);
@@ -371,9 +355,7 @@ sig must be "positive" only if score>=4, "negative" if score<=2, else "neutral".
         1400,
         true,
       );
-    } catch (e1) {
-      dbgLog({ runId: 'pre-fix', hypothesisId: 'H1-H2', location: 'intelligence/route.js:fetchNewsNarrative', message: 'Anthropic web_search failed', data: { err: String(e1?.message || e1).slice(0, 160) } });
-    }
+    } catch { /* fall through to text-only */ }
   }
   return await haikuSearch(sysText, promptText, anthropicKey, 1600, false);
 }
@@ -495,12 +477,7 @@ async function fetchAllNarrative(today, mkt, sp30d, anthropicKey) {
     fetchRatesAndPMI(today, anthropicKey),
   ]);
   const newsErr = newsRes.status === 'rejected' ? String(newsRes.reason?.message || newsRes.reason) : '';
-  // #region agent log
   const newsVal = newsRes.status === 'fulfilled' ? newsRes.value : null;
-  const _a = { runId: 'pre-fix', hypothesisId: 'H1-H5', location: 'intelligence/route.js:fetchAllNarrative', message: 'news+rates settled', data: { newsStatus: newsRes.status, ratesStatus: ratesRes.status, newsErr: newsErr.slice(0, 180), hasSecurity: !!newsVal?.security?.headline, hasProperty: !!newsVal?.property?.headline, hasAviation: !!newsVal?.aviation?.headline, keyPresent: !!(anthropicKey && String(anthropicKey).length > 10) } };
-  dbgLog(_a);
-  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '13de73' }, body: JSON.stringify({ sessionId: '13de73', ..._a, timestamp: Date.now() }) }).catch(() => {});
-  // #endregion
   const okNews = newsRes.status === 'fulfilled' && newsVal?.security?.headline && newsVal?.property?.headline && newsVal?.aviation?.headline;
   const news = okNews ? newsVal : fallbackNewsPillars(mkt, sp30d, newsErr);
   const rates = ratesRes.status === 'fulfilled' ? ratesRes.value : {};
@@ -520,11 +497,6 @@ async function fetchAllNarrative(today, mkt, sp30d, anthropicKey) {
 export async function GET() {
   const _dbg = {};
   const anthropicKey = resolveAnthropicKey(_dbg);
-  // #region agent log
-  const _g = { runId: 'pre-fix', hypothesisId: 'H2', location: 'intelligence/route.js:GET', message: 'intelligence GET', data: { keyPresent: !!(anthropicKey && String(anthropicKey).length > 10), envFile: _dbg.envFile || null, envReadErr: _dbg.envReadErr || null, envParsedLen: _dbg.envParsedLen } };
-  dbgLog(_g);
-  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '13de73' }, body: JSON.stringify({ sessionId: '13de73', ..._g, timestamp: Date.now() }) }).catch(() => {});
-  // #endregion
   const now   = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
   const today = now.toLocaleDateString('en-AE', { timeZone:'Asia/Dubai', day:'2-digit', month:'short', year:'numeric' });
   const ts    = now.toLocaleString('en-AE', { timeZone:'Asia/Dubai', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:false });
@@ -629,14 +601,16 @@ export async function GET() {
   if (keyOk) process.env.ANTHROPIC_API_KEY = anthropicKey;
   let intelNotice = null;
   if (!keyOk) {
+    const tav = !!(process.env.TAVILY_API_KEY || '').trim();
+    const both = 'You need BOTH keys: TAVILY_API_KEY (web snippets) AND ANTHROPIC_API_KEY (Claude turns snippets into scorecards). ';
     if (_dbg.envFile) {
       if (_dbg.envEmpty) {
-        intelNotice = `${_dbg.envFile.replace(/\\/g, '/')} is empty on disk. Paste one line, then Save (⌘S): ANTHROPIC_API_KEY=sk-ant-api03-...`;
+        intelNotice = `${both}${_dbg.envFile.replace(/\\/g, '/')} is empty or missing ANTHROPIC_API_KEY line. Save: ANTHROPIC_API_KEY=sk-ant-api03-...`;
       } else {
-        intelNotice = `Found ${_dbg.envFile.replace(/\\/g, '/')} but no usable ANTHROPIC_API_KEY (one line, no spaces around =): ANTHROPIC_API_KEY=sk-ant-... ${_dbg.envReadErr || ''}`;
+        intelNotice = `${both}Found ${_dbg.envFile.replace(/\\/g, '/')} but no usable ANTHROPIC_API_KEY. Add second line: ANTHROPIC_API_KEY=sk-ant-... ${tav ? '(Tavily already OK in log.)' : ''}`;
       }
     } else {
-      intelNotice = 'ANTHROPIC_API_KEY is not set. Add to Stradaintel/.env.local (same folder as package.json): ANTHROPIC_API_KEY=sk-ant-... then restart dev. Vercel: Environment Variables. No .env.local was found from this server cwd.';
+      intelNotice = `${both}npm run env:pull from Vercel, or add .env.local with both keys. ${tav ? 'Tavily worked — only Anthropic missing.' : ''}`;
     }
   } else if (narrativeBilling) {
     intelNotice = 'Anthropic web_search billing error. Add TAVILY_API_KEY in Vercel for **Preview + Production**, redeploy, and ensure the key is in the request body (fixed in app).';
