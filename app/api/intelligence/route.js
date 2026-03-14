@@ -308,24 +308,19 @@ sig must be "positive" only if score>=4, "negative" if score<=2, else "neutral".
   "property": { "score":3, "sig":"neutral", "headline":"One sentence Dubai property", "bullets":["Fact","Fact","Fact"], "risk":"Main property risk", "action":"Buyer/seller tilt" },
   "aviation": { "score":3, "sig":"neutral", "headline":"One sentence DXB/Emirates", "bullets":["Fact","Fact","Fact"], "risk":"Aviation risk", "action":"Tourism/short-let" }
 }`;
-  const sysWeb = 'Dubai real estate analyst. Search Middle East security, Dubai property, Emirates/DXB. Scores must align with threat level. Return ONLY valid JSON, no markdown, no cite tags.';
-  const sysText = 'Dubai real estate analyst. No web access — use general knowledge + the market line in the prompt. Return ONLY valid JSON. Scores 1-5 must match your bullets.';
-  const promptText = `${prompt}\n\nYou cannot browse. Infer region security, Dubai property tone, and DXB/aviation from context + typical conditions. Still output full JSON with plausible bullets (say "typical" where not certain).`;
-  try {
-    return await haikuSearch(sysWeb, prompt, anthropicKey, 1400, true);
-  } catch (e1) {
-    // #region agent log
-    const _n = { runId: 'pre-fix', hypothesisId: 'H1-H2', location: 'intelligence/route.js:fetchNewsNarrative', message: 'news web_search failed', data: { err: String(e1?.message || e1).slice(0, 200) } };
-    dbgLog(_n);
-    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '13de73' }, body: JSON.stringify({ sessionId: '13de73', ..._n, timestamp: Date.now() }) }).catch(() => {});
-    // #endregion
+  const sysWeb = 'Dubai real estate analyst. Search Middle East security, Dubai property, Emirates/DXB. Return ONLY valid JSON, no markdown, no cite tags.';
+  const sysText = 'Dubai real estate analyst. Use general knowledge + the market line below (no web). Return ONLY valid JSON. Scores 1-5 must match bullets.';
+  const promptText = `${prompt}\n\nNo web search. Use context (Brent/VIX/S&P) + typical UAE/Dubai conditions. Full JSON; note "general" where not time-specific.`;
+  // Default: text-only. web_search often returns 400 "credit balance too low" even when message API works after top-up.
+  const wantWeb = process.env.ANTHROPIC_WEB_SEARCH === '1';
+  if (wantWeb) {
     try {
-      return await haikuSearch(sysText, promptText, anthropicKey, 1600, false);
-    } catch (e2) {
-      dbgLog({ runId: 'pre-fix', hypothesisId: 'H1-H2', location: 'intelligence/route.js:fetchNewsNarrative', message: 'news text-only failed', data: { err: String(e2?.message || e2).slice(0, 200) } });
-      throw e2;
+      return await haikuSearch(sysWeb, prompt, anthropicKey, 1400, true);
+    } catch (e1) {
+      dbgLog({ runId: 'pre-fix', hypothesisId: 'H1-H2', location: 'intelligence/route.js:fetchNewsNarrative', message: 'news web_search failed, falling back text', data: { err: String(e1?.message || e1).slice(0, 160) } });
     }
   }
+  return await haikuSearch(sysText, promptText, anthropicKey, 1600, false);
 }
 
 // ── Haiku Call B: EIBOR 3M + UAE PMI ─────────────────────
@@ -369,23 +364,19 @@ Return ONLY this JSON (no markdown, no backticks, no XML tags):
   }
 }`;
   const sys = 'Financial data researcher. Return ONLY valid JSON. No markdown, no cite tags.';
-  try {
-    return await haikuSearch(
-      'Search UAE EIBOR 3M and UAE PMI via web; return JSON with rate_pct and headline numbers.',
-      prompt,
-      anthropicKey,
-      900,
-      true,
-    );
-  } catch {
-    return await haikuSearch(
-      sys,
-      `${prompt}\n\nNo web search. Estimate EIBOR 3M in 4.8-5.8% range and UAE PMI headline 52-56 for recent months; label estimates clearly in source fields.`,
-      anthropicKey,
-      700,
-      false,
-    );
+  const promptNoWeb = `${prompt}\n\nNo web search. Set EIBOR 3M ~4.9–5.6% and UAE PMI headline ~53–56 with reasonable month_label; mark source as estimate if needed.`;
+  if (process.env.ANTHROPIC_WEB_SEARCH === '1') {
+    try {
+      return await haikuSearch(
+        'Search UAE EIBOR 3M and UAE PMI; return JSON.',
+        prompt,
+        anthropicKey,
+        900,
+        true,
+      );
+    } catch { /* text-only */ }
   }
+  return await haikuSearch(sys, promptNoWeb, anthropicKey, 800, false);
 }
 
 /** When Claude/web_search fails (billing, timeout, parse), still show readable cards from Yahoo-only context. */
@@ -583,9 +574,9 @@ export async function GET() {
       intelNotice = 'ANTHROPIC_API_KEY is not set. Add to Stradaintel/.env.local (same folder as package.json): ANTHROPIC_API_KEY=sk-ant-... then restart dev. Vercel: Environment Variables. No .env.local was found from this server cwd.';
     }
   } else if (narrativeBilling) {
-    intelNotice = 'Anthropic API: credit balance too low (see debug log). Add credits at console.anthropic.com. Region / tourism / property cards below use Yahoo-only fallback until calls succeed.';
+    intelNotice = 'Anthropic still returned a billing error on the last request. Narratives default to text-only (no web search). If this persists, open console.anthropic.com → Billing; optional env ANTHROPIC_WEB_SEARCH=1 after web search is enabled.';
   } else if (narrativeFallback) {
-    intelNotice = 'Live Claude + web search did not complete; the three narrative scorecards use market fallback. Retry after API is healthy.';
+    intelNotice = 'Claude narrative unavailable this request; scorecards use Yahoo fallback.';
   }
   return Response.json({
     ok: true, ts, priceSource,

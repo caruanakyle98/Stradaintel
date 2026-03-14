@@ -39,6 +39,15 @@ npx vercel link
 - **Commit:** `.env.example` only (placeholder).  
 - **Never commit:** `.env.local` (gitignored).
 
-## 4. Optional manual `.env.local`
+## 4. Web search (optional)
+
+By default the app uses **Claude text-only** (no `web_search` tool), so normal API credits are enough after you top up.
+
+To turn on **live web search** (may require separate Anthropic access / still return “credit” errors for some accounts):
+
+- Vercel → Environment Variables → add **`ANTHROPIC_WEB_SEARCH`** = **`1`**
+- Redeploy
+
+## 5. Optional manual `.env.local`
 
 If you don’t use `env:pull`, you can still create `.env.local` by hand with the same `ANTHROPIC_API_KEY=` line — but **Vercel remains the canonical place** for production.
