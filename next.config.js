@@ -1,4 +1,10 @@
 const path = require('path');
+const { loadEnvConfig } = require('@next/env');
+
+// Always load .env / .env.local from this repo (next.config.js lives here).
+// If the shell cwd or Turbopack root points elsewhere, Next may skip Stradaintel's .env.local → API key missing.
+const projectRoot = path.resolve(__dirname);
+loadEnvConfig(projectRoot);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
