@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "env:pull": "npx vercel env pull .env.local --yes",
     "build": "next build",
     "start": "next start",
     "upload:sales-blob": "node scripts/upload-sales-to-blob.mjs",

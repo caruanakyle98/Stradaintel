@@ -30,14 +30,25 @@ Note: DFM stocks trade Mon–Fri 10:00–14:45 GST.
 Outside trading hours, the last close price is shown.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-DEPLOY STEPS
+DEPLOY STEPS (API KEY LIVES IN VERCEL ONLY)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. In Vercel → your project → Settings → Environment Variables
-   Ensure ANTHROPIC_API_KEY is set (your existing key)
-   No other keys needed.
+1. Vercel → Project → Settings → Environment Variables
+   Name: ANTHROPIC_API_KEY
+   Value: sk-ant-api03-... (from console.anthropic.com)
+   Environments: Production + Preview (+ Development if you want)
+   Redeploy after changing.
 
-2. Push to GitHub or run: npx vercel --prod
+2. Push to GitHub — Vercel build injects ANTHROPIC_API_KEY at runtime.
+   No key in repo. Same as before.
+
+LOCAL DEV (match Vercel)
+────────────────────────
+  npx vercel link          (once)
+  npm run env:pull         → writes .env.local from Vercel
+  npm run dev
+
+  See docs/VERCEL_ANTHROPIC.md
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STATUS BADGE (top of dashboard)
