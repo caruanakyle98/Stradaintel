@@ -5,9 +5,9 @@
 //     • 9 existing instruments (DFM, energy, global macro)
 //     • 4 new buyer-origin instruments: INR/AED, CNY/AED, Hang Seng, Sensex
 //     • S&P 500 + INR/AED + CNY/AED 30-day trend (1mo range fetch)
-//   Layer 2 — Haiku parallel calls:
-//     • Call A: news narrative (security, property, aviation)
-//     • Call B: EIBOR 3-month + UAE PMI (borrowing cost & economic health)
+//   Layer 2 — Web + Haiku (text-only Claude; web via Tavily when ANTHROPIC web_search bills out)
+//     • Call A: Tavily news → Haiku JSON (security, property, aviation)
+//     • Call B: Tavily EIBOR/PMI → Haiku JSON (optional)
 
 import { appendFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
@@ -289,18 +289,38 @@ function calibrateAviationScore(raw, p) {
   return s;
 }
 
+// ── Tavily web search (real URLs/snippets; Claude stays text-only) ──
+async function tavilySearchBlock(queries, topic = 'news') {
+  const key = (process.env.TAVILY_API_KEY || '').trim();
+  if (!key || key.length < 8) return '';
+  const lines = [];
+  for (const query of queries) {
+    try {
+      const r = await fetch('https://api.tavily.com/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        body: JSON.stringify({ query, topic, max_results: 6, search_depth: 'basic' }),
+      });
+      if (!r.ok) continue;
+      const d = await r.json();
+      for (const x of d.results || []) {
+        const c = (x.content || '').replace(/\s+/g, ' ').slice(0, 420);
+        lines.push(`• ${x.title || '—'}\n  ${c}`);
+      }
+    } catch { /* ignore */ }
+  }
+  return lines.join('\n\n').slice(0, 14000);
+}
+
 // ── Haiku Call A: News pillars ────────────────────────────
 async function fetchNewsNarrative(today, mkt, sp30d, anthropicKey) {
   const ctx = `Brent $${mkt.brent?.price||'N/A'}/bbl | VIX ${mkt.vix?.price||'N/A'} | S&P ${mkt.sp500?.price||'N/A'} (30d:${sp30d?.chgPct||'N/A'})`;
-  const prompt = `Today is ${today}. Context: ${ctx}
-
-Search current news. Return ONLY this JSON (no markdown, no backticks, no XML).
+  const jsonSchema = `Return ONLY this JSON (no markdown, no backticks, no XML).
 
 SCORING RULES (mandatory — score MUST match how safe UAE/Dubai feels for property investors):
-- security.score 1–5: 5 = region calm, no material military or terrorism stress to UAE. 4 = elevated noise only. 3 = moderate regional tension, UAE operating normally. 2 = direct threats, evacuations, or military activity near UAE/Gulf. 1 = active conflict affecting Gulf airspace, UAE, or investor exodus narrative. If headline or bullets mention missiles, drones, strikes, evacuations, or airport disruption → score MUST be 1 or 2 only.
+- security.score 1–5: 5 = region calm, no material military or terrorism stress to UAE. 4 = elevated noise only. 3 = moderate regional tension, UAE operating normally. 2 = direct threats, evacuations, or military activity near UAE/Gulf. 1 = active conflict affecting Gulf airspace, UAE, or investor exodus narrative.
 - property.score 1–5: 5 = strong demand/pricing narrative. 1 = severe negative (crash/freeze). Must match bullets.
 - aviation.score 1–5: 5 = DXB/Emirates normal. 1–2 = major cancellations or closures. Must match bullets.
-
 sig must be "positive" only if score>=4, "negative" if score<=2, else "neutral".
 
 {
@@ -308,16 +328,38 @@ sig must be "positive" only if score>=4, "negative" if score<=2, else "neutral".
   "property": { "score":3, "sig":"neutral", "headline":"One sentence Dubai property", "bullets":["Fact","Fact","Fact"], "risk":"Main property risk", "action":"Buyer/seller tilt" },
   "aviation": { "score":3, "sig":"neutral", "headline":"One sentence DXB/Emirates", "bullets":["Fact","Fact","Fact"], "risk":"Aviation risk", "action":"Tourism/short-let" }
 }`;
-  const sysWeb = 'Dubai real estate analyst. Search Middle East security, Dubai property, Emirates/DXB. Return ONLY valid JSON, no markdown, no cite tags.';
-  const sysText = 'Dubai real estate analyst. Use general knowledge + the market line below (no web). Return ONLY valid JSON. Scores 1-5 must match bullets.';
-  const promptText = `${prompt}\n\nNo web search. Use context (Brent/VIX/S&P) + typical UAE/Dubai conditions. Full JSON; note "general" where not time-specific.`;
-  // Default: text-only. web_search often returns 400 "credit balance too low" even when message API works after top-up.
-  const wantWeb = process.env.ANTHROPIC_WEB_SEARCH === '1';
-  if (wantWeb) {
+  const promptBase = `Today is ${today}. Market context: ${ctx}\n\n${jsonSchema}`;
+  const tavilyCtx = await tavilySearchBlock(
+    [
+      `Middle East UAE Gulf security Dubai investors ${today}`,
+      `Dubai property real estate market demand prices`,
+      `Dubai airport DXB Emirates flights tourism passengers`,
+    ],
+    'news',
+  );
+  if (tavilyCtx.length > 200) {
+    return await haikuSearch(
+      'Dubai real estate analyst. Ground security/property/aviation ONLY in the WEB SEARCH block below. Return ONLY valid JSON. No markdown, no cite tags.',
+      `${promptBase}\n\n=== WEB SEARCH (use for bullets & scores) ===\n${tavilyCtx}`,
+      anthropicKey,
+      2000,
+      false,
+    );
+  }
+  const sysText = 'Dubai real estate analyst. Return ONLY valid JSON. Scores 1-5 must match bullets.';
+  const promptText = `${promptBase}\n\nNo web snippets available — use Brent/VIX/S&P + typical UAE conditions; say "context" where not news-specific.`;
+  const wantAnthropicWeb = process.env.ANTHROPIC_WEB_SEARCH === '1';
+  if (wantAnthropicWeb) {
     try {
-      return await haikuSearch(sysWeb, prompt, anthropicKey, 1400, true);
+      return await haikuSearch(
+        'Dubai analyst. Use web_search then return ONLY JSON.',
+        `${promptBase}\nSearch current news for UAE/Dubai.`,
+        anthropicKey,
+        1400,
+        true,
+      );
     } catch (e1) {
-      dbgLog({ runId: 'pre-fix', hypothesisId: 'H1-H2', location: 'intelligence/route.js:fetchNewsNarrative', message: 'news web_search failed, falling back text', data: { err: String(e1?.message || e1).slice(0, 160) } });
+      dbgLog({ runId: 'pre-fix', hypothesisId: 'H1-H2', location: 'intelligence/route.js:fetchNewsNarrative', message: 'Anthropic web_search failed', data: { err: String(e1?.message || e1).slice(0, 160) } });
     }
   }
   return await haikuSearch(sysText, promptText, anthropicKey, 1600, false);
@@ -364,17 +406,24 @@ Return ONLY this JSON (no markdown, no backticks, no XML tags):
   }
 }`;
   const sys = 'Financial data researcher. Return ONLY valid JSON. No markdown, no cite tags.';
-  const promptNoWeb = `${prompt}\n\nNo web search. Set EIBOR 3M ~4.9–5.6% and UAE PMI headline ~53–56 with reasonable month_label; mark source as estimate if needed.`;
+  const tavilyRates = await tavilySearchBlock(
+    ['EIBOR 3 month rate UAE Emirates interbank latest', 'UAE non-oil PMI S&P Global purchasing managers latest'],
+    'news',
+  );
+  if (tavilyRates.length > 80) {
+    return await haikuSearch(
+      sys,
+      `${prompt}\n\n=== WEB SEARCH (extract rate_pct and PMI headline from here) ===\n${tavilyRates}`,
+      anthropicKey,
+      1000,
+      false,
+    );
+  }
+  const promptNoWeb = `${prompt}\n\nNo web snippets. Set EIBOR 3M ~4.9–5.6% and UAE PMI ~53–56; mark source estimate if needed.`;
   if (process.env.ANTHROPIC_WEB_SEARCH === '1') {
     try {
-      return await haikuSearch(
-        'Search UAE EIBOR 3M and UAE PMI; return JSON.',
-        prompt,
-        anthropicKey,
-        900,
-        true,
-      );
-    } catch { /* text-only */ }
+      return await haikuSearch('Search EIBOR and UAE PMI; return JSON.', prompt, anthropicKey, 900, true);
+    } catch { /* below */ }
   }
   return await haikuSearch(sys, promptNoWeb, anthropicKey, 800, false);
 }
@@ -574,9 +623,9 @@ export async function GET() {
       intelNotice = 'ANTHROPIC_API_KEY is not set. Add to Stradaintel/.env.local (same folder as package.json): ANTHROPIC_API_KEY=sk-ant-... then restart dev. Vercel: Environment Variables. No .env.local was found from this server cwd.';
     }
   } else if (narrativeBilling) {
-    intelNotice = 'Anthropic still returned a billing error on the last request. Narratives default to text-only (no web search). If this persists, open console.anthropic.com → Billing; optional env ANTHROPIC_WEB_SEARCH=1 after web search is enabled.';
+    intelNotice = 'Anthropic web_search hit a billing error. Add TAVILY_API_KEY (tavily.com, free tier) in Vercel for real web-backed scorecards without Anthropic search. Or fix billing at console.anthropic.com.';
   } else if (narrativeFallback) {
-    intelNotice = 'Claude narrative unavailable this request; scorecards use Yahoo fallback.';
+    intelNotice = 'Narrative fallback (no Tavily + Claude JSON failed). Add TAVILY_API_KEY for web search + redeploy.';
   }
   return Response.json({
     ok: true, ts, priceSource,

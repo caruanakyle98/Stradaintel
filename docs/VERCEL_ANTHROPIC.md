@@ -39,14 +39,15 @@ npx vercel link
 - **Commit:** `.env.example` only (placeholder).  
 - **Never commit:** `.env.local` (gitignored).
 
-## 4. Web search (optional)
+## 4. Web search (recommended: Tavily)
 
-By default the app uses **Claude text-only** (no `web_search` tool), so normal API credits are enough after you top up.
+Anthropic’s built-in **`web_search`** tool often returns **“credit balance too low”** even when normal Claude calls work. Strada uses **Tavily** for real web results, then Claude (text-only) turns them into scorecards.
 
-To turn on **live web search** (may require separate Anthropic access / still return “credit” errors for some accounts):
+1. Sign up at **[tavily.com](https://tavily.com)** → API key (`tvly-…`).
+2. Vercel → Environment Variables → **`TAVILY_API_KEY`** = your key (Production + Preview).
+3. Redeploy.
 
-- Vercel → Environment Variables → add **`ANTHROPIC_WEB_SEARCH`** = **`1`**
-- Redeploy
+Optional: **`ANTHROPIC_WEB_SEARCH=1`** — also tries Claude native search when Tavily has no results (may still 400 on billing).
 
 ## 5. Optional manual `.env.local`
 

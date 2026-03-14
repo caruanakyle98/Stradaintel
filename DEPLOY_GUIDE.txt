@@ -33,10 +33,9 @@ Outside trading hours, the last close price is shown.
 DEPLOY STEPS (API KEY LIVES IN VERCEL ONLY)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. Vercel → Project → Settings → Environment Variables
-   Name: ANTHROPIC_API_KEY
-   Value: sk-ant-api03-... (from console.anthropic.com)
-   Environments: Production + Preview (+ Development if you want)
+1. Vercel → Settings → Environment Variables
+   ANTHROPIC_API_KEY = sk-ant-api03-... (console.anthropic.com)
+   TAVILY_API_KEY   = tvly-... (tavily.com — web-backed scorecards; avoids Anthropic web_search billing errors)
    Redeploy after changing.
 
 2. Push to GitHub — Vercel build injects ANTHROPIC_API_KEY at runtime.
