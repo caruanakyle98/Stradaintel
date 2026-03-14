@@ -9,11 +9,46 @@
 //     • Call A: news narrative (security, property, aviation)
 //     • Call B: EIBOR 3-month + UAE PMI (borrowing cost & economic health)
 
-import { appendFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { appendFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
+
+/** Turbopack/workers sometimes omit ANTHROPIC_API_KEY from process.env; read .env.local from disk (local dev only). */
+function resolveAnthropicKey() {
+  let k = (process.env.ANTHROPIC_API_KEY || '').trim();
+  if (k.length > 10) return k;
+  const tryDirs = new Set();
+  let d = process.cwd();
+  for (let i = 0; i < 10; i++) {
+    tryDirs.add(d);
+    const up = dirname(d);
+    if (up === d) break;
+    d = up;
+  }
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    tryDirs.add(here);
+    tryDirs.add(join(here, '..', '..', '..'));
+  } catch { /* CJS bundle */ }
+  for (const dir of tryDirs) {
+    for (const name of ['.env.local', '.env']) {
+      const p = join(dir, name);
+      if (!existsSync(p)) continue;
+      try {
+        const text = readFileSync(p, 'utf8').replace(/^\uFEFF/, '');
+        const m = text.match(/^\s*ANTHROPIC_API_KEY\s*=\s*([^\r\n#]+?)\s*$/m);
+        if (m) {
+          k = m[1].trim().replace(/^["']|["']$/g, '');
+          if (k.length > 10) return k;
+        }
+      } catch { /* ignore */ }
+    }
+  }
+  return (process.env.ANTHROPIC_API_KEY || '').trim() || null;
+}
 
 function dbgLog(payload) {
   try {
@@ -339,9 +374,9 @@ async function fetchAllNarrative(today, mkt, sp30d, anthropicKey) {
 
 // ── Main handler ──────────────────────────────────────────
 export async function GET() {
-  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const anthropicKey = resolveAnthropicKey();
   // #region agent log
-  const _g = { runId: 'pre-fix', hypothesisId: 'H2', location: 'intelligence/route.js:GET', message: 'intelligence GET', data: { keyPresent: !!(anthropicKey && String(anthropicKey).length > 10) } };
+  const _g = { runId: 'pre-fix', hypothesisId: 'H2', location: 'intelligence/route.js:GET', message: 'intelligence GET', data: { keyPresent: !!(anthropicKey && String(anthropicKey).length > 10), keyFromFile: !!anthropicKey && !(process.env.ANTHROPIC_API_KEY || '').trim() } };
   dbgLog(_g);
   fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '13de73' }, body: JSON.stringify({ sessionId: '13de73', ..._g, timestamp: Date.now() }) }).catch(() => {});
   // #endregion
@@ -440,6 +475,7 @@ export async function GET() {
   const priceSource = pricesOk >= totalSyms-2 ? `Yahoo Finance (${pricesOk}/${totalSyms} live)` : `Yahoo Finance (partial ${pricesOk}/${totalSyms})`;
 
   const keyOk = !!(anthropicKey && String(anthropicKey).length > 10);
+  if (keyOk) process.env.ANTHROPIC_API_KEY = anthropicKey;
   return Response.json({
     ok: true, ts, priceSource,
     anthropic_configured: keyOk,
