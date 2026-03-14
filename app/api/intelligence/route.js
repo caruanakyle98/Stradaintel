@@ -37,10 +37,13 @@ function parseAnthropicKeyFromEnvText(text) {
   return null;
 }
 
-/** Turbopack/workers sometimes omit ANTHROPIC_API_KEY from process.env; read .env.local from disk (local dev only). */
-function resolveAnthropicKey(debug) {
+/**
+ * Turbopack/workers sometimes omit ANTHROPIC_API_KEY from process.env; read .env.local from disk (local dev only).
+ * @returns {{ key: string | null, envHelp?: { path: string, empty: boolean } }}
+ */
+function resolveAnthropicKey() {
   let k = (process.env.ANTHROPIC_API_KEY || '').trim();
-  if (k.length > 10) return k;
+  if (k.length > 10) return { key: k };
   const tryDirs = new Set();
   let d = process.cwd();
   for (let i = 0; i < 10; i++) {
@@ -54,23 +57,22 @@ function resolveAnthropicKey(debug) {
     tryDirs.add(here);
     tryDirs.add(join(here, '..', '..', '..'));
   } catch { /* CJS bundle */ }
+  let envHelp = null;
   for (const dir of tryDirs) {
     for (const name of ['.env.local', '.env']) {
       const p = join(dir, name);
       if (!existsSync(p)) continue;
-      if (debug) debug.envFile = p;
       try {
         const text = readFileSync(p, 'utf8');
-        if (debug) debug.envEmpty = text.trim().length === 0;
+        const empty = text.trim().length === 0;
         k = parseAnthropicKeyFromEnvText(text);
-        if (k && k.length > 10) return k;
-        if (debug) debug.envParsedLen = k ? k.length : 0;
-      } catch (e) {
-        if (debug) debug.envReadErr = String(e?.message || e).slice(0, 80);
-      }
+        if (k && k.length > 10) return { key: k };
+        envHelp = { path: p, empty };
+      } catch { /* next file */ }
     }
   }
-  return (process.env.ANTHROPIC_API_KEY || '').trim() || null;
+  k = (process.env.ANTHROPIC_API_KEY || '').trim();
+  return { key: k.length > 10 ? k : null, envHelp };
 }
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
@@ -596,18 +598,10 @@ async function fetchAllNarrative(today, mkt, sp30d, anthropicKey) {
 
 // ── Main handler ──────────────────────────────────────────
 export async function GET() {
-  const _dbg = {};
-  const anthropicKey = resolveAnthropicKey(_dbg);
+  const { key: anthropicKey, envHelp } = resolveAnthropicKey();
   const now   = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
   const today = now.toLocaleDateString('en-AE', { timeZone:'Asia/Dubai', day:'2-digit', month:'short', year:'numeric' });
   const ts    = now.toLocaleString('en-AE', { timeZone:'Asia/Dubai', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:false });
-
-  // Run market data fetch and narrative fetch in parallel
-  const [mktRes, narrRes] = await Promise.allSettled([
-    fetchAllMarketData(),
-    // narrative needs prices so we start it slightly after — but still run together
-    (async () => null)(), // placeholder, replaced below
-  ]);
 
   // Fetch market data first (fast), then narrative (needs price context)
   let mktData = { markets:{}, sp30d:null, inr30d:null, cny30d:null };
@@ -704,11 +698,12 @@ export async function GET() {
   if (!keyOk) {
     const tav = !!(process.env.TAVILY_API_KEY || '').trim();
     const both = 'You need BOTH keys: TAVILY_API_KEY (web snippets) AND ANTHROPIC_API_KEY (Claude turns snippets into scorecards). ';
-    if (_dbg.envFile) {
-      if (_dbg.envEmpty) {
-        intelNotice = `${both}${_dbg.envFile.replace(/\\/g, '/')} is empty or missing ANTHROPIC_API_KEY line. Save: ANTHROPIC_API_KEY=sk-ant-api03-...`;
+    if (envHelp?.path) {
+      const pathNorm = envHelp.path.replace(/\\/g, '/');
+      if (envHelp.empty) {
+        intelNotice = `${both}${pathNorm} is empty or missing ANTHROPIC_API_KEY line. Save: ANTHROPIC_API_KEY=sk-ant-api03-...`;
       } else {
-        intelNotice = `${both}Found ${_dbg.envFile.replace(/\\/g, '/')} but no usable ANTHROPIC_API_KEY. Add second line: ANTHROPIC_API_KEY=sk-ant-... ${tav ? '(Tavily already OK in log.)' : ''}`;
+        intelNotice = `${both}Found ${pathNorm} but no usable ANTHROPIC_API_KEY. Add: ANTHROPIC_API_KEY=sk-ant-... ${tav ? '(Tavily is set.)' : ''}`;
       }
     } else {
       intelNotice = `${both}npm run env:pull from Vercel, or add .env.local with both keys. ${tav ? 'Tavily worked — only Anthropic missing.' : ''}`;

@@ -69,7 +69,9 @@ const css = `
     *{animation:none!important}
     .print-avoid-break{break-inside:avoid;page-break-inside:avoid}
     .print-section{break-inside:avoid-page;page-break-inside:auto}
-    svg{overflow:visible!important}
+    svg{overflow:visible!important;max-width:100%!important;height:auto!important}
+    .print-exclude-section{display:none!important}
+    .client-pack-print [style*="gridTemplateColumns"]{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
   }
 `;
 
@@ -410,6 +412,29 @@ const CHECKLIST = [
   ['Financial Markets · 09:00',[['DFM Live Market Data','https://dfm.ae/market-data'],['UAE Central Bank','https://centralbank.ae']]],
 ];
 
+/** Sections for client PDF / static HTML (no API when clients open the file). */
+const CLIENT_SECTION_META = [
+  { id: 'header', label: 'Title & branding' },
+  { id: 'verdict', label: "Today's verdict & score" },
+  { id: 's01', label: '01 · Property numbers & charts' },
+  { id: 's02', label: '02 · Seven market drivers' },
+  { id: 's03', label: '03 · Scenarios & scorecard' },
+  { id: 's04', label: '04 · Warning signs' },
+  { id: 's05', label: '05 · Supporting data (stocks, rates)' },
+  { id: 's06', label: '06 · Morning checklist' },
+  { id: 'footer', label: 'Footer & contact' },
+];
+
+const defaultClientSections = () =>
+  Object.fromEntries(CLIENT_SECTION_META.map(({ id }) => [id, id !== 's05']));
+
+function cloneNodeNoNoPrint(el) {
+  if (!el) return '';
+  const c = el.cloneNode(true);
+  c.querySelectorAll?.('.no-print')?.forEach((n) => n.remove());
+  return c.outerHTML;
+}
+
 // ═══════════════════════════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════════════════════════
@@ -427,6 +452,9 @@ export default function Page() {
   const [area, setArea] = useState('');
   const showDataBeforePrintRef = useRef(false);
   const uploadedCsvTextRef = useRef(null);
+  const [clientSections, setClientSections] = useState(() => defaultClientSections());
+  const [clientPackOpen, setClientPackOpen] = useState(false);
+  const [printScope, setPrintScope] = useState(false);
 
   const refreshIntel = useCallback(async () => {
     setLoadIntel(true); setError(null);
@@ -541,15 +569,56 @@ export default function Page() {
   const openPrintPdf = useCallback(() => {
     showDataBeforePrintRef.current = showData;
     setShowData(true);
+    setPrintScope(false);
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        window.print();
-      }, 450);
+      setTimeout(() => window.print(), 450);
     });
   }, [showData]);
 
+  const openPrintSelected = useCallback(() => {
+    showDataBeforePrintRef.current = showData;
+    if (clientSections.s05) setShowData(true);
+    setPrintScope(true);
+    requestAnimationFrame(() => {
+      setTimeout(() => window.print(), 550);
+    });
+  }, [showData, clientSections.s05]);
+
+  const downloadClientPackHtml = useCallback(() => {
+    if (clientSections.s05) setShowData(true);
+    const slug = (ts || new Date().toISOString()).replace(/[^\dA-Za-z]+/g, '-').slice(0, 32);
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const chunks = [
+          `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Strada · Client brief · ${ts || ''}</title><style>${css}</style></head>`,
+          `<body class="client-pack-print" style="margin:0;background:#080a08;color:#e4ede4;font-family:-apple-system,Segoe UI,sans-serif;font-weight:300;font-size:14px">`,
+          `<div style="padding:16px 20px;background:#1a1408;border-bottom:1px solid #1c261c;font-family:monospace;font-size:10px;color:#d49535;line-height:1.5">`,
+          `<strong>Static client brief</strong> · ${ts || '—'} GST · Opened offline — does not use Strada APIs (no credit use).`,
+          `</div><div style="padding:24px 40px 64px">`,
+        ];
+        for (const { id } of CLIENT_SECTION_META) {
+          if (!clientSections[id]) continue;
+          const el = document.querySelector(`[data-client-section="${id}"]`);
+          if (el) chunks.push(cloneNodeNoNoPrint(el));
+        }
+        chunks.push(
+          `</div><div style="padding:14px 40px;border-top:1px solid #1c261c;font-size:9px;color:#445544">Strada Real Estate · stradauae.com · For discussion only; not financial advice.</div></body></html>`,
+        );
+        const blob = new Blob(chunks, { type: 'text/html;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `Strada-client-brief-${slug}.html`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }, clientSections.s05 ? 400 : 0);
+    });
+  }, [clientSections, ts]);
+
   useEffect(() => {
-    const onAfterPrint = () => setShowData(showDataBeforePrintRef.current);
+    const onAfterPrint = () => {
+      setShowData(showDataBeforePrintRef.current);
+      setPrintScope(false);
+    };
     window.addEventListener('afterprint', onAfterPrint);
     return () => window.removeEventListener('afterprint', onAfterPrint);
   }, []);
@@ -559,14 +628,22 @@ export default function Page() {
     refreshIntel();
   }, [refreshIntel]);
 
+  const secClass = (id) =>
+    printScope && !clientSections[id] ? 'print-exclude-section' : '';
+
   return (
     <div
+      className={printScope ? 'client-pack-print' : ''}
       style={{ background:C.bg, minHeight:'100vh', color:C.t1, fontFamily:'-apple-system,"Segoe UI",sans-serif', fontWeight:300, fontSize:14 }}
     >
       <style>{css}</style>
 
       {/* ── HEADER ──────────────────────────────────────── */}
-      <div style={{ padding:'28px 48px 22px', borderBottom:`1px solid ${C.border}` }} className="print-avoid-break">
+      <div
+        data-client-section="header"
+        style={{ padding:'28px 48px 22px', borderBottom:`1px solid ${C.border}` }}
+        className={`print-avoid-break ${secClass('header')}`}
+      >
         <div className="print-only" style={{ fontFamily:'monospace', fontSize:9, color:C.tm, marginBottom:8, letterSpacing:'.08em' }}>
           STRADA INTELLIGENCE · PDF EXPORT · {ts || '—'} (GST when live)
         </div>
@@ -597,10 +674,17 @@ export default function Page() {
               <button
                 type="button"
                 onClick={openPrintPdf}
-                title="Opens print dialog — choose Save as PDF"
+                title="Full page print / PDF"
                 style={{ padding:'7px 13px', background:C.surf, border:`1px solid ${C.g}`, borderRadius:2, color:C.ga, fontFamily:'monospace', fontSize:9, cursor:'pointer' }}
               >
-                Save as PDF (print)
+                Print full page
+              </button>
+              <button
+                type="button"
+                onClick={() => setClientPackOpen((o) => !o)}
+                style={{ padding:'7px 13px', background:C.gd, border:`1px solid ${C.gm}`, borderRadius:2, color:C.ga, fontFamily:'monospace', fontSize:9, cursor:'pointer' }}
+              >
+                {clientPackOpen ? '▼ Client pack' : '▶ Client pack'}
               </button>
               <button onClick={() => refreshProp()} disabled={loadProp} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadProp?'wait':'pointer' }}>
                 {loadProp?'…':'Property data only'}
@@ -653,6 +737,92 @@ export default function Page() {
             <div style={{ fontFamily:'monospace', fontSize:9, color:C.tm }}>
               {ts?`LAST UPDATED · ${ts} GST`:'PRESS "GET LATEST INTELLIGENCE" TO BEGIN'}
             </div>
+            {clientPackOpen && (
+              <div
+                style={{
+                  marginTop: 12,
+                  padding: '14px 16px',
+                  background: C.card,
+                  border: `1px solid ${C.gm}`,
+                  borderRadius: 2,
+                  textAlign: 'left',
+                  maxWidth: 520,
+                }}
+              >
+                <div style={{ fontFamily: 'monospace', fontSize: 8, color: C.gm, letterSpacing: '.12em', marginBottom: 8 }}>
+                  SHARE WITH CLIENTS (NO API / NO CREDITS)
+                </div>
+                <div style={{ fontSize: 10, color: C.t2, lineHeight: 1.5, marginBottom: 10 }}>
+                  Choose sections, then <strong style={{ color: C.t1 }}>Download HTML</strong> and email the file — clients open it offline.
+                  Or <strong style={{ color: C.t1 }}>Print selected</strong> for PDF. Formatting matches the dashboard (dark theme + print colours).
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 14px', marginBottom: 12 }}>
+                  {CLIENT_SECTION_META.map(({ id, label }) => (
+                    <label
+                      key={id}
+                      style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'monospace', fontSize: 9, color: C.t2, cursor: 'pointer' }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!clientSections[id]}
+                        onChange={() => setClientSections((s) => ({ ...s, [id]: !s[id] }))}
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={downloadClientPackHtml}
+                    style={{
+                      padding: '10px 16px',
+                      background: C.gm,
+                      border: `1px solid ${C.g}`,
+                      borderRadius: 2,
+                      color: C.t1,
+                      fontFamily: 'monospace',
+                      fontSize: 10,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Download HTML brief
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openPrintSelected}
+                    style={{
+                      padding: '10px 16px',
+                      background: 'transparent',
+                      border: `1px solid ${C.border}`,
+                      borderRadius: 2,
+                      color: C.ga,
+                      fontFamily: 'monospace',
+                      fontSize: 10,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Print selected → PDF
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setClientSections(defaultClientSections())}
+                    style={{
+                      padding: '10px 12px',
+                      background: 'transparent',
+                      border: `1px solid ${C.border}`,
+                      borderRadius: 2,
+                      color: C.tm,
+                      fontFamily: 'monospace',
+                      fontSize: 9,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Reset defaults
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
           <div className="print-only" style={{ fontFamily:'monospace', fontSize:9, color:C.tm, textAlign:'right' }}>
             {ts ? `Data as of · ${ts} GST` : 'Load intelligence before export for full report'}
@@ -675,7 +845,11 @@ export default function Page() {
         {(intel||loadIntel) && (() => {
           const v = VERDICT(intel?.composite||3);
           return (
-            <div className="fade-in" style={{ marginTop:28, padding:'22px 26px', background:`${v.col}14`, border:`1px solid ${v.col}40`, borderLeft:`5px solid ${v.col}`, borderRadius:2 }}>
+            <div
+              data-client-section="verdict"
+              className={`fade-in print-avoid-break ${secClass('verdict')}`}
+              style={{ marginTop:28, padding:'22px 26px', background:`${v.col}14`, border:`1px solid ${v.col}40`, borderLeft:`5px solid ${v.col}`, borderRadius:2 }}
+            >
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:16 }}>
                 <div style={{ flex:1 }}>
                   <div style={{ fontFamily:'monospace', fontSize:8, letterSpacing:'.14em', color:v.col, marginBottom:6 }}>TODAY'S MARKET VERDICT</div>
@@ -713,7 +887,7 @@ export default function Page() {
         {/* ══════════════════════════════════════════════ */}
         {/* ── 01 DUBAI PROPERTY MARKET — THE NUMBERS ── */}
         {/* ══════════════════════════════════════════════ */}
-        <div style={{ marginTop:48 }}>
+        <div data-client-section="s01" className={`print-section ${secClass('s01')}`} style={{ marginTop:48 }}>
           <SectionHead n="01" title="Dubai Property Market — The Numbers"
             desc="Live transaction data from Dubai Land Department, rental yields, asking prices and the most active areas this week."/>
 
@@ -943,7 +1117,7 @@ export default function Page() {
         {/* ══════════════════════════════════════════════ */}
         {/* ── 02 WHAT'S DRIVING THE MARKET ── */}
         {/* ══════════════════════════════════════════════ */}
-        <div style={{ marginTop:48 }}>
+        <div data-client-section="s02" className={`print-section ${secClass('s02')}`} style={{ marginTop:48 }}>
           <SectionHead n="02" title="What's Driving the Market?"
             desc="Seven forces that determine where Dubai property prices go next — each searched, scored and explained in plain English. Green means it's helping your property value. Red means it's adding pressure."/>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:10 }}>
@@ -955,7 +1129,7 @@ export default function Page() {
         {/* ── 03 THREE POSSIBLE OUTCOMES ── */}
         {/* ══════════════════════════════════════════════ */}
         {(intel||loadIntel) && (
-        <div style={{ marginTop:48 }}>
+        <div data-client-section="s03" className={`print-section ${secClass('s03')}`} style={{ marginTop:48 }}>
           <SectionHead n="03" title="Three Possible Outcomes"
             desc="Based on today's data, here are the three most likely ways the Dubai property market could move over the next 3–6 months."/>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
@@ -1021,7 +1195,7 @@ export default function Page() {
         {/* ══════════════════════════════════════════════ */}
         {/* ── 04 WARNING SIGNS ── */}
         {/* ══════════════════════════════════════════════ */}
-        <div style={{ marginTop:48 }}>
+        <div data-client-section="s04" className={`print-section ${secClass('s04')}`} style={{ marginTop:48 }}>
           <SectionHead n="04" title="Warning Signs — Know When to Act"
             desc="Bookmark this page. If any of these occur, check the relevant column for what to do. Nothing on this list is currently triggered unless it glows red or amber."/>
           <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, overflow:'hidden' }}>
@@ -1041,7 +1215,7 @@ export default function Page() {
         {/* ══════════════════════════════════════════════ */}
         {/* ── 05 SUPPORTING DATA (collapsed by default) ── */}
         {/* ══════════════════════════════════════════════ */}
-        <div style={{ marginTop:48 }} className="print-section">
+        <div data-client-section="s05" className={`print-section ${secClass('s05')}`} style={{ marginTop:48 }}>
           <div
             className="no-print"
             onClick={() => setShowData(!showData)}
@@ -1061,8 +1235,8 @@ export default function Page() {
             <div style={{ fontSize:11, color:C.tm, marginTop:4 }}>Supporting data (included in this PDF)</div>
           </div>
 
-          {showData && (
-            <div className="fade-in" style={{ border:`1px solid ${C.border}`, borderTop:'none', borderRadius:'0 0 2px 2px', padding:'24px 20px', background:C.surf }}>
+          {(showData || printScope) && clientSections.s05 && (
+            <div className="fade-in print-avoid-break" style={{ border:`1px solid ${C.border}`, borderTop: showData ? 'none' : undefined, borderRadius: 2, padding:'24px 20px', background:C.surf }}>
 
               {/* Dubai developers + banks */}
               <div style={{ marginBottom:20 }}>
@@ -1157,7 +1331,7 @@ export default function Page() {
         </div>
 
         {/* ── 06 MORNING CHECKLIST ── */}
-        <div style={{ marginTop:36 }}>
+        <div data-client-section="s06" className={`print-section ${secClass('s06')}`} style={{ marginTop:36 }}>
           <SectionHead n="06" title="Your 5-Minute Morning Checklist"
             desc="For those who want to go deeper — these are the best sources to check each morning. Bookmark this page."/>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:10 }}>
@@ -1177,7 +1351,11 @@ export default function Page() {
 
       </div>
 
-      <div style={{ padding:'18px 48px', borderTop:`1px solid ${C.border}`, display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:10 }}>
+      <div
+        data-client-section="footer"
+        className={`print-avoid-break ${secClass('footer')}`}
+        style={{ padding:'18px 48px', borderTop:`1px solid ${C.border}`, display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:10 }}
+      >
         <div style={{ fontFamily:'Georgia,serif', fontSize:11, fontStyle:'italic', color:C.tm }}>"The market rewards those who see clearly, earlier."</div>
         <div style={{ fontFamily:'monospace', fontSize:8, color:C.td, textAlign:'right', lineHeight:1.9 }}>STRADA REAL ESTATE · KYLE CARUANA · +971 58 579 2599 · STRADAUAE.COM</div>
       </div>
