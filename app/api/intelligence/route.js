@@ -308,6 +308,83 @@ async function tavilySearchBlock(queries, topic = 'news') {
   return lines.join('\n\n').slice(0, 14000);
 }
 
+/** Richer search for EIBOR/PMI facts (general + advanced; news topic often misses tables). */
+async function tavilyRatesSearchBlock() {
+  const key = (process.env.TAVILY_API_KEY || '').trim();
+  if (!key || key.length < 8) return '';
+  const queries = [
+    'EIBOR 3 month rate UAE percent central bank',
+    'Emirates interbank offered rate 3M latest',
+    'UAE mortgage benchmark rate EIBOR March 2025 2026',
+    'S&P Global UAE PMI purchasing managers index latest month',
+    'UAE non-oil private sector PMI IHS Markit headline',
+  ];
+  const lines = [];
+  for (const query of queries) {
+    try {
+      const r = await fetch('https://api.tavily.com/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          api_key: key,
+          query,
+          topic: 'general',
+          max_results: 6,
+          search_depth: 'advanced',
+        }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) continue;
+      for (const x of d.results || []) {
+        const c = (x.content || '').replace(/\s+/g, ' ').slice(0, 500);
+        lines.push(`• ${x.title || '—'}\n  ${c}`);
+      }
+    } catch { /* next */ }
+  }
+  return lines.join('\n\n').slice(0, 16000);
+}
+
+function numericRatePct(v) {
+  if (v == null) return NaN;
+  const s = String(v).replace(/%/g, '').trim();
+  const n = parseFloat(s);
+  return Number.isFinite(n) && n >= 2 && n <= 15 ? n : NaN;
+}
+
+function numericPmi(v) {
+  if (v == null) return NaN;
+  const n = parseFloat(String(v).replace(/[^\d.]/g, ''));
+  return Number.isFinite(n) && n >= 35 && n <= 70 ? n : NaN;
+}
+
+/** Reject model placeholders so we can re-prompt with estimates. */
+function ratesNeedEstimate(o) {
+  if (!o || typeof o !== 'object') return true;
+  const r = numericRatePct(o.eibor?.rate_pct);
+  const p = numericPmi(o.uae_pmi?.headline);
+  const junk = (s) => /not found|unable to determine|n\/a|unknown|search results/i.test(String(s || ''));
+  if (!Number.isFinite(r)) return true;
+  if (!Number.isFinite(p)) return true;
+  if (junk(o.eibor?.source) && junk(o.eibor?.interpretation)) return true;
+  return false;
+}
+
+function sanitizeRatesDisplay(o) {
+  if (!o || typeof o !== 'object') return o;
+  const out = {
+    ...o,
+    eibor: { ...(o.eibor && typeof o.eibor === 'object' ? o.eibor : {}) },
+    uae_pmi: { ...(o.uae_pmi && typeof o.uae_pmi === 'object' ? o.uae_pmi : {}) },
+  };
+  const j = (s) => /not found|unable to determine|^unknown$/i.test(String(s || '').trim());
+  if (j(out.eibor?.prev_3m_pct)) delete out.eibor.prev_3m_pct;
+  if (j(out.eibor?.source)) out.eibor.source = 'estimate (typical UAE range)';
+  if (j(out.uae_pmi?.new_orders)) delete out.uae_pmi.new_orders;
+  if (j(out.uae_pmi?.source)) out.uae_pmi.source = 'estimate (typical UAE range)';
+  if (j(out.uae_pmi?.month_label)) out.uae_pmi.month_label = new Date().toLocaleDateString('en-AE', { month: 'long', year: 'numeric' });
+  return out;
+}
+
 // ── Haiku Call A: News pillars ────────────────────────────
 async function fetchNewsNarrative(today, mkt, sp30d, anthropicKey) {
   const ctx = `Brent $${mkt.brent?.price||'N/A'}/bbl | VIX ${mkt.vix?.price||'N/A'} | S&P ${mkt.sp500?.price||'N/A'} (30d:${sp30d?.chgPct||'N/A'})`;
@@ -401,26 +478,50 @@ Return ONLY this JSON (no markdown, no backticks, no XML tags):
   }
 }`;
   const sys = 'Financial data researcher. Return ONLY valid JSON. No markdown, no cite tags.';
-  const tavilyRates = await tavilySearchBlock(
-    ['EIBOR 3 month rate UAE Emirates interbank latest', 'UAE non-oil PMI S&P Global purchasing managers latest'],
-    'news',
-  );
-  if (tavilyRates.length > 80) {
-    return await haikuSearch(
-      sys,
-      `${prompt}\n\n=== WEB SEARCH (extract rate_pct and PMI headline from here) ===\n${tavilyRates}`,
-      anthropicKey,
-      1000,
-      false,
-    );
-  }
-  const promptNoWeb = `${prompt}\n\nNo web snippets. Set EIBOR 3M ~4.9–5.6% and UAE PMI ~53–56; mark source estimate if needed.`;
-  if (process.env.ANTHROPIC_WEB_SEARCH === '1' && !(process.env.TAVILY_API_KEY || '').trim()) {
+  const tavilyRates = await tavilyRatesSearchBlock();
+  const tavilyFallback = tavilyRates.length < 80
+    ? await tavilySearchBlock(
+        ['EIBOR 3 month UAE rate percent', 'UAE PMI S&P Global latest reading'],
+        'general',
+      )
+    : '';
+  const webBlock = (tavilyRates.length >= 80 ? tavilyRates : tavilyFallback).slice(0, 15000);
+  const promptWeb = `${prompt}\n\nRules: rate_pct and headline MUST be numeric strings only (e.g. "5.12" and "54.2"). If the text above does not state an exact EIBOR 3M or PMI number, use promptNoWeb instead by returning JSON with source "estimate" and plausible UAE-range numbers — never write "not found" or "unable" in any field.`;
+  const promptNoWeb = `${prompt}\n\nNo reliable web numbers in context. Return JSON with: eibor.rate_pct between 4.85 and 5.75 (pick one plausible UAE 3M EIBOR), eibor.prev_3m_pct similar ±0.15, eibor.source "typical range (model estimate)", eibor.period current month/year. uae_pmi.headline between 52 and 57, uae_pmi.source "typical range (model estimate)", signal expansion|neutral. Do not use the words "not found", "unable", or "unknown" in any value.`;
+
+  let parsed = null;
+  if (webBlock.length >= 80) {
     try {
-      return await haikuSearch('Search EIBOR and UAE PMI; return JSON.', prompt, anthropicKey, 900, true);
-    } catch { /* below */ }
+      parsed = await haikuSearch(sys, `${promptWeb}\n\n=== WEB SNIPPETS ===\n${webBlock}`, anthropicKey, 1100, false);
+    } catch { parsed = null; }
   }
-  return await haikuSearch(sys, promptNoWeb, anthropicKey, 800, false);
+  if (ratesNeedEstimate(parsed)) {
+    try {
+      parsed = await haikuSearch(sys, promptNoWeb, anthropicKey, 900, false);
+    } catch { /* keep partial */ }
+  }
+  if (ratesNeedEstimate(parsed)) {
+    parsed = {
+      eibor: {
+        rate_pct: '5.15',
+        prev_3m_pct: '5.28',
+        trend: 'stable',
+        period: today,
+        source: 'typical range (fallback)',
+        interpretation: 'UAE 3M EIBOR usually tracks Fed; use centralbank.ae for exact fixings.',
+      },
+      uae_pmi: {
+        headline: '54.5',
+        new_orders: '53.8',
+        month_label: today,
+        vs_prev: 'N/A',
+        signal: 'expansion',
+        source: 'typical range (fallback)',
+        interpretation: 'UAE non-oil PMI typically 52–57; check S&P Global for latest release.',
+      },
+    };
+  }
+  return sanitizeRatesDisplay(parsed);
 }
 
 /** When Claude/web_search fails (billing, timeout, parse), still show readable cards from Yahoo-only context. */

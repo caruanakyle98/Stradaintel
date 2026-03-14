@@ -1138,7 +1138,7 @@ export default function Page() {
                         <Tag color={C.gm}>Dubai Business Confidence Index</Tag>
                         {loadIntel?<Skel h={28} mb={6}/>:<>
                           <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:col, lineHeight:1.1, marginBottom:6 }}>
-                            {val>0?p.headline:'—'} <span style={{ fontSize:10, color:C.tm }}>{val>=50?'(growing)':'(shrinking)'}</span>
+                            {val>0?p.headline:'—'} {val>0?<span style={{ fontSize:10, color:C.tm }}>{val>=50?'(growing)':'(shrinking)'}</span>:null}
                           </div>
                           {p?.new_orders&&<div style={{ fontFamily:'monospace', fontSize:9, color:C.t2, marginBottom:4 }}>New business orders: {p.new_orders}</div>}
                           <div style={{ fontSize:10, color:C.t2, lineHeight:1.5 }}>
