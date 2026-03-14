@@ -289,25 +289,37 @@ function calibrateAviationScore(raw, p) {
   return s;
 }
 
-// ── Tavily web search (real URLs/snippets; Claude stays text-only) ──
+// ── Tavily web search (api_key required in JSON body per Tavily API) ──
 async function tavilySearchBlock(queries, topic = 'news') {
   const key = (process.env.TAVILY_API_KEY || '').trim();
   if (!key || key.length < 8) return '';
   const lines = [];
   for (const query of queries) {
-    try {
-      const r = await fetch('https://api.tavily.com/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-        body: JSON.stringify({ query, topic, max_results: 6, search_depth: 'basic' }),
-      });
-      if (!r.ok) continue;
-      const d = await r.json();
-      for (const x of d.results || []) {
-        const c = (x.content || '').replace(/\s+/g, ' ').slice(0, 420);
-        lines.push(`• ${x.title || '—'}\n  ${c}`);
+    for (const t of [topic, 'general']) {
+      try {
+        const r = await fetch('https://api.tavily.com/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            api_key: key,
+            query,
+            topic: t,
+            max_results: 8,
+            search_depth: 'basic',
+          }),
+        });
+        const d = await r.json().catch(() => ({}));
+        dbgLog({ runId: 'tavily', hypothesisId: 'TAV', location: 'tavilySearchBlock', message: 'tavily response', data: { ok: r.ok, status: r.status, queryLen: query.length, topic: t, resultCount: (d.results || []).length } });
+        if (!r.ok) continue;
+        for (const x of d.results || []) {
+          const c = (x.content || '').replace(/\s+/g, ' ').slice(0, 420);
+          lines.push(`• ${x.title || '—'}\n  ${c}`);
+        }
+        if ((d.results || []).length) break;
+      } catch (e) {
+        dbgLog({ runId: 'tavily', hypothesisId: 'TAV', message: 'tavily err', data: { err: String(e?.message || e).slice(0, 80) } });
       }
-    } catch { /* ignore */ }
+    }
   }
   return lines.join('\n\n').slice(0, 14000);
 }
@@ -337,7 +349,7 @@ sig must be "positive" only if score>=4, "negative" if score<=2, else "neutral".
     ],
     'news',
   );
-  if (tavilyCtx.length > 200) {
+  if (tavilyCtx.length > 120) {
     return await haikuSearch(
       'Dubai real estate analyst. Ground security/property/aviation ONLY in the WEB SEARCH block below. Return ONLY valid JSON. No markdown, no cite tags.',
       `${promptBase}\n\n=== WEB SEARCH (use for bullets & scores) ===\n${tavilyCtx}`,
@@ -348,7 +360,8 @@ sig must be "positive" only if score>=4, "negative" if score<=2, else "neutral".
   }
   const sysText = 'Dubai real estate analyst. Return ONLY valid JSON. Scores 1-5 must match bullets.';
   const promptText = `${promptBase}\n\nNo web snippets available — use Brent/VIX/S&P + typical UAE conditions; say "context" where not news-specific.`;
-  const wantAnthropicWeb = process.env.ANTHROPIC_WEB_SEARCH === '1';
+  const tavilyConfigured = !!(process.env.TAVILY_API_KEY || '').trim();
+  const wantAnthropicWeb = process.env.ANTHROPIC_WEB_SEARCH === '1' && !tavilyConfigured;
   if (wantAnthropicWeb) {
     try {
       return await haikuSearch(
@@ -420,7 +433,7 @@ Return ONLY this JSON (no markdown, no backticks, no XML tags):
     );
   }
   const promptNoWeb = `${prompt}\n\nNo web snippets. Set EIBOR 3M ~4.9–5.6% and UAE PMI ~53–56; mark source estimate if needed.`;
-  if (process.env.ANTHROPIC_WEB_SEARCH === '1') {
+  if (process.env.ANTHROPIC_WEB_SEARCH === '1' && !(process.env.TAVILY_API_KEY || '').trim()) {
     try {
       return await haikuSearch('Search EIBOR and UAE PMI; return JSON.', prompt, anthropicKey, 900, true);
     } catch { /* below */ }
@@ -498,7 +511,8 @@ async function fetchAllNarrative(today, mkt, sp30d, anthropicKey) {
     eibor: rates.eibor || null,
     uae_pmi: rates.uae_pmi || null,
     narrative_fallback: !okNews,
-    narrative_billing: /credit balance|too low/i.test(newsErr),
+    narrative_billing: /credit balance|too low/i.test(newsErr) && !(process.env.TAVILY_API_KEY || '').trim(),
+    tavily_configured: !!(process.env.TAVILY_API_KEY || '').trim(),
   };
 }
 
@@ -530,8 +544,10 @@ export async function GET() {
   try { narrative = await fetchAllNarrative(today, mktData.markets, mktData.sp30d, anthropicKey); } catch {}
   const narrativeBilling = narrative.narrative_billing === true;
   const narrativeFallback = narrative.narrative_fallback === true;
+  const tavilyConfigured = narrative.tavily_configured === true;
   delete narrative.narrative_billing;
   delete narrative.narrative_fallback;
+  delete narrative.tavily_configured;
 
   const { markets, sp30d, inr30d, cny30d } = mktData;
 
@@ -623,9 +639,11 @@ export async function GET() {
       intelNotice = 'ANTHROPIC_API_KEY is not set. Add to Stradaintel/.env.local (same folder as package.json): ANTHROPIC_API_KEY=sk-ant-... then restart dev. Vercel: Environment Variables. No .env.local was found from this server cwd.';
     }
   } else if (narrativeBilling) {
-    intelNotice = 'Anthropic web_search hit a billing error. Add TAVILY_API_KEY (tavily.com, free tier) in Vercel for real web-backed scorecards without Anthropic search. Or fix billing at console.anthropic.com.';
+    intelNotice = 'Anthropic web_search billing error. Add TAVILY_API_KEY in Vercel for **Preview + Production**, redeploy, and ensure the key is in the request body (fixed in app).';
+  } else if (tavilyConfigured && narrativeFallback) {
+    intelNotice = 'TAVILY_API_KEY is set but Tavily returned no snippets or Claude failed. Redeploy after env change; add key to Preview if you use preview URLs; check Tavily dashboard usage.';
   } else if (narrativeFallback) {
-    intelNotice = 'Narrative fallback (no Tavily + Claude JSON failed). Add TAVILY_API_KEY for web search + redeploy.';
+    intelNotice = 'Narrative fallback. Add TAVILY_API_KEY (Vercel: Production + Preview), redeploy.';
   }
   return Response.json({
     ok: true, ts, priceSource,

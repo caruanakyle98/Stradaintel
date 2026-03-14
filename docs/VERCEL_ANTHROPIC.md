@@ -44,8 +44,8 @@ npx vercel link
 Anthropic’s built-in **`web_search`** tool often returns **“credit balance too low”** even when normal Claude calls work. Strada uses **Tavily** for real web results, then Claude (text-only) turns them into scorecards.
 
 1. Sign up at **[tavily.com](https://tavily.com)** → API key (`tvly-…`).
-2. Vercel → Environment Variables → **`TAVILY_API_KEY`** = your key (Production + Preview).
-3. Redeploy.
+2. Vercel → Environment Variables → **`TAVILY_API_KEY`** = your key — enable for **Production and Preview** (preview deployments do not see Production-only vars).
+3. **Redeploy** after adding or changing env (serverless needs a new deployment).
 
 Optional: **`ANTHROPIC_WEB_SEARCH=1`** — also tries Claude native search when Tavily has no results (may still 400 on billing).
 
