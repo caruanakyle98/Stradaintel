@@ -235,7 +235,7 @@ export async function GET(request) {
           try {
             const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
             const windows = deriveAnalysisWindows([]);
-            mergeRentalIntoPayload(body, rentalRaw, rentalLabel, windows);
+            mergeRentalIntoPayload(body, rentalRaw, rentalLabel, windows, {});
           } catch (e) {
             body.rental = body.rental || {};
             body.rental.note = `Rental URL failed: ${e?.message || e}.`;
@@ -306,7 +306,9 @@ export async function GET(request) {
     if (rentalUrlEnv && result.windows) {
       try {
         const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
-        mergeRentalIntoPayload(result.body, rentalRaw, rentalLabel, result.windows);
+        mergeRentalIntoPayload(result.body, rentalRaw, rentalLabel, result.windows, {
+          filterArea: areaFilterActive ? areaParam : '',
+        });
       } catch (e) {
         result.body.rental = result.body.rental || {};
         result.body.rental.note = `Rental URL failed: ${e?.message || e}. Sales data still shown.`;
