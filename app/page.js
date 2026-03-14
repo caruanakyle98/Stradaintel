@@ -1219,14 +1219,9 @@ export default function Page() {
         <div data-client-section="s05" className={`print-section ${secClass('s05')}`} style={{ marginTop:48 }}>
           <div
             className="no-print"
-            onClick={() => {
-              const next = !showData;
-              // #region agent log
-              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',hypothesisId:'A',location:'page.js:s05-toggle',message:'section05 toggle',data:{next,wasBlockedByS05Gate:false},timestamp:Date.now(),runId:'post-fix'})}).catch(()=>{});
-              // #endregion
-              setShowData(next);
-            }}
-            style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 18px', background:C.card, border:`1px solid ${C.border}`, borderRadius:2, cursor:'pointer', userSelect:'none' }}>
+            onClick={() => setShowData(!showData)}
+            style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 18px', background:C.card, border:`1px solid ${C.border}`, borderRadius:2, cursor:'pointer', userSelect:'none' }}
+          >
             <div>
               <div style={{ fontFamily:'Georgia,serif', fontSize:15, fontWeight:700, color:C.t1 }}>
                 05 · The Data Behind Our Analysis
