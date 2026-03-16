@@ -603,8 +603,14 @@ export default function Page() {
   }, [showData, clientSections.s05]);
 
   const buildClientHtml = useCallback(() => {
+    // In the exported window we're not in @media print, so .print-only would stay hidden.
+    // Override so client-pack content is visible on screen and when printing.
+    const clientPackOverride = `
+      .client-pack-print .print-only { display: block !important; }
+      .client-pack-print .no-print { display: none !important; }
+    `;
     const chunks = [
-      `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Strada · Client brief · ${ts || ''}</title><style>${css}</style></head>`,
+      `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Strada · Client brief · ${ts || ''}</title><style>${css}</style><style>${clientPackOverride}</style></head>`,
       `<body class="client-pack-print" style="margin:0;background:#080a08;color:#e4ede4;font-family:-apple-system,Segoe UI,sans-serif;font-weight:300;font-size:14px">`,
       `<div style="padding:16px 20px;background:#1a1408;border-bottom:1px solid #1c261c;font-family:monospace;font-size:10px;color:#d49535;line-height:1.5">`,
       `<strong>Static client brief</strong> · ${ts || '—'} GST · Opened offline — does not use Strada APIs (no credit use).`,
