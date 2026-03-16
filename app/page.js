@@ -601,15 +601,20 @@ export default function Page() {
       `<strong>Static client brief</strong> · ${ts || '—'} GST · Opened offline — does not use Strada APIs (no credit use).`,
       `</div><div style="padding:24px 40px 64px">`,
     ];
+    let sectionChunks = 0;
     for (const { id } of CLIENT_SECTION_META) {
       if (!clientSections[id]) continue;
       const el = document.querySelector(`[data-client-section="${id}"]`);
-      if (el) chunks.push(cloneNodeNoNoPrint(el));
+      if (el) { chunks.push(cloneNodeNoNoPrint(el)); sectionChunks++; }
     }
     chunks.push(
       `</div><div style="padding:14px 40px;border-top:1px solid #1c261c;font-size:9px;color:#445544">Strada Real Estate · stradauae.com · For discussion only; not financial advice.</div></body></html>`,
     );
-    return chunks.join('');
+    const html = chunks.join('');
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:buildClientHtml',message:'HTML built',data:{htmlLength:html.length,sectionChunks},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{});
+    // #endregion
+    return html;
   }, [clientSections, ts]);
 
   const downloadClientPackHtml = useCallback(() => {
@@ -630,15 +635,41 @@ export default function Page() {
 
   /** Opens selected sections in a new window, ready for Print → Save as PDF. Each section starts on a new page. */
   const openClientPdfView = useCallback(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'openClientPdfView called',data:{s05:!!clientSections?.s05},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     if (clientSections.s05) setShowData(true);
     requestAnimationFrame(() => {
       setTimeout(() => {
-        const html = buildClientHtml();
+        let html;
+        try {
+          html = buildClientHtml();
+        } catch (e) {
+          // #region agent log
+          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'buildClientHtml threw',data:{err:String(e?.message||e)},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+          // #endregion
+          return;
+        }
+        // #region agent log
+        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'before window.open',data:{htmlLength:html?.length},timestamp:Date.now(),hypothesisId:'H5'})}).catch(()=>{});
+        // #endregion
         const w = window.open('', '_blank', 'noopener,noreferrer,width=900,height=700,scrollbars=yes,resizable=yes');
+        // #region agent log
+        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'after window.open',data:{winNotNull:!!w},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+        // #endregion
         if (!w) return;
-        w.document.write(html);
-        w.document.close();
-        w.document.title = `Strada Client Brief · ${ts || ''}`;
+        try {
+          w.document.write(html);
+          w.document.close();
+          w.document.title = `Strada Client Brief · ${ts || ''}`;
+          // #region agent log
+          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'document.write done',data:{},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
+          // #endregion
+        } catch (e2) {
+          // #region agent log
+          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'document.write threw',data:{err:String(e2?.message||e2)},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
+          // #endregion
+        }
       }, clientSections.s05 ? 400 : 0);
     });
   }, [clientSections, ts, buildClientHtml]);
