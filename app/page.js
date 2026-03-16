@@ -639,12 +639,7 @@ export default function Page() {
     fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'openClientPdfView called',data:{s05:!!clientSections?.s05},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
     // #endregion
     if (clientSections.s05) setShowData(true);
-    // Open window synchronously while still in user gesture so it isn't blocked as a popup.
-    const w = window.open('', '_blank', 'noopener,noreferrer,width=900,height=700,scrollbars=yes,resizable=yes');
-    // #region agent log
-    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'after window.open',data:{winNotNull:!!w},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-    // #endregion
-    if (!w) return;
+    // Build HTML after a short delay so s05 data can render, then open via Blob URL so we don't rely on popup-unblocked window.
     requestAnimationFrame(() => {
       setTimeout(() => {
         let html;
@@ -656,18 +651,13 @@ export default function Page() {
           // #endregion
           return;
         }
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const blobUrl = URL.createObjectURL(blob);
+        const w = window.open(blobUrl, '_blank', 'noopener,noreferrer,width=900,height=700,scrollbars=yes,resizable=yes');
         // #region agent log
-        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'document.write done',data:{htmlLength:html?.length},timestamp:Date.now(),runId:'post-fix'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'after window.open(blobUrl)',data:{winNotNull:!!w,htmlLength:html?.length},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
         // #endregion
-        try {
-          w.document.write(html);
-          w.document.close();
-          w.document.title = `Strada Client Brief · ${ts || ''}`;
-        } catch (e2) {
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'document.write threw',data:{err:String(e2?.message||e2)},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
-          // #endregion
-        }
+        if (w) setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
       }, clientSections.s05 ? 400 : 0);
     });
   }, [clientSections, ts, buildClientHtml]);
