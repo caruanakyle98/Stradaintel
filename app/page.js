@@ -60,7 +60,7 @@ const css = `
   .no-print{ }
   .print-only{display:none}
   @media print{
-    @page{margin:10mm 12mm;size:A4 portrait}
+    @page{margin:12mm 14mm;size:A4 portrait}
     html,body{background:#080a08!important;color:#e4ede4!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
     .no-print{display:none!important}
     .print-only{display:block!important}
@@ -68,7 +68,9 @@ const css = `
     a[href]:after{content:none!important}
     *{animation:none!important}
     .print-avoid-break{break-inside:avoid;page-break-inside:avoid}
-    .print-section{break-inside:avoid-page;page-break-inside:auto}
+    .print-section{break-inside:avoid;page-break-inside:avoid}
+    [data-client-section]:not([data-client-section="header"]){page-break-before:always}
+    [data-client-section="header"]{page-break-before:avoid}
     svg{overflow:visible!important;max-width:100%!important;height:auto!important}
     .print-exclude-section{display:none!important}
     .client-pack-print [style*="gridTemplateColumns"]{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}
@@ -600,27 +602,32 @@ export default function Page() {
     });
   }, [showData, clientSections.s05]);
 
+  const buildClientHtml = useCallback(() => {
+    const chunks = [
+      `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Strada · Client brief · ${ts || ''}</title><style>${css}</style></head>`,
+      `<body class="client-pack-print" style="margin:0;background:#080a08;color:#e4ede4;font-family:-apple-system,Segoe UI,sans-serif;font-weight:300;font-size:14px">`,
+      `<div style="padding:16px 20px;background:#1a1408;border-bottom:1px solid #1c261c;font-family:monospace;font-size:10px;color:#d49535;line-height:1.5">`,
+      `<strong>Static client brief</strong> · ${ts || '—'} GST · Opened offline — does not use Strada APIs (no credit use).`,
+      `</div><div style="padding:24px 40px 64px">`,
+    ];
+    for (const { id } of CLIENT_SECTION_META) {
+      if (!clientSections[id]) continue;
+      const el = document.querySelector(`[data-client-section="${id}"]`);
+      if (el) chunks.push(cloneNodeNoNoPrint(el));
+    }
+    chunks.push(
+      `</div><div style="padding:14px 40px;border-top:1px solid #1c261c;font-size:9px;color:#445544">Strada Real Estate · stradauae.com · For discussion only; not financial advice.</div></body></html>`,
+    );
+    return chunks.join('');
+  }, [clientSections, ts]);
+
   const downloadClientPackHtml = useCallback(() => {
     if (clientSections.s05) setShowData(true);
     const slug = (ts || new Date().toISOString()).replace(/[^\dA-Za-z]+/g, '-').slice(0, 32);
     requestAnimationFrame(() => {
       setTimeout(() => {
-        const chunks = [
-          `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Strada · Client brief · ${ts || ''}</title><style>${css}</style></head>`,
-          `<body class="client-pack-print" style="margin:0;background:#080a08;color:#e4ede4;font-family:-apple-system,Segoe UI,sans-serif;font-weight:300;font-size:14px">`,
-          `<div style="padding:16px 20px;background:#1a1408;border-bottom:1px solid #1c261c;font-family:monospace;font-size:10px;color:#d49535;line-height:1.5">`,
-          `<strong>Static client brief</strong> · ${ts || '—'} GST · Opened offline — does not use Strada APIs (no credit use).`,
-          `</div><div style="padding:24px 40px 64px">`,
-        ];
-        for (const { id } of CLIENT_SECTION_META) {
-          if (!clientSections[id]) continue;
-          const el = document.querySelector(`[data-client-section="${id}"]`);
-          if (el) chunks.push(cloneNodeNoNoPrint(el));
-        }
-        chunks.push(
-          `</div><div style="padding:14px 40px;border-top:1px solid #1c261c;font-size:9px;color:#445544">Strada Real Estate · stradauae.com · For discussion only; not financial advice.</div></body></html>`,
-        );
-        const blob = new Blob(chunks, { type: 'text/html;charset=utf-8' });
+        const html = buildClientHtml();
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `Strada-client-brief-${slug}.html`;
@@ -628,7 +635,22 @@ export default function Page() {
         URL.revokeObjectURL(a.href);
       }, clientSections.s05 ? 400 : 0);
     });
-  }, [clientSections, ts]);
+  }, [clientSections, ts, buildClientHtml]);
+
+  /** Opens selected sections in a new window, ready for Print → Save as PDF. Each section starts on a new page. */
+  const openClientPdfView = useCallback(() => {
+    if (clientSections.s05) setShowData(true);
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const html = buildClientHtml();
+        const w = window.open('', '_blank', 'noopener,noreferrer,width=900,height=700,scrollbars=yes,resizable=yes');
+        if (!w) return;
+        w.document.write(html);
+        w.document.close();
+        w.document.title = `Strada Client Brief · ${ts || ''}`;
+      }, clientSections.s05 ? 400 : 0);
+    });
+  }, [clientSections, ts, buildClientHtml]);
 
   useEffect(() => {
     const onAfterPrint = () => {
@@ -764,11 +786,10 @@ export default function Page() {
                 }}
               >
                 <div style={{ fontFamily: 'monospace', fontSize: 8, color: C.gm, letterSpacing: '.12em', marginBottom: 8 }}>
-                  SHARE WITH CLIENTS (NO API / NO CREDITS)
+                  EXPORT FOR CLIENTS (NO API / NO CREDITS)
                 </div>
                 <div style={{ fontSize: 10, color: C.t2, lineHeight: 1.5, marginBottom: 10 }}>
-                  Choose sections, then <strong style={{ color: C.t1 }}>Download HTML</strong> and email the file — clients open it offline.
-                  Or <strong style={{ color: C.t1 }}>Print selected</strong> for PDF. Formatting matches the dashboard (dark theme + print colours).
+                  Tick the sections you want, then use <strong style={{ color: C.ga }}>Open PDF view</strong> — a new window opens with a clean, presentable report. In that window: <strong style={{ color: C.t1 }}>Print → Save as PDF</strong>. Each section starts on a new page. Or download as HTML to email; or print from this page.
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 14px', marginBottom: 12 }}>
                   {CLIENT_SECTION_META.map(({ id, label }) => (
@@ -788,7 +809,7 @@ export default function Page() {
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   <button
                     type="button"
-                    onClick={downloadClientPackHtml}
+                    onClick={openClientPdfView}
                     style={{
                       padding: '10px 16px',
                       background: C.gm,
@@ -800,7 +821,7 @@ export default function Page() {
                       cursor: 'pointer',
                     }}
                   >
-                    Download HTML brief
+                    Open PDF view (recommended)
                   </button>
                   <button
                     type="button"
@@ -816,7 +837,23 @@ export default function Page() {
                       cursor: 'pointer',
                     }}
                   >
-                    Print selected → PDF
+                    Print selected from this page
+                  </button>
+                  <button
+                    type="button"
+                    onClick={downloadClientPackHtml}
+                    style={{
+                      padding: '10px 16px',
+                      background: 'transparent',
+                      border: `1px solid ${C.border}`,
+                      borderRadius: 2,
+                      color: C.t2,
+                      fontFamily: 'monospace',
+                      fontSize: 10,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Download HTML brief
                   </button>
                   <button
                     type="button"
