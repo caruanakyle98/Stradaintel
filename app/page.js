@@ -457,9 +457,24 @@ export default function Page() {
   const [clientPackOpen, setClientPackOpen] = useState(false);
   const [printScope, setPrintScope] = useState(false);
 
-  const refreshIntel = useCallback(async () => {
+  const refreshIntel = useCallback(async (source = 'manual') => {
     setLoadIntel(true); setError(null);
     try {
+      // #region agent log
+      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},
+        body:JSON.stringify({
+          sessionId:'13de73',
+          runId:'intel-websearch',
+          hypothesisId:'WS',
+          location:'page.js:refreshIntel',
+          message:'refreshIntel called',
+          data:{ source },
+          timestamp:Date.now(),
+        })
+      }).catch(()=>{});
+      // #endregion
       const r = await fetch('/api/intelligence');
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const d = await r.json();
@@ -624,10 +639,8 @@ export default function Page() {
     return () => window.removeEventListener('afterprint', onAfterPrint);
   }, []);
 
-  // Load market signals once on mount so scorecards + debug logs run (no button required).
-  useEffect(() => {
-    refreshIntel();
-  }, [refreshIntel]);
+  // Previously: auto-refresh market signals on mount.
+  // Now disabled so web search / Haiku are only triggered by explicit user action.
 
   const secClass = (id) =>
     printScope && !clientSections[id] ? 'print-exclude-section' : '';
@@ -663,13 +676,13 @@ export default function Page() {
             <div style={{ fontFamily:'monospace', fontSize:9, color:C.tm, marginTop:8 }}>EVERYTHING AFFECTING YOUR PROPERTY'S VALUE · UPDATED ON DEMAND</div>
           </div>
           <div className="no-print" style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6 }}>
-            <button onClick={refreshAll} disabled={loadIntel||loadProp}
+            <button onClick={() => refreshAll()} disabled={loadIntel||loadProp}
               style={{ padding:'12px 22px', background:(loadIntel||loadProp)?C.gd:C.gm, border:`1px solid ${(loadIntel||loadProp)?C.gm:C.g}`, borderRadius:2, color:C.t1, fontFamily:'monospace', fontSize:10, letterSpacing:'.1em', cursor:(loadIntel||loadProp)?'wait':'pointer', display:'flex', alignItems:'center', gap:8 }}>
               {(loadIntel||loadProp)&&<span style={{ width:10, height:10, border:`2px solid ${C.g}`, borderTopColor:'transparent', borderRadius:'50%', animation:'spin .7s linear infinite' }}/>}
               {(loadIntel||loadProp)?'UPDATING...':'⟳  GET LATEST INTELLIGENCE'}
             </button>
             <div style={{ display:'flex', flexWrap:'wrap', gap:8, alignItems:'center' }}>
-              <button onClick={refreshIntel} disabled={loadIntel} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadIntel?'wait':'pointer' }}>
+              <button onClick={() => refreshIntel('manual-button')} disabled={loadIntel} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadIntel?'wait':'pointer' }}>
                 {loadIntel?'…':'Market signals only'}
               </button>
               <button
