@@ -68,7 +68,7 @@ const css = `
     a[href]:after{content:none!important}
     *{animation:none!important}
     .print-avoid-break{break-inside:avoid;page-break-inside:avoid}
-    .print-section{break-inside:avoid;page-break-inside:avoid}
+    .print-keep-together{break-inside:avoid;page-break-inside:avoid}
     [data-client-section]:not([data-client-section="header"]){page-break-before:always}
     [data-client-section="header"]{page-break-before:avoid}
     svg{overflow:visible!important;max-width:100%!important;height:auto!important}
@@ -110,7 +110,7 @@ function TxCard({ label, value, wowChg, yoyChg, trend, loading, period, source }
   // Only warn when copy explicitly says monthly — not when dates contain "Mar", "May", etc.
   const isMonthly = !!(period && /\b(month|months|monthly)\b/i.test(period));
   return (
-    <div style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${tc}`, borderRadius:2, padding:'16px 18px' }}>
+    <div className="print-keep-together" style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${tc}`, borderRadius:2, padding:'16px 18px' }}>
       <Tag>{label}</Tag>
       {loading?<><Skel h={30} mb={6}/><Skel w="70%" h={9}/></>:<>
         <div style={{ fontFamily:'Georgia,serif', fontSize:28, fontWeight:700, color:value&&value!=='—'?tc:C.tm, lineHeight:1.1, marginBottom:6 }}>
@@ -174,7 +174,7 @@ function YieldGauge({ label, gross, net, loading }) {
   const pct = Math.min((g/12)*100,100);
   const col = g>=7?C.g:g>=5?C.ga:g>=4?C.am:C.red;
   return (
-    <div style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px', textAlign:'center' }}>
+    <div className="print-keep-together" style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px', textAlign:'center' }}>
       <Tag>{label}</Tag>
       {loading?<><Skel h={40} mb={6}/><Skel w="60%" h={10}/></>:<>
         <div style={{ position:'relative', width:80, height:40, margin:'8px auto 4px' }}>
@@ -221,7 +221,7 @@ function TrendDualChart({ title, subtitle, daily, ma7, dailyColor, maColor, load
   const innerH = H - padT - padB;
   if (loading) {
     return (
-      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px', minHeight:H }}>
+      <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px', minHeight:H }}>
         <Tag color={C.gm}>{title}</Tag>
         <Skel h={H - 50} />
       </div>
@@ -243,7 +243,7 @@ function TrendDualChart({ title, subtitle, daily, ma7, dailyColor, maColor, load
   const ticks = [0, Math.floor(n / 4), Math.floor(n / 2), Math.floor((3 * n) / 4), n - 1].filter((v, i, a) => a.indexOf(v) === i);
   const yTicks = 4;
   return (
-    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px' }}>
+    <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px' }}>
       <Tag color={C.gm}>{title}</Tag>
       {subtitle ? <div style={{ fontSize:9, color:C.tm, marginBottom:8, fontFamily:'monospace' }}>{subtitle}</div> : null}
       <div style={{ fontSize:8, color:C.t2, marginBottom:6, fontFamily:'monospace' }}>
@@ -314,7 +314,7 @@ function FactorCard({ data, loading }) {
   const col     = verdict.col;
 
   return (
-    <div className="fade-in" style={{ background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${col}`, borderRadius:2, padding:20 }}>
+    <div className="fade-in print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${col}`, borderRadius:2, padding:20 }}>
 
       {/* Header row */}
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:10 }}>
@@ -383,7 +383,7 @@ function FactorCard({ data, loading }) {
 function DataCard({ label, price, chg, up, loading, explain }) {
   const col = up===true?C.g : up===false?C.red : C.t2;
   return (
-    <div style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'12px 14px' }}>
+    <div className="print-keep-together" style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'12px 14px' }}>
       <Tag color={C.td}>{label}</Tag>
       {loading?<><Skel h={18} mb={4}/><Skel w="55%" h={8}/></>:<>
         <div style={{ fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:price?col:C.tm, lineHeight:1 }}>{price||'—'}</div>
@@ -601,20 +601,15 @@ export default function Page() {
       `<strong>Static client brief</strong> · ${ts || '—'} GST · Opened offline — does not use Strada APIs (no credit use).`,
       `</div><div style="padding:24px 40px 64px">`,
     ];
-    let sectionChunks = 0;
     for (const { id } of CLIENT_SECTION_META) {
       if (!clientSections[id]) continue;
       const el = document.querySelector(`[data-client-section="${id}"]`);
-      if (el) { chunks.push(cloneNodeNoNoPrint(el)); sectionChunks++; }
+      if (el) chunks.push(cloneNodeNoNoPrint(el));
     }
     chunks.push(
       `</div><div style="padding:14px 40px;border-top:1px solid #1c261c;font-size:9px;color:#445544">Strada Real Estate · stradauae.com · For discussion only; not financial advice.</div></body></html>`,
     );
-    const html = chunks.join('');
-    // #region agent log
-    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:buildClientHtml',message:'HTML built',data:{htmlLength:html.length,sectionChunks},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{});
-    // #endregion
-    return html;
+    return chunks.join('');
   }, [clientSections, ts]);
 
   const downloadClientPackHtml = useCallback(() => {
@@ -635,28 +630,14 @@ export default function Page() {
 
   /** Opens selected sections in a new window, ready for Print → Save as PDF. Each section starts on a new page. */
   const openClientPdfView = useCallback(() => {
-    // #region agent log
-    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'openClientPdfView called',data:{s05:!!clientSections?.s05},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
     if (clientSections.s05) setShowData(true);
     // Build HTML after a short delay so s05 data can render, then open via Blob URL so we don't rely on popup-unblocked window.
     requestAnimationFrame(() => {
       setTimeout(() => {
-        let html;
-        try {
-          html = buildClientHtml();
-        } catch (e) {
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'buildClientHtml threw',data:{err:String(e?.message||e)},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
-          // #endregion
-          return;
-        }
+        const html = buildClientHtml();
         const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
         const blobUrl = URL.createObjectURL(blob);
         const w = window.open(blobUrl, '_blank', 'noopener,noreferrer,width=900,height=700,scrollbars=yes,resizable=yes');
-        // #region agent log
-        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:openClientPdfView',message:'after window.open(blobUrl)',data:{winNotNull:!!w,htmlLength:html?.length},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-        // #endregion
         if (w) setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
       }, clientSections.s05 ? 400 : 0);
     });
@@ -954,7 +935,7 @@ export default function Page() {
 
           {/* Owner briefing */}
           {(prop?.owner_briefing||loadProp) && (
-            <div className="fade-in" style={{ marginBottom:20, padding:'16px 20px', background:C.gd, border:`1px solid ${C.gm}`, borderLeft:`4px solid ${C.g}`, borderRadius:2 }}>
+            <div className="fade-in print-keep-together" style={{ marginBottom:20, padding:'16px 20px', background:C.gd, border:`1px solid ${C.gm}`, borderLeft:`4px solid ${C.g}`, borderRadius:2 }}>
               <Tag color={C.ga}>Strada's Market Summary · {prop?.data_freshness||'Latest data'}</Tag>
               {loadProp?<><Skel h={14} mb={6}/><Skel w="80%" h={14}/></>:
                 <p style={{ fontSize:13, color:C.t1, lineHeight:1.7, marginTop:4 }}>{na(prop?.owner_briefing)}</p>
@@ -973,7 +954,7 @@ export default function Page() {
               <TxCard label="Annualised rent (week)" value={prop?.weekly?.rent_value_aed?.value} wowChg={prop?.weekly?.rent_value_aed?.chg_wow} yoyChg={prop?.weekly?.rent_value_aed?.chg_yoy} trend={prop?.weekly?.rent_value_aed?.trend} period={prop?.weekly?.rent_value_aed?.period} source={prop?.weekly?.rent_value_aed?.source} loading={loadProp}/>
             </div>
             {prop?.weekly?.rent_new_vs_renewal && !loadProp && (
-              <div style={{ marginTop:12, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px' }}>
+              <div className="print-keep-together" style={{ marginTop:12, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px' }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:10, letterSpacing:'.1em' }}>NEW VS RENEWAL · SAME WEEK (BY REGISTRATION DATE)</div>
                 <div style={{ display:'flex', gap:16, flexWrap:'wrap', alignItems:'center', marginBottom:12 }}>
                   <div style={{ flex:1, minWidth:140 }}>
@@ -1000,7 +981,7 @@ export default function Page() {
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
 
             {/* Prices */}
-            <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
+            <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:12, letterSpacing:'.1em' }}>AVERAGE ASKING PRICE PER SQUARE FOOT · {na(prop?.prices?.price_source)}</div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
                 {[
@@ -1018,7 +999,7 @@ export default function Page() {
             </div>
 
             {/* Off-plan vs resale */}
-            <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
+            <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:8, letterSpacing:'.1em' }}>WHAT KIND OF PROPERTY IS SELLING? · {na(prop?.market_split?.split_period)}</div>
               {loadProp?<Skel h={60}/>:prop?.market_split&&(
                 <>
@@ -1038,7 +1019,7 @@ export default function Page() {
 
           {/* 30-day trends: daily + 7d MA + weekly */}
           {(prop?.charts_30d || loadProp) && (
-            <div style={{ marginBottom:16 }}>
+            <div className="print-keep-together" style={{ marginBottom:16 }}>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:6, letterSpacing:'.1em' }}>
                 MARKET TREND (DUBAI) · {prop?.charts_30d?.window_label || '30 days'}
               </div>
@@ -1066,16 +1047,17 @@ export default function Page() {
                   loading={loadProp}
                 />
               </div>
-              <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, margin:'14px 0 8px', letterSpacing:'.1em' }}>WEEKLY PULSE (30-DAY WINDOW · DUBAI MON–SUN)</div>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:12 }}>
+              <div className="print-keep-together" style={{ marginTop:12 }}>
+                <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, margin:'14px 0 8px', letterSpacing:'.1em' }}>WEEKLY PULSE (30-DAY WINDOW · DUBAI MON–SUN)</div>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:12 }}>
                 {loadProp ? (
                   <>
-                    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}><Tag color={C.gm}>Weekly volume</Tag><Skel h={36} /></div>
-                    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}><Tag color={C.gm}>Weekly PSF</Tag><Skel h={36} /></div>
+                    <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}><Tag color={C.gm}>Weekly volume</Tag><Skel h={36} /></div>
+                    <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}><Tag color={C.gm}>Weekly PSF</Tag><Skel h={36} /></div>
                   </>
                 ) : (
                   <>
-                    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
+                    <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
                       <Tag color={C.gm}>Weekly volume</Tag>
                       <div style={{ fontSize:9, color:C.tm, marginTop:6, fontFamily:'monospace' }}>Total transactions Mon–Sun (Dubai)</div>
                       <div style={{ fontSize:12, fontFamily:'monospace', color:(prop?.charts_30d?.wow_volume_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:8 }}>
@@ -1085,7 +1067,7 @@ export default function Page() {
                           : 'N/A'}
                       </div>
                     </div>
-                    <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
+                    <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
                       <Tag color={C.gm}>Weekly PSF</Tag>
                       <div style={{ fontSize:9, color:C.tm, marginTop:6, fontFamily:'monospace' }}>Median price per sq ft by week</div>
                       <div style={{ fontSize:12, fontFamily:'monospace', color:(prop?.charts_30d?.wow_psf_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:8 }}>
@@ -1097,13 +1079,14 @@ export default function Page() {
                     </div>
                   </>
                 )}
+                </div>
               </div>
             </div>
           )}
 
           {/* Rental yields */}
           {(prop?.yields||loadProp) && (
-            <div style={{ marginBottom:12 }}>
+            <div className="print-keep-together" style={{ marginBottom:12 }}>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:8, letterSpacing:'.1em' }}>ANNUAL RENTAL YIELD — HOW MUCH INCOME YOUR PROPERTY GENERATES</div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
                 <YieldGauge label="Apartments · Gross Yield"  gross={na(prop?.yields?.apt_gross_yield)}  net={na(prop?.yields?.apt_net_yield)}   loading={loadProp}/>
@@ -1116,7 +1099,7 @@ export default function Page() {
           {/* Hottest areas */}
           {(prop?.top_areas||loadProp) && (
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
-              <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
+              <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:4, letterSpacing:'.1em' }}>
                   {prop?.top_areas_mode === 'sub_community'
                     ? 'MOST ACTIVE SUB-COMMUNITIES / BUILDINGS'
@@ -1134,9 +1117,9 @@ export default function Page() {
                       ))
                     : prop?.top_areas_mode === 'sub_community' && prop?.top_areas_empty_hint ? (
                         <div style={{ fontSize: 10, color: C.tm, lineHeight: 1.5, padding: '8px 0' }}>{prop.top_areas_empty_hint}</div>
-                      ) : null)}
+                      )                     : null)}
               </div>
-              <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
+              <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:12, letterSpacing:'.1em' }}>SUPPLY & MARKET DYNAMICS</div>
                 {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={20} mb={8}/>):<>
                   <StatRow label="New project launches this month" value={na(prop?.supply?.new_launches_this_month)}/>
@@ -1151,7 +1134,7 @@ export default function Page() {
 
           {/* Rental rates */}
           {(prop?.rental||loadProp) && (
-            <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px', marginBottom:12 }}>
+            <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px', marginBottom:12 }}>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:12, letterSpacing:'.1em' }}>WHAT TENANTS ARE PAYING RIGHT NOW</div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))', gap:8 }}>
                 {[
@@ -1196,7 +1179,7 @@ export default function Page() {
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
 
             {/* Probabilities */}
-            <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:24 }}>
+            <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:24 }}>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, letterSpacing:'.1em', marginBottom:16 }}>LIKELIHOOD OF EACH SCENARIO</div>
               {loadIntel?[1,2,3].map(i=><Skel key={i} h={40} mb={14}/>):[
                 ['Most likely — market stays broadly stable', intel?.base, C.g, 'Geopolitical risk stays contained. Oil steady. Foreign buyers active.'],
@@ -1217,7 +1200,7 @@ export default function Page() {
             </div>
 
             {/* Score card */}
-            <div style={{ background:C.gd, border:`1px solid ${C.gm}`, borderRadius:2, padding:28, display:'flex', flexDirection:'column', justifyContent:'center' }}>
+            <div className="print-keep-together" style={{ background:C.gd, border:`1px solid ${C.gm}`, borderRadius:2, padding:28, display:'flex', flexDirection:'column', justifyContent:'center' }}>
               {loadIntel?<Skel h={120}/>:<>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, letterSpacing:'.1em', marginBottom:8 }}>OVERALL MARKET SCORE</div>
                 <div style={{ fontFamily:'Georgia,serif', fontSize:80, fontWeight:700, color:intel?.col||C.tm, lineHeight:1, marginBottom:4 }}>
@@ -1259,7 +1242,7 @@ export default function Page() {
         <div data-client-section="s04" className={`print-section ${secClass('s04')}`} style={{ marginTop:48 }}>
           <SectionHead n="04" title="Warning Signs — Know When to Act"
             desc="Bookmark this page. If any of these occur, check the relevant column for what to do. Nothing on this list is currently triggered unless it glows red or amber."/>
-          <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, overflow:'hidden' }}>
+          <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, overflow:'hidden' }}>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 120px 1fr', background:C.surf, padding:'8px 16px', borderBottom:`1px solid ${C.border}` }}>
               {['WHAT TO WATCH FOR','URGENCY LEVEL','WHAT TO DO'].map(h=><span key={h} style={{ fontFamily:'monospace', fontSize:7, letterSpacing:'.1em', color:C.tm }}>{h}</span>)}
             </div>
@@ -1301,7 +1284,7 @@ export default function Page() {
             <div className="fade-in print-avoid-break" style={{ border:`1px solid ${C.border}`, borderTop:'none', borderRadius:'0 0 2px 2px', padding:'24px 20px', background:C.surf }}>
 
               {/* Dubai developers + banks */}
-              <div style={{ marginBottom:20 }}>
+              <div className="print-keep-together" style={{ marginBottom:20 }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, letterSpacing:'.1em', marginBottom:4 }}>DUBAI DEVELOPER & BANK STOCKS</div>
                 <div style={{ fontSize:10, color:C.td, marginBottom:8 }}>When these rise, property prices tend to follow 2–3 months later</div>
                 <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
@@ -1314,7 +1297,7 @@ export default function Page() {
               </div>
 
               {/* Energy & global */}
-              <div style={{ marginBottom:20 }}>
+              <div className="print-keep-together" style={{ marginBottom:20 }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, letterSpacing:'.1em', marginBottom:4 }}>GLOBAL CONDITIONS</div>
                 <div style={{ fontSize:10, color:C.td, marginBottom:8 }}>World economy signals that drive foreign investor confidence and Gulf oil wealth</div>
                 <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
@@ -1327,7 +1310,7 @@ export default function Page() {
               </div>
 
               {/* Buyer origin */}
-              <div style={{ marginBottom:20 }}>
+              <div className="print-keep-together" style={{ marginBottom:20 }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, letterSpacing:'.1em', marginBottom:4 }}>INDIA & CHINA — TOP BUYER NATIONALITIES AT DUBAI LAND DEPARTMENT</div>
                 <div style={{ fontSize:10, color:C.td, marginBottom:8 }}>Indian and Chinese nationals are consistently the #1 and #2 foreign buyer groups in Dubai</div>
                 <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
@@ -1339,7 +1322,7 @@ export default function Page() {
               </div>
 
               {/* UAE Mortgage rate & Business confidence */}
-              <div style={{ marginBottom:20 }}>
+              <div className="print-keep-together" style={{ marginBottom:20 }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, letterSpacing:'.1em', marginBottom:4 }}>UAE MORTGAGE RATE & BUSINESS CONFIDENCE</div>
                 <div style={{ fontSize:10, color:C.td, marginBottom:8 }}>The interest rate Dubai banks charge on mortgages, and a measure of how confident businesses are</div>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
@@ -1349,7 +1332,7 @@ export default function Page() {
                     const rate = parseFloat(e?.rate_pct||0);
                     const col  = rate===0?C.tm:rate<5?C.g:rate<5.5?C.am:C.red;
                     return (
-                      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
+                      <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
                         <Tag color={C.gm}>UAE Mortgage Interest Rate (3-month)</Tag>
                         {loadIntel?<Skel h={28} mb={6}/>:<>
                           <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:col, lineHeight:1.1, marginBottom:6 }}>
@@ -1370,7 +1353,7 @@ export default function Page() {
                     const val = parseFloat(p?.headline||0);
                     const col = val===0?C.tm:val>=54?C.g:val>=50?C.am:C.red;
                     return (
-                      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
+                      <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
                         <Tag color={C.gm}>Dubai Business Confidence Index</Tag>
                         {loadIntel?<Skel h={28} mb={6}/>:<>
                           <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:col, lineHeight:1.1, marginBottom:6 }}>
@@ -1398,7 +1381,7 @@ export default function Page() {
             desc="For those who want to go deeper — these are the best sources to check each morning. Bookmark this page."/>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:10 }}>
             {CHECKLIST.map(([cat,items])=>(
-              <div key={cat} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'15px 17px' }}>
+              <div key={cat} className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'15px 17px' }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, letterSpacing:'.14em', color:C.g, marginBottom:10, paddingBottom:7, borderBottom:`1px solid ${C.border}` }}>{cat}</div>
                 {items.map(([name,url])=>(
                   <div key={name} style={{ padding:'6px 0', borderBottom:`1px solid ${C.border}` }}>
