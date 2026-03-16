@@ -459,24 +459,9 @@ export default function Page() {
   const [clientPackOpen, setClientPackOpen] = useState(false);
   const [printScope, setPrintScope] = useState(false);
 
-  const refreshIntel = useCallback(async (source = 'manual') => {
+  const refreshIntel = useCallback(async () => {
     setLoadIntel(true); setError(null);
     try {
-      // #region agent log
-      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},
-        body:JSON.stringify({
-          sessionId:'13de73',
-          runId:'intel-websearch',
-          hypothesisId:'WS',
-          location:'page.js:refreshIntel',
-          message:'refreshIntel called',
-          data:{ source },
-          timestamp:Date.now(),
-        })
-      }).catch(()=>{});
-      // #endregion
       const r = await fetch('/api/intelligence');
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const d = await r.json();
@@ -710,7 +695,7 @@ export default function Page() {
               {(loadIntel||loadProp)?'UPDATING...':'⟳  GET LATEST INTELLIGENCE'}
             </button>
             <div style={{ display:'flex', flexWrap:'wrap', gap:8, alignItems:'center' }}>
-              <button onClick={() => refreshIntel('manual-button')} disabled={loadIntel} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadIntel?'wait':'pointer' }}>
+              <button onClick={() => refreshIntel()} disabled={loadIntel} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadIntel?'wait':'pointer' }}>
                 {loadIntel?'…':'Market signals only'}
               </button>
               <button
