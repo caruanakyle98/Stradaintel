@@ -282,7 +282,7 @@ function calibrateAviationScore(raw, p) {
 async function tavilySearchBlock(queries, topic = 'news') {
   const key = (process.env.TAVILY_API_KEY || '').trim();
   if (!key || key.length < 8) return '';
-  const lines = [];
+  const snippets = [];
   for (const query of queries) {
     for (const t of [topic, 'general']) {
       try {
@@ -300,12 +300,26 @@ async function tavilySearchBlock(queries, topic = 'news') {
         const d = await r.json().catch(() => ({}));
         if (!r.ok) continue;
         for (const x of d.results || []) {
-          const c = (x.content || '').replace(/\s+/g, ' ').slice(0, 420);
-          lines.push(`• ${x.title || '—'}\n  ${c}`);
+          snippets.push({
+            title: x.title || '—',
+            content: (x.content || '').replace(/\s+/g, ' ').slice(0, 420),
+            url: x.url || x.source || '',
+            published_date: x.published_date || x.publishedDate || x.date || '',
+            query,
+            topic: t,
+          });
         }
         if ((d.results || []).length) break;
       } catch { /* next query/topic */ }
     }
+  }
+  const ranked = rankTavilySnippets(snippets, queries[0] || '', topic);
+  const lines = [];
+  for (const s of ranked.slice(0, 14)) {
+    const meta = [s.published_date ? `date: ${s.published_date}` : null, s.url ? `source: ${s.url}` : null, s._relevance ? `relevance: ${s._relevance}` : null]
+      .filter(Boolean)
+      .join(' | ');
+    lines.push(`• ${s.title}\n  ${s.content}${meta ? `\n  ${meta}` : ''}`);
   }
   return lines.join('\n\n').slice(0, 14000);
 }
@@ -321,7 +335,7 @@ async function tavilyRatesSearchBlock() {
     'S&P Global UAE PMI purchasing managers index latest month',
     'UAE non-oil private sector PMI IHS Markit headline',
   ];
-  const lines = [];
+  const snippets = [];
   for (const query of queries) {
     try {
       const r = await fetch('https://api.tavily.com/search', {
@@ -338,10 +352,24 @@ async function tavilyRatesSearchBlock() {
       const d = await r.json().catch(() => ({}));
       if (!r.ok) continue;
       for (const x of d.results || []) {
-        const c = (x.content || '').replace(/\s+/g, ' ').slice(0, 500);
-        lines.push(`• ${x.title || '—'}\n  ${c}`);
+        snippets.push({
+          title: x.title || '—',
+          content: (x.content || '').replace(/\s+/g, ' ').slice(0, 500),
+          url: x.url || x.source || '',
+          published_date: x.published_date || x.publishedDate || x.date || '',
+          query,
+          topic: 'general',
+        });
       }
     } catch { /* next */ }
+  }
+  const ranked = rankTavilySnippets(snippets, queries[0] || '', 'general');
+  const lines = [];
+  for (const s of ranked.slice(0, 18)) {
+    const meta = [s.published_date ? `date: ${s.published_date}` : null, s.url ? `source: ${s.url}` : null, s._relevance ? `relevance: ${s._relevance}` : null]
+      .filter(Boolean)
+      .join(' | ');
+    lines.push(`• ${s.title}\n  ${s.content}${meta ? `\n  ${meta}` : ''}`);
   }
   return lines.join('\n\n').slice(0, 16000);
 }
@@ -385,6 +413,61 @@ function sanitizeRatesDisplay(o) {
   if (j(out.uae_pmi?.source)) out.uae_pmi.source = 'estimate (typical UAE range)';
   if (j(out.uae_pmi?.month_label)) out.uae_pmi.month_label = new Date().toLocaleDateString('en-AE', { month: 'long', year: 'numeric' });
   return out;
+}
+
+function parseSnippetDate(value) {
+  if (!value) return null;
+  const text = String(value).trim();
+  if (!text) return null;
+  const iso = new Date(text);
+  if (!Number.isNaN(iso.getTime())) return iso;
+  const mdY = text.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?:\s+.*)?$/);
+  if (mdY) {
+    const d = parseInt(mdY[1], 10);
+    const m = parseInt(mdY[2], 10) - 1;
+    let y = parseInt(mdY[3], 10);
+    if (y < 100) y += 2000;
+    const dt = new Date(Date.UTC(y, m, d, 12, 0, 0));
+    if (!Number.isNaN(dt.getTime())) return dt;
+  }
+  return null;
+}
+
+function scoreSnippetRelevance(snippet, query, topic) {
+  const hay = `${snippet.title || ''} ${snippet.content || ''}`.toLowerCase();
+  const q = String(query || '').toLowerCase();
+  const t = String(topic || '').toLowerCase();
+  let score = 0;
+  const add = (rx, weight) => { if (rx.test(hay) || rx.test(q)) score += weight; };
+
+  if (t === 'news') {
+    add(/\bdxb\b|\bairport\b|\bemirates\b|\baviation\b|\bflight(s)?\b|\btourism\b/, 4);
+    add(/\buae\b|\bdubai\b|\bgulf\b|\bmiddle east\b/, 3);
+    add(/\battack\b|\bstrike\b|\bmissile\b|\bdrone\b|\bcancellation(s)?\b|\bclosure(s)?\b/, 4);
+    add(/\bsecurity\b|\bwar\b|\bconflict\b|\bairspace\b/, 3);
+    add(/\bproperty\b|\breal estate\b|\bdld\b|\bdeveloper\b|\bprices?\b/, 1);
+  } else {
+    add(/\beibor\b|\binterbank\b|\bmortgage\b/, 4);
+    add(/\bpmi\b|\bpurchasing managers\b|\bsp global\b|\bihs markit\b/, 4);
+    add(/\buae\b|\bdubai\b/, 2);
+  }
+
+  if (/dxb|emirates|airport|airspace|flight/.test(hay) && /attack|strike|missile|drone|closure|cancel/.test(hay)) score += 5;
+  if (/dubai|uae/.test(hay) && /security|airspace|tourism|property|mortgage|pmi|eibor/.test(hay)) score += 2;
+  return score;
+}
+
+function rankTavilySnippets(snippets, query, topic) {
+  const now = Date.now();
+  return [...snippets]
+    .map((snippet, idx) => {
+      const published = parseSnippetDate(snippet.published_date || snippet.publishedDate || snippet.date);
+      const ageDays = published ? Math.max((now - published.getTime()) / 86400000, 0) : null;
+      const recency = ageDays == null ? 0.5 : Math.max(0, 10 - ageDays);
+      const relevance = scoreSnippetRelevance(snippet, query, topic);
+      return { ...snippet, _idx: idx, _published: published, _ageDays: ageDays, _relevance: relevance, _recency: recency, _rank: relevance * 10 + recency };
+    })
+    .sort((a, b) => (b._rank - a._rank) || (a._ageDays ?? 9999) - (b._ageDays ?? 9999) || a._idx - b._idx);
 }
 
 // ── Haiku Call A: News pillars ────────────────────────────
