@@ -1,14 +1,7 @@
 'use client';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { buildPayloadFromCsvText } from '../lib/salesCsvPayload.js';
-
-
-const C = {
-  bg:'#080a08', surf:'#0f130f', card:'#141a14', border:'#1c261c',
-  gd:'#162816', gm:'#2a5e2a', g:'#52a352', ga:'#78c278',
-  am:'#d49535', amL:'#f0b84a', red:'#c94f4f',
-  t1:'#e4ede4', t2:'#7fa07f', tm:'#445544', td:'#26332a',
-};
+import { C } from '../lib/theme.js';
 
 // ── Helpers ─────────────────────────────────────────────────
 const str = v => {
@@ -62,10 +55,10 @@ const css = `
   .print-only{display:none}
   @media print{
     @page{margin:12mm 14mm;size:A4 portrait}
-    html,body{background:#080a08!important;color:#e4ede4!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+    html,body{background:${C.bg}!important;color:${C.t1}!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
     .no-print{display:none!important}
     .print-only{display:block!important}
-    a{color:#52a352!important;text-decoration:none!important}
+    a{color:${C.g}!important;text-decoration:none!important}
     a[href]:after{content:none!important}
     *{animation:none!important}
     .print-avoid-break{break-inside:avoid;page-break-inside:avoid}
@@ -597,8 +590,8 @@ export default function Page() {
     `;
     const chunks = [
       `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Strada · Client brief · ${ts || ''}</title><style>${css}</style><style>${clientPackOverride}</style></head>`,
-      `<body class="client-pack-print" style="margin:0;background:#080a08;color:#e4ede4;font-family:-apple-system,Segoe UI,sans-serif;font-weight:300;font-size:14px">`,
-      `<div style="padding:16px 20px;background:#1a1408;border-bottom:1px solid #1c261c;font-family:monospace;font-size:10px;color:#d49535;line-height:1.5">`,
+      `<body class="client-pack-print" style="margin:0;background:${C.bg};color:${C.t1};font-family:-apple-system,Segoe UI,sans-serif;font-weight:300;font-size:14px">`,
+      `<div style="padding:16px 20px;background:${C.gd};border-bottom:1px solid ${C.border};font-family:monospace;font-size:10px;color:${C.am};line-height:1.5">`,
       `<strong>Static client brief</strong> · ${ts || '—'} GST · Opened offline — does not use Strada APIs (no credit use).`,
       `</div><div style="padding:24px 40px 64px">`,
     ];
@@ -608,7 +601,7 @@ export default function Page() {
       if (el) chunks.push(cloneNodeNoNoPrint(el));
     }
     chunks.push(
-      `</div><div style="padding:14px 40px;border-top:1px solid #1c261c;font-size:9px;color:#445544">Strada Real Estate · stradauae.com · For discussion only; not financial advice.</div></body></html>`,
+      `</div><div style="padding:14px 40px;border-top:1px solid ${C.border};font-size:9px;color:${C.tm}">Strada Real Estate · stradauae.com · For discussion only; not financial advice.</div></body></html>`,
     );
     return chunks.join('');
   }, [clientSections, ts]);
@@ -646,59 +639,33 @@ export default function Page() {
 
   /** Downloads a PDF with one page per section (section-based page breaks). Uses html2pdf.js; no server required. */
   const downloadClientPdf = useCallback(() => {
-    // #region agent log
-    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:downloadClientPdf',message:'downloadClientPdf called',data:{},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
     if (clientSections.s05) setShowData(true);
     const slug = (ts || new Date().toISOString()).replace(/[^\dA-Za-z]+/g, '-').slice(0, 32);
     requestAnimationFrame(() => {
       setTimeout(async () => {
-        try {
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:downloadClientPdf',message:'before import',data:{},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{});
-          // #endregion
-          const html2pdf = (await import('html2pdf.js')).default;
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:downloadClientPdf',message:'import ok',data:{hasDefault:!!html2pdf},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{});
-          // #endregion
-          const html = buildClientHtml();
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:downloadClientPdf',message:'buildClientHtml ok',data:{htmlLength:html?.length},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-          // #endregion
-          const iframe = document.createElement('iframe');
-          iframe.setAttribute('style', 'position:fixed;left:-9999px;top:0;width:210mm;height:297mm;border:none');
-          document.body.appendChild(iframe);
-          const iframeDoc = iframe.contentDocument;
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:downloadClientPdf',message:'iframe ready',data:{hasDoc:!!iframeDoc},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
-          // #endregion
-          if (!iframeDoc) { try { document.body.removeChild(iframe); } catch (_) {} return; }
-          iframeDoc.open();
-          iframeDoc.write(html);
-          iframeDoc.close();
-          const sectionEls = iframeDoc.querySelectorAll('[data-client-section]:not([data-client-section="header"]):not([data-client-section="verdict"])');
-          sectionEls.forEach(el => el.classList.add('pdf-page-break-before'));
+        const html2pdf = (await import('html2pdf.js')).default;
+        const html = buildClientHtml();
+        const iframe = document.createElement('iframe');
+        iframe.setAttribute('style', 'position:fixed;left:-9999px;top:0;width:210mm;height:297mm;border:none');
+        document.body.appendChild(iframe);
+        const iframeDoc = iframe.contentDocument;
+        if (!iframeDoc) { try { document.body.removeChild(iframe); } catch (_) {} return; }
+        iframeDoc.open();
+        iframeDoc.write(html);
+        iframeDoc.close();
+        iframeDoc.querySelectorAll('[data-client-section]:not([data-client-section="header"]):not([data-client-section="verdict"])').forEach(el => el.classList.add('pdf-page-break-before'));
         const opt = {
           margin: [10, 8, 10, 8],
           filename: `Strada-client-brief-${slug}.pdf`,
-            image: { type: 'jpeg', quality: 0.95 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { before: '.pdf-page-break-before' },
-          };
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:downloadClientPdf',message:'before save',data:{sectionCount:sectionEls.length},timestamp:Date.now(),hypothesisId:'H5'})}).catch(()=>{});
-          // #endregion
+          image: { type: 'jpeg', quality: 0.95 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak: { before: '.pdf-page-break-before' },
+        };
+        try {
           await html2pdf().set(opt).from(iframeDoc.body).save();
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:downloadClientPdf',message:'save done',data:{},timestamp:Date.now(),hypothesisId:'H5',runId:'post-fix'})}).catch(()=>{});
-          // #endregion
-        } catch (e) {
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:downloadClientPdf',message:'catch',data:{err:String(e?.message||e),stack:(e?.stack||'').slice(0,200)},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-          // #endregion
         } finally {
-          try { const i = document.querySelector('iframe'); if (i && i.getAttribute('style')?.includes('-9999px')) document.body.removeChild(i); } catch (_) {}
+          try { document.body.removeChild(iframe); } catch (_) {}
         }
       }, clientSections.s05 ? 400 : 0);
     });
