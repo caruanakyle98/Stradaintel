@@ -116,10 +116,10 @@ function TxCard({ label, value, wowChg, yoyChg, trend, loading, period, source }
           {wowChg&&wowChg!=='N/A'&&<span style={{ fontSize:10, color:C.t2 }}>vs last week: <span style={{color:wowChg.startsWith('+')?C.g:C.red,fontWeight:600}}>{wowChg}</span></span>}
           {yoyChg&&yoyChg!=='N/A'&&<span style={{ fontSize:10, color:C.t2 }}>vs last year: <span style={{color:yoyChg.startsWith('+')?C.g:C.red,fontWeight:600}}>{yoyChg}</span></span>}
         </div>
-        {(period||source)&&(
+        {(period||(source&&!String(source).includes('Self-hosted CSV')))&&(
           <div style={{ marginTop:5, paddingTop:5, borderTop:`1px solid ${C.border}` }}>
             {period&&<div style={{ fontFamily:'monospace', fontSize:8, color:isMonthly?C.am:C.tm }}>{isMonthly?'⚠ Monthly figure (not weekly): ':''}{period}</div>}
-            {source&&<div style={{ fontFamily:'monospace', fontSize:7, color:C.td, marginTop:1 }}>{source}</div>}
+            {source&&!String(source).includes('Self-hosted CSV')&&<div style={{ fontFamily:'monospace', fontSize:7, color:C.td, marginTop:1 }}>{source}</div>}
           </div>
         )}
       </>}
@@ -132,7 +132,7 @@ function StatRow({ label, value, sub, highlight, last, source }) {
     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'8px 0', borderBottom:last?'none':`1px solid ${C.border}` }}>
       <div>
         <span style={{ fontSize:11, color:C.t2 }}>{label}</span>
-        {source&&<div style={{ fontFamily:'monospace', fontSize:7, color:C.td, marginTop:1 }}>{source}</div>}
+        {source&&!String(source).includes('Self-hosted CSV')&&<div style={{ fontFamily:'monospace', fontSize:7, color:C.td, marginTop:1 }}>{source}</div>}
       </div>
       <div style={{ textAlign:'right' }}>
         <div style={{ fontFamily:'Georgia,serif', fontSize:13, fontWeight:700, color:highlight||C.t1 }}>{na(value)}</div>
@@ -798,7 +798,7 @@ export default function Page() {
                 {uploadingCsv ? 'Reading CSV…' : 'Hosted: GitHub raw URLs in Vercel env (docs/GITHUB_CSV.md). File picker = local parse. HOSTING.md.'}
               </div>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>
-                Off-plan is inferred from <span style={{ color:C.ga }}>Select Data Points = Oqood</span>. Active source: {prop?.sources_used?.[0] || 'default sales.csv path'}
+                Off-plan is inferred from <span style={{ color:C.ga }}>Select Data Points = Oqood</span>.
               </div>
             </div>
             <div style={{ fontFamily:'monospace', fontSize:9, color:C.tm }}>
@@ -996,7 +996,6 @@ export default function Page() {
               {loadProp?<><Skel h={14} mb={6}/><Skel w="80%" h={14}/></>:
                 <p style={{ fontSize:13, color:C.t1, lineHeight:1.7, marginTop:4 }}>{na(prop?.owner_briefing)}</p>
               }
-              {prop?.sources_used&&<div style={{ marginTop:8, fontFamily:'monospace', fontSize:8, color:C.tm }}>Sources: {prop.sources_used.join(' · ')}</div>}
             </div>
           )}
 
@@ -1205,7 +1204,7 @@ export default function Page() {
                   </div>
                 ):null)}
               </div>
-              {prop?.rental?.rental_index_chg_yoy&&(
+              {Number.isFinite(parseFloat(prop?.rental?.rental_index_chg_yoy))&&(
                 <div style={{ marginTop:10, fontFamily:'monospace', fontSize:9, color:parseFloat(prop.rental.rental_index_chg_yoy)>=0?C.g:C.red }}>
                   Rents are {parseFloat(prop.rental.rental_index_chg_yoy)>=0?'up':'down'} {prop.rental.rental_index_chg_yoy} year-on-year
                 </div>
