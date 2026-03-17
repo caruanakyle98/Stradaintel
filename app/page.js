@@ -3,6 +3,8 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { buildPayloadFromCsvText } from '../lib/salesCsvPayload.js';
 import { C } from '../lib/theme.js';
 
+const glowFor = (col) => (col === C.g || col === C.ga) ? C.glowG : col === C.red ? C.glowRed : col === C.am ? C.glowAm : C.glowMetric;
+
 // ── Helpers ─────────────────────────────────────────────────
 const str = v => {
   if (v===null||v===undefined) return null;
@@ -107,7 +109,7 @@ function TxCard({ label, value, wowChg, yoyChg, trend, loading, period, source }
     <div className="print-keep-together" style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${tc}`, borderRadius:2, padding:'16px 18px' }}>
       <Tag>{label}</Tag>
       {loading?<><Skel h={30} mb={6}/><Skel w="70%" h={9}/></>:<>
-        <div style={{ fontFamily:'Georgia,serif', fontSize:28, fontWeight:700, color:value&&value!=='—'?tc:C.tm, lineHeight:1.1, marginBottom:6 }}>
+        <div style={{ fontFamily:'Georgia,serif', fontSize:28, fontWeight:700, color:value&&value!=='—'?tc:C.tm, lineHeight:1.1, marginBottom:6, textShadow:value&&value!=='—'?glowFor(tc):'none' }}>
           {na(value)} <span style={{fontSize:14}}>{trendArrow(trend)}</span>
         </div>
         <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:4 }}>
@@ -177,7 +179,7 @@ function YieldGauge({ label, gross, net, loading }) {
             <path d="M 4 38 A 36 36 0 0 1 76 38" stroke={col} strokeWidth="6" fill="none" strokeLinecap="round"
               strokeDasharray={`${pct*1.13} 113`} style={{ transition:'stroke-dasharray 1.4s ease' }}/>
           </svg>
-          <div style={{ position:'absolute', bottom:0, left:0, right:0, textAlign:'center', fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:col }}>{g>0?`${g}%`:'—'}</div>
+          <div style={{ position:'absolute', bottom:0, left:0, right:0, textAlign:'center', fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:col, textShadow:g>0?glowFor(col):'none' }}>{g>0?`${g}%`:'—'}</div>
         </div>
         <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>ANNUAL RENTAL RETURN</div>
         {net&&<div style={{ fontFamily:'monospace', fontSize:9, color:C.t2, marginTop:4 }}>After costs: ~{net}</div>}
@@ -319,7 +321,7 @@ function FactorCard({ data, loading }) {
         </div>
         {data.score && (
           <div style={{ textAlign:'right' }}>
-            <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:col, lineHeight:1 }}>{data.score}<span style={{fontSize:9,color:C.tm}}>/5</span></div>
+            <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:col, lineHeight:1, textShadow:glowFor(col) }}>{data.score}<span style={{fontSize:9,color:C.tm}}>/5</span></div>
           </div>
         )}
       </div>
@@ -380,7 +382,7 @@ function DataCard({ label, price, chg, up, loading, explain }) {
     <div className="print-keep-together" style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'12px 14px' }}>
       <Tag color={C.td}>{label}</Tag>
       {loading?<><Skel h={18} mb={4}/><Skel w="55%" h={8}/></>:<>
-        <div style={{ fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:price?col:C.tm, lineHeight:1 }}>{price||'—'}</div>
+        <div style={{ fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:price?col:C.tm, lineHeight:1, textShadow:price?glowFor(col):'none' }}>{price||'—'}</div>
         {chg&&<div style={{ fontFamily:'monospace', fontSize:9, color:col, marginTop:3 }}>{chg}</div>}
         {explain&&<div style={{ fontSize:9, color:C.td, marginTop:5, lineHeight:1.4, borderTop:`1px solid ${C.border}`, paddingTop:4 }}>{explain}</div>}
       </>}
@@ -940,7 +942,7 @@ export default function Page() {
                 <div style={{ flex:1 }}>
                   <div style={{ fontFamily:'monospace', fontSize:8, letterSpacing:'.14em', color:v.col, marginBottom:6 }}>TODAY'S MARKET VERDICT</div>
                   {loadIntel ? <Skel h={32} mb={8} w="60%"/> :
-                    <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:v.col, marginBottom:6 }}>{v.label}</div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:v.col, marginBottom:6, textShadow:glowFor(v.col) }}>{v.label}</div>
                   }
                   {loadIntel ? <Skel h={14} w="80%"/> :
                     <div style={{ fontSize:13, color:C.t2, lineHeight:1.55, maxWidth:520 }}>{v.sub}</div>
@@ -955,7 +957,7 @@ export default function Page() {
                 {!loadIntel && intel?.composite && (
                   <div style={{ textAlign:'center', minWidth:90 }}>
                     <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm, marginBottom:4 }}>OVERALL SCORE</div>
-                    <div style={{ fontFamily:'Georgia,serif', fontSize:64, fontWeight:700, color:v.col, lineHeight:1 }}>{intel.composite}</div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:64, fontWeight:700, color:v.col, lineHeight:1, textShadow:glowFor(v.col) }}>{intel.composite}</div>
                     <div style={{ fontFamily:'monospace', fontSize:9, color:C.tm }}>OUT OF 5</div>
                   </div>
                 )}
@@ -1003,12 +1005,12 @@ export default function Page() {
                 <div style={{ display:'flex', gap:16, flexWrap:'wrap', alignItems:'center', marginBottom:12 }}>
                   <div style={{ flex:1, minWidth:140 }}>
                     <div style={{ fontFamily:'monospace', fontSize:8, color:C.ga, marginBottom:4 }}>NEW CONTRACT</div>
-                    <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:C.ga }}>{prop.weekly.rent_new_vs_renewal.new_count}</div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:C.ga, textShadow:C.glowGa }}>{prop.weekly.rent_new_vs_renewal.new_count}</div>
                     <div style={{ fontSize:10, color:C.t2 }}>{prop.weekly.rent_new_vs_renewal.new_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.new_chg_wow}</div>
                   </div>
                   <div style={{ flex:1, minWidth:140 }}>
                     <div style={{ fontFamily:'monospace', fontSize:8, color:C.am, marginBottom:4 }}>RENEWAL</div>
-                    <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:C.am }}>{prop.weekly.rent_new_vs_renewal.renewal_count}</div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:C.am, textShadow:C.glowAm }}>{prop.weekly.rent_new_vs_renewal.renewal_count}</div>
                     <div style={{ fontSize:10, color:C.t2 }}>{prop.weekly.rent_new_vs_renewal.renewal_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.renewal_chg_wow}</div>
                   </div>
                 </div>
@@ -1034,7 +1036,7 @@ export default function Page() {
                 ].map(([type,psf,avg,yoy]) => (
                   <div key={type} style={{ padding:'10px 12px', background:C.surf, borderRadius:2 }}>
                     <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm, marginBottom:6 }}>{type.toUpperCase()}</div>
-                    <div style={{ fontFamily:'Georgia,serif', fontSize:22, fontWeight:700, color:C.t1 }}>AED {na(psf)}<span style={{fontSize:9,color:C.tm}}>/sqft</span></div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:22, fontWeight:700, color:C.metric, textShadow:C.glowMetric }}>AED {na(psf)}<span style={{fontSize:9,color:C.tm}}>/sqft</span></div>
                     {avg&&<div style={{ fontFamily:'monospace', fontSize:9, color:C.t2, marginTop:3 }}>Avg deal: AED {na(avg)}</div>}
                     {yoy&&<div style={{ fontFamily:'monospace', fontSize:9, color:yoy.toString().startsWith('+')?C.g:C.red, marginTop:3 }}>{yoy} vs last year</div>}
                   </div>
@@ -1189,7 +1191,7 @@ export default function Page() {
                 ].map(([label,val,unit]) => val&&na(val)!=='—' ? (
                   <div key={label} style={{ padding:'10px 12px', background:C.surf, borderRadius:2 }}>
                     <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm, marginBottom:5 }}>{label.toUpperCase()}</div>
-                    <div style={{ fontFamily:'Georgia,serif', fontSize:17, fontWeight:700, color:C.t1 }}>AED {na(val)}<span style={{fontSize:9,color:C.tm}}>{unit}</span></div>
+                    <div style={{ fontFamily:'Georgia,serif', fontSize:17, fontWeight:700, color:C.metric, textShadow:C.glowMetric }}>AED {na(val)}<span style={{fontSize:9,color:C.tm}}>{unit}</span></div>
                   </div>
                 ):null)}
               </div>
@@ -1233,7 +1235,7 @@ export default function Page() {
                 <div key={i} style={{ marginBottom:16 }}>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:4 }}>
                     <span style={{ fontSize:11, color:C.t2, flex:1, paddingRight:10, lineHeight:1.4 }}>{lbl}</span>
-                    <span style={{ fontFamily:'Georgia,serif', fontSize:20, fontWeight:700, color:col }}>~{pct||'—'}%</span>
+                    <span style={{ fontFamily:'Georgia,serif', fontSize:20, fontWeight:700, color:col, textShadow:glowFor(col) }}>~{pct||'—'}%</span>
                   </div>
                   <div style={{ height:4, background:C.border, borderRadius:2, marginBottom:5 }}>
                     <div style={{ width:`${pct||0}%`, height:'100%', background:col, borderRadius:2, transition:'width 1.4s ease' }}/>
@@ -1247,7 +1249,7 @@ export default function Page() {
             <div className="print-keep-together" style={{ background:C.gd, border:`1px solid ${C.gm}`, borderRadius:2, padding:28, display:'flex', flexDirection:'column', justifyContent:'center' }}>
               {loadIntel?<Skel h={120}/>:<>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, letterSpacing:'.1em', marginBottom:8 }}>OVERALL MARKET SCORE</div>
-                <div style={{ fontFamily:'Georgia,serif', fontSize:80, fontWeight:700, color:intel?.col||C.tm, lineHeight:1, marginBottom:4 }}>
+                <div style={{ fontFamily:'Georgia,serif', fontSize:80, fontWeight:700, color:intel?.col||C.tm, lineHeight:1, marginBottom:4, textShadow:glowFor(intel?.col||C.tm) }}>
                   {intel?.composite||'—'}<span style={{fontSize:16,color:C.tm}}>/5</span>
                 </div>
                 <div style={{ fontFamily:'monospace', fontSize:11, letterSpacing:'.14em', color:intel?.col||C.tm, marginBottom:14 }}>
@@ -1269,7 +1271,7 @@ export default function Page() {
                     return (
                       <div key={p.key} style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', borderBottom:`1px solid ${C.border}`, alignItems:'center' }}>
                         <span style={{ fontSize:10, color:C.t2 }}>{meta.icon} {meta.title}</span>
-                        <span style={{ fontFamily:'Georgia,serif', fontSize:13, fontWeight:700, color:col }}>{p.score||'—'}<span style={{fontSize:8,color:C.tm}}>/5</span></span>
+                        <span style={{ fontFamily:'Georgia,serif', fontSize:13, fontWeight:700, color:col, textShadow:glowFor(col) }}>{p.score||'—'}<span style={{fontSize:8,color:C.tm}}>/5</span></span>
                       </div>
                     );
                   })}
@@ -1379,7 +1381,7 @@ export default function Page() {
                       <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
                         <Tag color={C.gm}>UAE Mortgage Interest Rate (3-month)</Tag>
                         {loadIntel?<Skel h={28} mb={6}/>:<>
-                          <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:col, lineHeight:1.1, marginBottom:6 }}>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:col, lineHeight:1.1, marginBottom:6, textShadow:rate>0?glowFor(col):'none' }}>
                             {rate>0?`${e.rate_pct}%`:'—'}
                           </div>
                           {e?.prev_3m_pct&&<div style={{ fontFamily:'monospace', fontSize:9, color:C.t2, marginBottom:6 }}>3 months ago: {e.prev_3m_pct}%</div>}
@@ -1400,7 +1402,7 @@ export default function Page() {
                       <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}>
                         <Tag color={C.gm}>Dubai Business Confidence Index</Tag>
                         {loadIntel?<Skel h={28} mb={6}/>:<>
-                          <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:col, lineHeight:1.1, marginBottom:6 }}>
+                          <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:col, lineHeight:1.1, marginBottom:6, textShadow:val>0?glowFor(col):'none' }}>
                             {val>0?p.headline:'—'} {val>0?<span style={{ fontSize:10, color:C.tm }}>{val>=50?'(growing)':'(shrinking)'}</span>:null}
                           </div>
                           {p?.new_orders&&<div style={{ fontFamily:'monospace', fontSize:9, color:C.t2, marginBottom:4 }}>New business orders: {p.new_orders}</div>}
