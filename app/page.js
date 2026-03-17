@@ -1153,7 +1153,7 @@ export default function Page() {
 
           {/* Hottest areas */}
           {(prop?.top_areas||loadProp) && (
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
+            <div style={{ marginBottom:12 }}>
               <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:4, letterSpacing:'.1em' }}>
                   {prop?.top_areas_mode === 'sub_community'
@@ -1173,16 +1173,6 @@ export default function Page() {
                     : prop?.top_areas_mode === 'sub_community' && prop?.top_areas_empty_hint ? (
                         <div style={{ fontSize: 10, color: C.tm, lineHeight: 1.5, padding: '8px 0' }}>{prop.top_areas_empty_hint}</div>
                       )                     : null)}
-              </div>
-              <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
-                <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:12, letterSpacing:'.1em' }}>SUPPLY & MARKET DYNAMICS</div>
-                {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={20} mb={8}/>):<>
-                  <StatRow label="New project launches this month" value={na(prop?.supply?.new_launches_this_month)}/>
-                  <StatRow label="Notable new launches" value={na(prop?.supply?.notable_launches)}/>
-                  <StatRow label="Units completing this year" value={na(prop?.supply?.completions_ytd)}/>
-                  <StatRow label="Oversupply risk" value={na(prop?.supply?.oversupply_risk)} highlight={prop?.supply?.oversupply_risk==='low'?C.g:prop?.supply?.oversupply_risk==='high'?C.red:C.am}/>
-                  <StatRow label="Market power (landlord vs tenant)" value={na(prop?.rental?.landlord_vs_tenant)} highlight={prop?.rental?.landlord_vs_tenant==='landlord'?C.g:C.am} last/>
-                </>}
               </div>
             </div>
           )}
