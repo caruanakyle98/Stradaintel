@@ -1176,33 +1176,6 @@ export default function Page() {
             </div>
           )}
 
-          {/* Rental rates */}
-          {(prop?.rental||loadProp) && (
-            <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px', marginBottom:12 }}>
-              <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:12, letterSpacing:'.1em' }}>WHAT TENANTS ARE PAYING RIGHT NOW</div>
-              {/* #region agent log */}
-              {(()=>{ const r=prop?.rental; if(r&&typeof fetch!=='undefined') fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'13de73'},body:JSON.stringify({sessionId:'13de73',location:'page.js:WHAT TENANTS',message:'Rental cards keys',data:{studioValue:r.apt_1br_avg_aed,oneBedValue:r.apt_1br_avg_aed,sameKey:true,studioDedicated:r.studio_avg_aed},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{}); return null; })()}
-              {/* #endregion */}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))', gap:8 }}>
-                {[
-                  ['Studio (avg rent)', prop?.rental?.apt_1br_avg_aed, '/year'],
-                  ['1-Bed (avg rent)',  prop?.rental?.apt_1br_avg_aed,'/year'],
-                  ['2-Bed (avg rent)',  prop?.rental?.apt_2br_avg_aed,'/year'],
-                  ['Villa (avg rent)',  prop?.rental?.villa_3br_avg_aed,  '/year'],
-                ].map(([label,val,unit]) => val&&na(val)!=='—' ? (
-                  <div key={label} style={{ padding:'10px 12px', background:C.surf, borderRadius:2 }}>
-                    <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm, marginBottom:5 }}>{label.toUpperCase()}</div>
-                    <div style={{ fontFamily:'Georgia,serif', fontSize:17, fontWeight:700, color:C.metric, textShadow:C.glowMetric }}>AED {na(val)}<span style={{fontSize:9,color:C.tm}}>{unit}</span></div>
-                  </div>
-                ):null)}
-              </div>
-              {Number.isFinite(parseFloat(prop?.rental?.rental_index_chg_yoy))&&(
-                <div style={{ marginTop:10, fontFamily:'monospace', fontSize:9, color:parseFloat(prop.rental.rental_index_chg_yoy)>=0?C.g:C.red }}>
-                  Rents are {parseFloat(prop.rental.rental_index_chg_yoy)>=0?'up':'down'} {prop.rental.rental_index_chg_yoy} year-on-year
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         {/* ══════════════════════════════════════════════ */}
