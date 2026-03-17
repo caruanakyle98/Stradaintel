@@ -165,7 +165,7 @@ function AreaRow({ rank, area, vol, psf, trend, maxVol, last }) {
   );
 }
 
-function YieldGauge({ label, gross, net, loading }) {
+function YieldGauge({ label, gross, loading }) {
   const g = parseFloat(gross)||0;
   const pct = Math.min((g/12)*100,100);
   const col = g>=7?C.g:g>=5?C.ga:g>=4?C.am:C.red;
@@ -182,7 +182,6 @@ function YieldGauge({ label, gross, net, loading }) {
           <div style={{ position:'absolute', bottom:0, left:0, right:0, textAlign:'center', fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:col, textShadow:g>0?glowFor(col):'none' }}>{g>0?`${g}%`:'—'}</div>
         </div>
         <div style={{ fontFamily:'monospace', fontSize:8, color:C.tm }}>ANNUAL RENTAL RETURN</div>
-        {net&&<div style={{ fontFamily:'monospace', fontSize:9, color:C.t2, marginTop:4 }}>After costs: ~{net}</div>}
         <div style={{ fontSize:9, color:col, marginTop:4 }}>
           {g>=7?'Excellent return':g>=5?'Good return':g>=4?'Average return':g>0?'Low return':''}
         </div>
@@ -1144,9 +1143,9 @@ export default function Page() {
             <div className="print-keep-together" style={{ marginBottom:12 }}>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:8, letterSpacing:'.1em' }}>ANNUAL RENTAL YIELD — HOW MUCH INCOME YOUR PROPERTY GENERATES</div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                <YieldGauge label="Apartments · Gross Yield"  gross={na(prop?.yields?.apt_gross_yield)}  net={na(prop?.yields?.apt_net_yield)}   loading={loadProp}/>
-                <YieldGauge label="Villas · Gross Yield"      gross={na(prop?.yields?.villa_gross_yield)} net={na(prop?.yields?.villa_net_yield)}  loading={loadProp}/>
-                
+                <YieldGauge label="Villa · Gross Yield"      gross={na(prop?.yields?.villa_gross_yield)}   loading={loadProp}/>
+                <YieldGauge label="Apartment · Gross Yield"  gross={na(prop?.yields?.apt_gross_yield)}    loading={loadProp}/>
+                <YieldGauge label="Townhouse · Gross Yield"   gross={na(prop?.yields?.townhouse_gross_yield)} loading={loadProp}/>
               </div>
             </div>
           )}
