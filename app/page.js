@@ -676,7 +676,7 @@ export default function Page() {
           iframeDoc.open();
           iframeDoc.write(html);
           iframeDoc.close();
-          const sectionEls = iframeDoc.querySelectorAll('[data-client-section]:not([data-client-section="header"])');
+          const sectionEls = iframeDoc.querySelectorAll('[data-client-section]:not([data-client-section="header"]):not([data-client-section="verdict"])');
           sectionEls.forEach(el => el.classList.add('pdf-page-break-before'));
         const opt = {
           margin: [10, 8, 10, 8],
