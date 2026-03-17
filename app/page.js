@@ -589,13 +589,23 @@ export default function Page() {
     const clientPackOverride = `
       .client-pack-print .print-only { display: block !important; }
       .client-pack-print .no-print { display: none !important; }
+      @media (max-width: 768px) {
+        .client-pack-print .client-pack-body { padding: 16px 12px 40px !important; }
+        .client-pack-print > div:last-of-type { padding-left: 12px !important; padding-right: 12px !important; }
+        .client-pack-print [style*="grid-template-columns"],
+        .client-pack-print [style*="gridTemplateColumns"] { grid-template-columns: 1fr !important; }
+        .client-pack-print .print-keep-together { min-width: 0; overflow-wrap: break-word; word-wrap: break-word; }
+        .client-pack-print .print-keep-together > * { min-width: 0; }
+        .client-pack-print [style*="display: flex"] > div:first-child,
+        .client-pack-print [style*="display:flex"] > div:first-child { min-width: 0; overflow-wrap: break-word; word-wrap: break-word; }
+      }
     `;
     const chunks = [
       `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Strada · Client brief · ${ts || ''}</title><style>${css}</style><style>${clientPackOverride}</style></head>`,
       `<body class="client-pack-print" style="margin:0;background:${C.bg};color:${C.t1};font-family:-apple-system,Segoe UI,sans-serif;font-weight:300;font-size:14px">`,
       `<div style="padding:16px 20px;background:${C.gd};border-bottom:1px solid ${C.border};font-family:monospace;font-size:10px;color:${C.am};line-height:1.5">`,
       `<strong>Static client brief</strong> · ${ts || '—'} GST · Opened offline — does not use Strada APIs (no credit use).`,
-      `</div><div style="padding:24px 40px 64px">`,
+      `</div><div class="client-pack-body" style="padding:24px 40px 64px">`,
     ];
     for (const { id } of CLIENT_SECTION_META) {
       if (!clientSections[id]) continue;
