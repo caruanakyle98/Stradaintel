@@ -2,6 +2,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { buildPayloadFromCsvText } from '../lib/salesCsvPayload.js';
 
+
 const C = {
   bg:'#080a08', surf:'#0f130f', card:'#141a14', border:'#1c261c',
   gd:'#162816', gm:'#2a5e2a', g:'#52a352', ga:'#78c278',
@@ -643,6 +644,39 @@ export default function Page() {
     });
   }, [clientSections, ts, buildClientHtml]);
 
+  /** Downloads a PDF with one page per section (section-based page breaks). Uses html2pdf.js; no server required. */
+  const downloadClientPdf = useCallback(() => {
+    if (clientSections.s05) setShowData(true);
+    const slug = (ts || new Date().toISOString()).replace(/[^\dA-Za-z]+/g, '-').slice(0, 32);
+    requestAnimationFrame(() => {
+      setTimeout(async () => {
+        const html2pdf = (await import('html2pdf.js')).default;
+        const html = buildClientHtml();
+        const iframe = document.createElement('iframe');
+        iframe.setAttribute('style', 'position:fixed;left:-9999px;top:0;width:210mm;height:297mm;border:none');
+        document.body.appendChild(iframe);
+        const iframeDoc = iframe.contentDocument;
+        iframeDoc.open();
+        iframeDoc.write(html);
+        iframeDoc.close();
+        iframeDoc.querySelectorAll('[data-client-section]:not([data-client-section="header"])').forEach(el => el.classList.add('pdf-page-break-before'));
+        const opt = {
+          margin: 10,
+          filename: `Strada-client-brief-${slug}.pdf`,
+          image: { type: 'jpeg', quality: 0.95 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak: { before: '.pdf-page-break-before' },
+        };
+        try {
+          await html2pdf().set(opt).from(iframeDoc.body).save();
+        } finally {
+          try { document.body.removeChild(iframe); } catch (_) {}
+        }
+      }, clientSections.s05 ? 400 : 0);
+    });
+  }, [clientSections, ts, buildClientHtml]);
+
   useEffect(() => {
     const onAfterPrint = () => {
       setShowData(showDataBeforePrintRef.current);
@@ -829,6 +863,22 @@ export default function Page() {
                     }}
                   >
                     Print selected from this page
+                  </button>
+                  <button
+                    type="button"
+                    onClick={downloadClientPdf}
+                    style={{
+                      padding: '10px 16px',
+                      background: C.gm,
+                      border: `1px solid ${C.g}`,
+                      borderRadius: 2,
+                      color: C.t1,
+                      fontFamily: 'monospace',
+                      fontSize: 10,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Download PDF
                   </button>
                   <button
                     type="button"
