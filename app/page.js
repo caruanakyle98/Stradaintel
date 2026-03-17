@@ -678,9 +678,9 @@ export default function Page() {
           iframeDoc.close();
           const sectionEls = iframeDoc.querySelectorAll('[data-client-section]:not([data-client-section="header"])');
           sectionEls.forEach(el => el.classList.add('pdf-page-break-before'));
-          const opt = {
-            margin: { top: 10, right: 8, bottom: 10, left: 8 },
-            filename: `Strada-client-brief-${slug}.pdf`,
+        const opt = {
+          margin: 10,
+          filename: `Strada-client-brief-${slug}.pdf`,
             image: { type: 'jpeg', quality: 0.95 },
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
