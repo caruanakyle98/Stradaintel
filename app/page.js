@@ -1021,12 +1021,29 @@ export default function Page() {
                     <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:C.am, textShadow:C.glowAm }}>{prop.weekly.rent_new_vs_renewal.renewal_count}</div>
                     <div style={{ fontSize:10, color:C.t2 }}>{prop.weekly.rent_new_vs_renewal.renewal_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.renewal_chg_wow}</div>
                   </div>
+                  {Number(prop.weekly.rent_new_vs_renewal.other_count) > 0 && (
+                    <div style={{ flex:1, minWidth:140 }}>
+                      <div style={{ fontFamily:'monospace', fontSize:8, color:C.t2, marginBottom:4 }}>OTHER / UNSPECIFIED</div>
+                      <div style={{ fontFamily:'Georgia,serif', fontSize:26, fontWeight:700, color:C.t2, textShadow:'none' }}>{prop.weekly.rent_new_vs_renewal.other_count}</div>
+                      <div style={{ fontSize:10, color:C.t2 }}>Rows not tagged as new or renewal</div>
+                    </div>
+                  )}
                 </div>
                 <div style={{ height:8, background:C.border, borderRadius:4, overflow:'hidden', display:'flex' }}>
                   <div style={{ width:`${prop.weekly.rent_new_vs_renewal.new_pct}%`, background:C.ga, minWidth: Number(prop.weekly.rent_new_vs_renewal.new_count) > 0 ? 2 : 0 }} title="New" />
                   <div style={{ width:`${prop.weekly.rent_new_vs_renewal.renewal_pct}%`, background:C.am, minWidth: Number(prop.weekly.rent_new_vs_renewal.renewal_count) > 0 ? 2 : 0 }} title="Renewal" />
+                  {Number(prop.weekly.rent_new_vs_renewal.other_count) > 0 && (
+                    <div
+                      style={{
+                        width: `${Math.max(0, 100 - Number(prop.weekly.rent_new_vs_renewal.new_pct || 0) - Number(prop.weekly.rent_new_vs_renewal.renewal_pct || 0))}%`,
+                        background: C.td,
+                        minWidth: 2,
+                      }}
+                      title="Other / unspecified"
+                    />
+                  )}
                 </div>
-                <div style={{ fontFamily:'monospace', fontSize:7, color:C.td, marginTop:8 }}>Split = new + renewal only ({Number(prop.weekly.rent_new_vs_renewal.new_count) + Number(prop.weekly.rent_new_vs_renewal.renewal_count)} of {prop?.weekly?.rent_volume?.value} registrations). Source: {prop.weekly.rent_new_vs_renewal.column}</div>
+                <div style={{ fontFamily:'monospace', fontSize:7, color:C.td, marginTop:8 }}>Split = new + renewal + other ({Number(prop.weekly.rent_new_vs_renewal.new_count) + Number(prop.weekly.rent_new_vs_renewal.renewal_count) + Number(prop.weekly.rent_new_vs_renewal.other_count || 0)} of {prop?.weekly?.rent_volume?.value} registrations). Source: {prop.weekly.rent_new_vs_renewal.column}</div>
               </div>
             )}
           </div>
