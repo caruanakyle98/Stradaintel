@@ -379,11 +379,11 @@ function DataCard({ label, price, chg, up, loading, explain }) {
   const col = up===true?C.g : up===false?C.red : C.t2;
   return (
     <div className="print-keep-together" style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'12px 14px' }}>
-      <Tag color={C.td}>{label}</Tag>
+      <Tag color={C.t2}>{label}</Tag>
       {loading?<><Skel h={18} mb={4}/><Skel w="55%" h={8}/></>:<>
         <div style={{ fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:price?col:C.tm, lineHeight:1, textShadow:price?glowFor(col):'none' }}>{price||'—'}</div>
         {chg&&<div style={{ fontFamily:'monospace', fontSize:9, color:col, marginTop:3 }}>{chg}</div>}
-        {explain&&<div style={{ fontSize:9, color:C.td, marginTop:5, lineHeight:1.4, borderTop:`1px solid ${C.border}`, paddingTop:4 }}>{explain}</div>}
+        {explain&&<div style={{ fontSize:9, color:C.tm, marginTop:5, lineHeight:1.4, borderTop:`1px solid ${C.border}`, paddingTop:4 }}>{explain}</div>}
       </>}
     </div>
   );
