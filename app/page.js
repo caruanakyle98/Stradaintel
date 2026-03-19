@@ -48,6 +48,8 @@ const css = `
   @keyframes spin{to{transform:rotate(360deg)}}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{max-width:100%;overflow-x:clip}
   body{background:${C.bg}}
   a{color:${C.g};text-decoration:none}a:hover{color:${C.ga}}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:${C.surf}}
@@ -55,6 +57,17 @@ const css = `
   .fade-in{animation:fade .5s ease}
   .no-print{ }
   .print-only{display:none}
+  /* Mobile / narrow viewports: stack rigid grids and avoid horizontal scroll */
+  @media (max-width:720px){
+    .mob-stack-2{display:grid!important;grid-template-columns:1fr!important}
+    .mob-alert-grid{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;align-items:start!important}
+    .mob-alert-grid > span{padding-left:0!important;padding-right:0!important;min-width:0!important;overflow-wrap:break-word}
+    .mob-card-min{min-width:0!important;flex:1 1 100%!important;max-width:100%!important}
+    .dashboard-root .print-keep-together{min-width:0;overflow-wrap:break-word;word-break:break-word}
+    .dash-header-actions{align-items:stretch!important;width:100%!important;max-width:100%!important}
+    .dash-header-actions button{max-width:100%}
+    .dash-header-actions label{display:flex;flex-wrap:wrap;gap:8px;max-width:100%}
+  }
   @media print{
     @page{margin:12mm 14mm;size:A4 portrait}
     html,body{background:${C.bg}!important;color:${C.t1}!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
@@ -106,7 +119,7 @@ function TxCard({ label, value, wowChg, yoyChg, trend, loading, period, source }
   // Only warn when copy explicitly says monthly — not when dates contain "Mar", "May", etc.
   const isMonthly = !!(period && /\b(month|months|monthly)\b/i.test(period));
   return (
-    <div className="print-keep-together" style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${tc}`, borderRadius:2, padding:'16px 18px' }}>
+    <div className="print-keep-together mob-card-min" style={{ flex:1, minWidth:'min(160px, 100%)', background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${tc}`, borderRadius:2, padding:'16px 18px' }}>
       <Tag>{label}</Tag>
       {loading?<><Skel h={30} mb={6}/><Skel w="70%" h={9}/></>:<>
         <div style={{ fontFamily:'Georgia,serif', fontSize:28, fontWeight:700, color:value&&value!=='—'?tc:C.tm, lineHeight:1.1, marginBottom:6, textShadow:value&&value!=='—'?glowFor(tc):'none' }}>
@@ -147,13 +160,13 @@ function AreaRow({ rank, area, vol, psf, trend, maxVol, last }) {
   const tc = trendCol(trend);
   return (
     <div style={{ padding:'10px 0', borderBottom:last?'none':`1px solid ${C.border}` }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:5 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <span style={{ fontFamily:'monospace', fontSize:8, color:C.tm, width:14 }}>{rank}</span>
-          <span style={{ fontSize:12, color:C.t1, fontWeight:500 }}>{area}</span>
-          <span style={{ fontSize:10 }}>{trendArrow(trend)}</span>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:8, marginBottom:5 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, minWidth:0, flex:'1 1 auto' }}>
+          <span style={{ fontFamily:'monospace', fontSize:8, color:C.tm, width:14, flexShrink:0 }}>{rank}</span>
+          <span style={{ fontSize:12, color:C.t1, fontWeight:500, overflowWrap:'break-word' }}>{area}</span>
+          <span style={{ fontSize:10, flexShrink:0 }}>{trendArrow(trend)}</span>
         </div>
-        <div style={{ display:'flex', gap:14, alignItems:'center' }}>
+        <div style={{ display:'flex', gap:14, alignItems:'center', flexWrap:'wrap' }}>
           <span style={{ fontSize:9, color:C.t2 }}>{na(vol)} deals</span>
           <span style={{ fontFamily:'Georgia,serif', fontSize:12, color:tc, fontWeight:600 }}>AED {na(psf)}/sqft</span>
         </div>
@@ -170,7 +183,7 @@ function YieldGauge({ label, gross, loading }) {
   const pct = Math.min((g/12)*100,100);
   const col = g>=7?C.g:g>=5?C.ga:g>=4?C.am:C.red;
   return (
-    <div className="print-keep-together" style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px', textAlign:'center' }}>
+    <div className="print-keep-together mob-card-min" style={{ flex:1, minWidth:'min(160px, 100%)', background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'16px 18px', textAlign:'center' }}>
       <Tag>{label}</Tag>
       {loading?<><Skel h={40} mb={6}/><Skel w="60%" h={10}/></>:<>
         <div style={{ position:'relative', width:80, height:40, margin:'8px auto 4px' }}>
@@ -282,7 +295,7 @@ function SplitBar({ offplan, secondary, loading }) {
   const op = parseInt(offplan)||0;
   return (
     <div>
-      <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:10, marginBottom:6 }}>
         <div>
           <span style={{ fontFamily:'monospace', fontSize:8, color:C.g }}>NEW BUILDS (OFF-PLAN) · {op}%</span>
           <div style={{ fontSize:9, color:C.tm, marginTop:2 }}>Buying directly from a developer before construction finishes</div>
@@ -312,8 +325,8 @@ function FactorCard({ data, loading }) {
     <div className="fade-in print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${col}`, borderRadius:2, padding:20 }}>
 
       {/* Header row */}
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:10 }}>
-        <div style={{ flex:1, paddingRight:12 }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:12, marginBottom:10 }}>
+        <div style={{ flex:'1 1 200px', minWidth:0, paddingRight:12 }}>
           <div style={{ fontSize:20, marginBottom:5 }}>{meta.icon}</div>
           <div style={{ fontFamily:'Georgia,serif', fontSize:14, fontWeight:700, color:C.t1 }}>{meta.title}</div>
           <div style={{ fontSize:10, color:C.tm, marginTop:3, fontStyle:'italic' }}>{meta.q}</div>
@@ -378,7 +391,7 @@ function FactorCard({ data, loading }) {
 function DataCard({ label, price, chg, up, loading, explain }) {
   const col = up===true?C.g : up===false?C.red : C.t2;
   return (
-    <div className="print-keep-together" style={{ flex:1, minWidth:160, background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'12px 14px' }}>
+    <div className="print-keep-together mob-card-min" style={{ flex:1, minWidth:'min(160px, 100%)', background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'12px 14px' }}>
       <Tag color={C.t2}>{label}</Tag>
       {loading?<><Skel h={18} mb={4}/><Skel w="55%" h={8}/></>:<>
         <div style={{ fontFamily:'Georgia,serif', fontSize:18, fontWeight:700, color:price?col:C.tm, lineHeight:1, textShadow:price?glowFor(col):'none' }}>{price||'—'}</div>
@@ -758,15 +771,18 @@ export default function Page() {
 
   return (
     <div
-      className={printScope ? 'client-pack-print' : ''}
-      style={{ background:C.bg, minHeight:'100vh', color:C.t1, fontFamily:'-apple-system,"Segoe UI",sans-serif', fontWeight:300, fontSize:14 }}
+      className={`dashboard-root${printScope ? ' client-pack-print' : ''}`}
+      style={{ background:C.bg, minHeight:'100vh', color:C.t1, fontFamily:'-apple-system,"Segoe UI",sans-serif', fontWeight:300, fontSize:14, maxWidth:'100%' }}
     >
       <style>{css}</style>
 
       {/* ── HEADER ──────────────────────────────────────── */}
       <div
         data-client-section="header"
-        style={{ padding:'28px 48px 22px', borderBottom:`1px solid ${C.border}` }}
+        style={{
+          padding: `28px max(clamp(16px, 5vw, 48px), env(safe-area-inset-right, 0px)) 22px max(clamp(16px, 5vw, 48px), env(safe-area-inset-left, 0px))`,
+          borderBottom: `1px solid ${C.border}`,
+        }}
         className={`print-avoid-break ${secClass('header')}`}
       >
         <div className="print-only" style={{ fontFamily:'monospace', fontSize:9, color:C.tm, marginBottom:8, letterSpacing:'.08em' }}>
@@ -786,7 +802,7 @@ export default function Page() {
             </h1>
             <div style={{ fontFamily:'monospace', fontSize:9, color:C.tm, marginTop:8 }}>EVERYTHING AFFECTING YOUR PROPERTY'S VALUE · UPDATED ON DEMAND</div>
           </div>
-          <div className="no-print" style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6 }}>
+          <div className="no-print dash-header-actions" style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6, maxWidth:'100%' }}>
             {!isClientView && (
             <button onClick={() => refreshAll()} disabled={loadIntel||loadProp}
               style={{ padding:'12px 22px', background:(loadIntel||loadProp)?C.gd:C.gm, border:`1px solid ${(loadIntel||loadProp)?C.gm:C.g}`, borderRadius:2, color:C.t1, fontFamily:'monospace', fontSize:10, letterSpacing:'.1em', cursor:(loadIntel||loadProp)?'wait':'pointer', display:'flex', alignItems:'center', gap:8 }}>
@@ -843,7 +859,7 @@ export default function Page() {
                     else refreshProp(undefined, v);
                   }}
                   disabled={loadProp || (!(prop?.area_options?.length) && !uploadedCsvTextRef.current)}
-                  style={{ minWidth:160, maxWidth:220, padding:'6px 8px', background:C.card, border:`1px solid ${C.border}`, borderRadius:2, color:C.t1, fontFamily:'monospace', fontSize:9 }}
+                  style={{ width:'100%', maxWidth:280, minWidth:'min(100%, 160px)', padding:'6px 8px', background:C.card, border:`1px solid ${C.border}`, borderRadius:2, color:C.t1, fontFamily:'monospace', fontSize:9 }}
                 >
                   <option value="">All areas</option>
                   {(prop?.area_options || []).map((a) => (
@@ -1022,7 +1038,11 @@ export default function Page() {
         {propError && <div className="no-print" style={{ marginTop:6,  padding:'9px 14px', background:'#1a0a0a', border:`1px solid ${C.red}30`, borderRadius:2, fontFamily:'monospace', fontSize:10, color:C.red }}>⚠ {propError}</div>}
       </div>
 
-      <div style={{ padding:'0 48px 80px' }}>
+      <div
+        style={{
+          padding: `0 max(clamp(16px, 5vw, 48px), env(safe-area-inset-right, 0px)) 80px max(clamp(16px, 5vw, 48px), env(safe-area-inset-left, 0px))`,
+        }}
+      >
 
         {/* ══════════════════════════════════════════════ */}
         {/* ── TODAY'S VERDICT ── */}
@@ -1137,12 +1157,12 @@ export default function Page() {
           </div>
 
           {/* Prices & Off-plan split */}
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
+          <div className="mob-stack-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
 
             {/* Prices */}
             <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'18px 20px' }}>
               <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, marginBottom:12, letterSpacing:'.1em' }}>AVERAGE ASKING PRICE PER SQUARE FOOT · {na(prop?.prices?.price_source)}</div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+              <div className="mob-stack-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
                 {[
                   ['Apartments', prop?.prices?.apt_psf_aed, prop?.prices?.apt_avg_aed, prop?.prices?.apt_chg_yoy||prop?.prices?.price_index_chg_yoy],
                   ['Villas',     prop?.prices?.villa_psf_aed, prop?.prices?.villa_avg_aed, prop?.prices?.villa_chg_yoy||prop?.prices?.price_index_chg_yoy],
@@ -1185,7 +1205,7 @@ export default function Page() {
               <div style={{ fontSize:9, color:C.tm, marginBottom:12, maxWidth:720, lineHeight:1.45 }}>
                 Daily lines are noisy (weekends & batch uploads). <strong style={{ color:C.t2 }}>7-day moving average</strong> highlights direction over the same 30-day window.
               </div>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:12 }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap:12 }}>
                 <TrendDualChart
                   title="Sale volume"
                   subtitle="Transactions per day vs smoothed trend"
@@ -1208,7 +1228,7 @@ export default function Page() {
               </div>
               <div className="print-keep-together" style={{ marginTop:12 }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, margin:'14px 0 8px', letterSpacing:'.1em' }}>WEEKLY PULSE (30-DAY WINDOW · DUBAI MON–SUN)</div>
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:12 }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap:12 }}>
                 {loadProp ? (
                   <>
                     <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'14px 16px' }}><Tag color={C.gm}>Weekly volume</Tag><Skel h={36} /></div>
@@ -1289,7 +1309,7 @@ export default function Page() {
         <div data-client-section="s02" className={`print-section ${secClass('s02')}`} style={{ marginTop:48 }}>
           <SectionHead n="02" title="What's Driving the Market?"
             desc="Seven forces that determine where Dubai property prices go next — each searched, scored and explained in plain English. Green means it's helping your property value. Red means it's adding pressure."/>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:10 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap:10 }}>
             {pillarsWithKey.map((p,i) => p ? <FactorCard key={i} data={p} loading={loadIntel}/> : null)}
           </div>
         </div>
@@ -1301,7 +1321,7 @@ export default function Page() {
         <div data-client-section="s03" className={`print-section ${secClass('s03')}`} style={{ marginTop:48 }}>
           <SectionHead n="03" title="Three Possible Outcomes"
             desc="Based on today's data, here are the three most likely ways the Dubai property market could move over the next 3–6 months."/>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+          <div className="mob-stack-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
 
             {/* Probabilities */}
             <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:24 }}>
@@ -1368,11 +1388,11 @@ export default function Page() {
           <SectionHead n="04" title="Warning Signs — Know When to Act"
             desc="Bookmark this page. If any of these occur, check the relevant column for what to do. Nothing on this list is currently triggered unless it glows red or amber."/>
           <div className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, overflow:'hidden' }}>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 120px 1fr', background:C.surf, padding:'8px 16px', borderBottom:`1px solid ${C.border}` }}>
+            <div className="mob-alert-grid" style={{ display:'grid', gridTemplateColumns:'1fr 120px 1fr', background:C.surf, padding:'8px 16px', borderBottom:`1px solid ${C.border}` }}>
               {['WHAT TO WATCH FOR','URGENCY LEVEL','WHAT TO DO'].map(h=><span key={h} style={{ fontFamily:'monospace', fontSize:7, letterSpacing:'.1em', color:C.tm }}>{h}</span>)}
             </div>
             {ALERTS.map(([trigger,level,action,col],i)=>(
-              <div key={i} style={{ display:'grid', gridTemplateColumns:'1fr 120px 1fr', padding:'11px 16px', borderBottom:i<ALERTS.length-1?`1px solid ${C.border}`:'none', alignItems:'center' }}>
+              <div key={i} className="mob-alert-grid" style={{ display:'grid', gridTemplateColumns:'1fr 120px 1fr', padding:'11px 16px', borderBottom:i<ALERTS.length-1?`1px solid ${C.border}`:'none', alignItems:'center' }}>
                 <span style={{ fontSize:11, color:C.t1, paddingRight:12, lineHeight:1.5 }}>{trigger}</span>
                 <span style={{ fontFamily:'monospace', fontSize:8, padding:'3px 6px', borderRadius:2, textAlign:'center', color:col, background:`${col}14`, border:`1px solid ${col}35`, lineHeight:1.5 }}>{level}</span>
                 <span style={{ fontSize:11, color:C.t2, paddingLeft:12, lineHeight:1.5 }}>{action}</span>
@@ -1450,7 +1470,7 @@ export default function Page() {
               <div className="print-keep-together" style={{ marginBottom:20 }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, color:C.gm, letterSpacing:'.1em', marginBottom:4 }}>UAE MORTGAGE RATE & BUSINESS CONFIDENCE</div>
                 <div style={{ fontSize:10, color:C.td, marginBottom:8 }}>The interest rate Dubai banks charge on mortgages, and a measure of how confident businesses are</div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                <div className="mob-stack-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
                   {/* Mortgage rate */}
                   {(() => {
                     const e = intel?.eibor;
@@ -1504,7 +1524,7 @@ export default function Page() {
         <div data-client-section="s06" className={`print-section ${secClass('s06')}`} style={{ marginTop:36 }}>
           <SectionHead n="06" title="Your 5-Minute Morning Checklist"
             desc="For those who want to go deeper — these are the best sources to check each morning. Bookmark this page."/>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:10 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap:10 }}>
             {CHECKLIST.map(([cat,items])=>(
               <div key={cat} className="print-keep-together" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:2, padding:'15px 17px' }}>
                 <div style={{ fontFamily:'monospace', fontSize:8, letterSpacing:'.14em', color:C.g, marginBottom:10, paddingBottom:7, borderBottom:`1px solid ${C.border}` }}>{cat}</div>
@@ -1524,7 +1544,15 @@ export default function Page() {
       <div
         data-client-section="footer"
         className={`print-avoid-break ${secClass('footer')}`}
-        style={{ padding:'18px 48px', borderTop:`1px solid ${C.border}`, display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:10 }}
+        style={{
+          padding: `18px max(clamp(16px, 5vw, 48px), env(safe-area-inset-right, 0px)) 18px max(clamp(16px, 5vw, 48px), env(safe-area-inset-left, 0px))`,
+          borderTop: `1px solid ${C.border}`,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 10,
+        }}
       >
         <div style={{ fontFamily:'Georgia,serif', fontSize:11, fontStyle:'italic', color:C.tm }}>"The market rewards those who see clearly, earlier."</div>
         <div style={{ fontFamily:'monospace', fontSize:8, color:C.td, textAlign:'right', lineHeight:1.9 }}>STRADA REAL ESTATE · KYLE CARUANA · +971 58 579 2599 · STRADAUAE.COM</div>
