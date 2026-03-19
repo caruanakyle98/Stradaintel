@@ -437,7 +437,7 @@ function cloneNodeNoNoPrint(el) {
 // MAIN APP
 // ═══════════════════════════════════════════════════════════
 export default function Page() {
-  const [viewMode, setViewMode] = useState('admin'); // 'admin' | 'client'
+  const [viewMode, setViewMode] = useState('client'); // 'admin' | 'client'
   const [adminToken, setAdminToken] = useState('');
   const [intel,     setIntel]     = useState(null);
   const [prop,      setProp]      = useState(null);
@@ -473,7 +473,8 @@ export default function Page() {
     }
   }, []);
 
-  const isClientView = viewMode === 'client';
+  const canAdmin = viewMode === 'admin' && !!adminToken;
+  const isClientView = viewMode === 'client' || !canAdmin;
 
   const refreshIntel = useCallback(async () => {
     setLoadIntel(true); setError(null);
@@ -501,7 +502,13 @@ export default function Page() {
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.ok) throw new Error(d?.error || `HTTP ${r.status}`);
-      await refreshIntel();
+      // Refresh using the snapshot-read endpoint so we don't re-run intelligence.
+      const rr = await fetch('/api/intelligence-read', { cache: 'no-store' });
+      const dd = await rr.json().catch(() => ({}));
+      if (rr.ok && dd?.ok) {
+        setIntel(dd);
+        setTs(dd.ts);
+      }
     } catch (e) {
       setError(e.message || 'Snapshot refresh failed');
     } finally {
