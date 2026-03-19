@@ -749,6 +749,10 @@ export default function Page() {
     refreshProp();
   }, [isClientView, refreshIntel, refreshProp]);
 
+  useEffect(() => {
+    if (isClientView) setClientPackOpen(false);
+  }, [isClientView]);
+
   const secClass = (id) =>
     printScope && !clientSections[id] ? 'print-exclude-section' : '';
 
@@ -806,6 +810,8 @@ export default function Page() {
                 {refreshingSnapshot ? 'Refreshing snapshot…' : 'Refresh client snapshot'}
               </button>
               )}
+              {!isClientView && (
+              <>
               <button
                 type="button"
                 onClick={openPrintPdf}
@@ -821,6 +827,8 @@ export default function Page() {
               >
                 {clientPackOpen ? '▼ Client pack' : '▶ Client pack'}
               </button>
+              </>
+              )}
               <button onClick={() => refreshProp()} disabled={loadProp} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadProp?'wait':'pointer' }}>
                 {loadProp?'…':'Property data only'}
               </button>
@@ -883,7 +891,7 @@ export default function Page() {
                 Client view: area filter is interactive; intelligence refresh is admin-only.
               </div>
             )}
-            {clientPackOpen && (
+            {!isClientView && clientPackOpen && (
               <div
                 style={{
                   marginTop: 12,
