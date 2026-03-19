@@ -25,12 +25,13 @@ function adminToken() {
 function tokenFromRequest(request) {
   const h = request.headers.get('x-intel-admin-token') || request.headers.get('authorization') || '';
   const fromHeader = h.startsWith('Bearer ') ? h.slice(7) : h;
-  if (fromHeader.trim()) return fromHeader.trim();
+  if (fromHeader.trim()) return { token: fromHeader.trim(), source: 'header' };
   try {
     const u = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
-    return (u.searchParams.get('token') || '').trim();
+    const tok = (u.searchParams.get('token') || '').trim();
+    return { token: tok, source: tok ? 'query' : 'none' };
   } catch {
-    return '';
+    return { token: '', source: 'none' };
   }
 }
 
@@ -40,7 +41,11 @@ export async function POST(request) {
     return Response.json({ ok: false, error: 'INTEL_ADMIN_TOKEN not configured.' }, { status: 500 });
   }
   const got = tokenFromRequest(request);
-  if (!got || got !== expected) {
+  const gotToken = got?.token || '';
+  if (!gotToken || gotToken !== expected) {
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-debug',hypothesisId:'H1',location:'app/api/intelligence-refresh/route.js',message:'Admin token mismatch/empty',data:{expectedLen:expected.length,gotLen:gotToken.length,gotFrom:got.source,gotHas:!!gotToken,expectedHas:!!expected,match:gotToken===expected},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     return Response.json({ ok: false, error: 'Unauthorized.' }, { status: 401 });
   }
   const token = blobToken();
@@ -49,6 +54,9 @@ export async function POST(request) {
   }
 
   try {
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-debug',hypothesisId:'H4',location:'app/api/intelligence-refresh/route.js',message:'Admin token authorized; starting intelligence payload',data:{expectedLen:expected.length},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     const payload = await buildIntelligencePayload();
     const stamped = {
       ...payload,
