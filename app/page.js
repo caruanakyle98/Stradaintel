@@ -437,6 +437,8 @@ function cloneNodeNoNoPrint(el) {
 // MAIN APP
 // ═══════════════════════════════════════════════════════════
 export default function Page() {
+  const [viewMode, setViewMode] = useState('admin'); // 'admin' | 'client'
+  const [adminToken, setAdminToken] = useState('');
   const [intel,     setIntel]     = useState(null);
   const [prop,      setProp]      = useState(null);
   const [loadIntel, setLoadIntel] = useState(false);
@@ -453,18 +455,59 @@ export default function Page() {
   const [clientSections, setClientSections] = useState(() => defaultClientSections());
   const [clientPackOpen, setClientPackOpen] = useState(false);
   const [printScope, setPrintScope] = useState(false);
+  const [refreshingSnapshot, setRefreshingSnapshot] = useState(false);
+
+  useEffect(() => {
+    try {
+      const u = new URL(window.location.href);
+      const fromQuery = (u.searchParams.get('view') || '').toLowerCase();
+      const fromEnv = String(process.env.NEXT_PUBLIC_DASHBOARD_VIEW_MODE || '').toLowerCase();
+      const mode = fromQuery === 'client' || fromQuery === 'admin'
+        ? fromQuery
+        : (fromEnv === 'client' ? 'client' : 'admin');
+      setViewMode(mode);
+      setAdminToken((u.searchParams.get('adminToken') || '').trim());
+    } catch {
+      setViewMode('admin');
+      setAdminToken('');
+    }
+  }, []);
+
+  const isClientView = viewMode === 'client';
 
   const refreshIntel = useCallback(async () => {
     setLoadIntel(true); setError(null);
     try {
-      const r = await fetch('/api/intelligence');
+      const intelUrl = isClientView ? '/api/intelligence-read' : '/api/intelligence';
+      const r = await fetch(intelUrl, { cache: 'no-store' });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const d = await r.json();
       if (!d.ok) throw new Error(d.error);
       setIntel(d); setTs(d.ts);
     } catch(e) { setError(e.message); }
     finally { setLoadIntel(false); }
-  }, []);
+  }, [isClientView]);
+
+  const refreshIntelSnapshot = useCallback(async () => {
+    if (isClientView) return;
+    setRefreshingSnapshot(true);
+    setError(null);
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (adminToken) headers['x-intel-admin-token'] = adminToken;
+      const r = await fetch('/api/intelligence-refresh', {
+        method: 'POST',
+        headers,
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.ok) throw new Error(d?.error || `HTTP ${r.status}`);
+      await refreshIntel();
+    } catch (e) {
+      setError(e.message || 'Snapshot refresh failed');
+    } finally {
+      setRefreshingSnapshot(false);
+    }
+  }, [adminToken, isClientView, refreshIntel]);
 
   const refreshProp = useCallback(async (forcedPath, overrideArea) => {
     setLoadProp(true); setPropError(null);
@@ -693,6 +736,11 @@ export default function Page() {
 
   // Previously: auto-refresh market signals on mount.
   // Now disabled so web search / Haiku are only triggered by explicit user action.
+  useEffect(() => {
+    if (!isClientView) return;
+    refreshIntel();
+    refreshProp();
+  }, [isClientView, refreshIntel, refreshProp]);
 
   const secClass = (id) =>
     printScope && !clientSections[id] ? 'print-exclude-section' : '';
@@ -728,15 +776,29 @@ export default function Page() {
             <div style={{ fontFamily:'monospace', fontSize:9, color:C.tm, marginTop:8 }}>EVERYTHING AFFECTING YOUR PROPERTY'S VALUE · UPDATED ON DEMAND</div>
           </div>
           <div className="no-print" style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6 }}>
+            {!isClientView && (
             <button onClick={() => refreshAll()} disabled={loadIntel||loadProp}
               style={{ padding:'12px 22px', background:(loadIntel||loadProp)?C.gd:C.gm, border:`1px solid ${(loadIntel||loadProp)?C.gm:C.g}`, borderRadius:2, color:C.t1, fontFamily:'monospace', fontSize:10, letterSpacing:'.1em', cursor:(loadIntel||loadProp)?'wait':'pointer', display:'flex', alignItems:'center', gap:8 }}>
               {(loadIntel||loadProp)&&<span style={{ width:10, height:10, border:`2px solid ${C.g}`, borderTopColor:'transparent', borderRadius:'50%', animation:'spin .7s linear infinite' }}/>}
               {(loadIntel||loadProp)?'UPDATING...':'⟳  GET LATEST INTELLIGENCE'}
             </button>
+            )}
             <div style={{ display:'flex', flexWrap:'wrap', gap:8, alignItems:'center' }}>
+              {!isClientView && (
               <button onClick={() => refreshIntel()} disabled={loadIntel} style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.t2, fontFamily:'monospace', fontSize:9, cursor:loadIntel?'wait':'pointer' }}>
                 {loadIntel?'…':'Market signals only'}
               </button>
+              )}
+              {!isClientView && (
+              <button
+                onClick={() => refreshIntelSnapshot()}
+                disabled={refreshingSnapshot}
+                style={{ padding:'7px 13px', background:'transparent', border:`1px solid ${C.border}`, borderRadius:2, color:C.ga, fontFamily:'monospace', fontSize:9, cursor:refreshingSnapshot?'wait':'pointer' }}
+                title="Runs live intelligence once, stores snapshot for clients"
+              >
+                {refreshingSnapshot ? 'Refreshing snapshot…' : 'Refresh client snapshot'}
+              </button>
+              )}
               <button
                 type="button"
                 onClick={openPrintPdf}
@@ -775,6 +837,7 @@ export default function Page() {
                 </select>
               </label>
             </div>
+            {!isClientView && (
             <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6, width:'min(460px,100%)' }}>
               <input
                 value={salesCsvPath}
@@ -800,9 +863,19 @@ export default function Page() {
                 Off-plan is inferred from <span style={{ color:C.ga }}>Select Data Points = Oqood</span>.
               </div>
             </div>
+            )}
             <div style={{ fontFamily:'monospace', fontSize:9, color:C.tm }}>
-              {ts?`LAST UPDATED · ${ts} GST`:'PRESS "GET LATEST INTELLIGENCE" TO BEGIN'}
+              {ts
+                ? `LAST UPDATED · ${ts} GST`
+                : isClientView
+                  ? 'Waiting for admin intelligence snapshot'
+                  : 'PRESS "GET LATEST INTELLIGENCE" TO BEGIN'}
             </div>
+            {isClientView && (
+              <div style={{ fontFamily:'monospace', fontSize:8, color:C.td, maxWidth:420, textAlign:'right' }}>
+                Client view: area filter is interactive; intelligence refresh is admin-only.
+              </div>
+            )}
             {clientPackOpen && (
               <div
                 style={{

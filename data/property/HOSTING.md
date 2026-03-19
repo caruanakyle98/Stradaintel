@@ -15,6 +15,8 @@ The app **GETs** CSVs over HTTPS—nothing is uploaded through the Next app (avo
 | `PROPERTY_METRICS_JSON_URL` | Pre-built JSON snapshot (optional) |
 | `PROPERTY_SALES_CSV_PATH` | Local/server filesystem path only |
 | `BLOB_READ_WRITE_TOKEN` | Optional — only if using Blob fallback after URLs fail |
+| `INTEL_SNAPSHOT_BLOB_PATH` | Intelligence snapshot JSON path in Blob (default: `stradaintel/intelligence-latest.json`) |
+| `INTEL_ADMIN_TOKEN` | Secret used by `/api/intelligence-refresh` to allow admin-only snapshot refresh |
 
 **Area filter:** `GET /api/property?area=…` — server-side CSV only; **`PROPERTY_METRICS_JSON_URL`** ignored when area is set.
 
@@ -37,3 +39,14 @@ See earlier sections in git history or [rentalCsvPayload.js](../../lib/rentalCsv
 ---
 
 Blob upload scripts remain in `package.json` (`upload:sales-blob`, `upload:blob-all`) if you switch back later.
+
+## Client view-only intelligence link
+
+Use this when clients should see the latest intelligence snapshot but must not trigger paid refresh calls:
+
+1. Share dashboard link with `?view=client` (for example: `https://your-app.vercel.app/?view=client`).
+2. Clients can still filter area and refresh property data, but intelligence refresh controls are hidden.
+3. Admin refreshes intelligence snapshot via:
+   - `POST /api/intelligence-refresh` with header `x-intel-admin-token: <INTEL_ADMIN_TOKEN>`, or
+   - open admin URL with `?adminToken=<INTEL_ADMIN_TOKEN>` and use **Refresh client snapshot** button.
+4. Client mode reads intelligence from `/api/intelligence-read` (Blob snapshot), not live `/api/intelligence`.

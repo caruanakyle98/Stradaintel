@@ -679,8 +679,8 @@ async function fetchAllNarrative(today, mkt, sp30d, anthropicKey) {
   };
 }
 
-// ── Main handler ──────────────────────────────────────────
-export async function GET() {
+// ── Payload builder (reused by snapshot refresh route) ────
+export async function buildIntelligencePayload() {
   const { key: anthropicKey, envHelp } = resolveAnthropicKey();
   const now   = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
   const today = now.toLocaleDateString('en-AE', { timeZone:'Asia/Dubai', day:'2-digit', month:'short', year:'numeric' });
@@ -798,7 +798,7 @@ export async function GET() {
   } else if (narrativeFallback) {
     intelNotice = 'Narrative fallback. Add TAVILY_API_KEY (Vercel: Production + Preview), redeploy.';
   }
-  return Response.json({
+  return {
     ok: true, ts, priceSource,
     anthropic_configured: keyOk,
     intel_notice: intelNotice,
@@ -852,5 +852,11 @@ export async function GET() {
       property:  { ...narrative.property, score:prpScore, weight:8,  title:'Property Market Sentiment' },
     },
     composite, label, col, base, down, up, action,
-  });
+  };
+}
+
+// ── Main handler ──────────────────────────────────────────
+export async function GET() {
+  const payload = await buildIntelligencePayload();
+  return Response.json(payload);
 }
