@@ -95,6 +95,575 @@ function Bar({ score, color, style={} }) {
     </div>
   );
 }
+
+// ─────────────────────────────────────────────────────────────
+// Landing page (/): luxury marketing UI (adminToken-gated)
+// ─────────────────────────────────────────────────────────────
+const landingCss = `
+  @keyframes floaty { 0%,100%{transform:translate3d(0,0,0)} 50%{transform:translate3d(0,-10px,0)} }
+  @keyframes shimmer { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+  .landing-root{min-height:100vh;background:linear-gradient(180deg,#06070a 0%, #0b1220 40%, #06070a 100%);color:${C.t1};position:relative;overflow-x:hidden}
+  .landing-root *{box-sizing:border-box}
+  .landing-glow{
+    position:absolute;inset:-200px -200px auto -200px;height:520px;pointer-events:none;
+    background:radial-gradient(circle at 30% 30%, rgba(244,211,94,0.20), transparent 55%),
+      radial-gradient(circle at 70% 15%, rgba(245,158,11,0.16), transparent 50%),
+      radial-gradient(circle at 20% 80%, rgba(45,107,45,0.16), transparent 55%);
+    filter: blur(8px);
+    animation: floaty 7s ease-in-out infinite;
+  }
+  .landing-topbar{position:sticky;top:0;z-index:30;backdrop-filter: blur(10px);background:rgba(3,4,8,0.35);border-bottom:1px solid rgba(244,211,94,0.12)}
+  .landing-container{max-width:1120px;margin:0 auto;padding:0 max(clamp(16px,4vw,32px),env(safe-area-inset-right,0px))}
+  .landing-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
+  .brand-mark{display:flex;align-items:center;gap:10px;min-width:0}
+  .brand-dot{width:10px;height:10px;border-radius:999px;background:${C.ga};box-shadow:${C.glowGa}}
+  .brand-name{font-family:var(--font-montserrat, Georgia,serif);font-weight:700;color:${C.ga};letter-spacing:.06em;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand-sub{font-family:monospace;font-size:9px;color:${C.tm};letter-spacing:.16em;margin-top:2px;text-transform:uppercase}
+  .landing-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  .btn-gold{
+    background:linear-gradient(90deg, ${C.gm} 0%, ${C.ga} 45%, ${C.amL} 100%);
+    color:#061006;border:1px solid rgba(255,210,90,0.35);
+    border-radius:10px;padding:12px 16px;font-family:monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    box-shadow:0 0 24px rgba(244,211,94,0.12);transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  }
+  .btn-gold:hover{transform:translate3d(0,-1px,0);box-shadow:0 0 36px rgba(244,211,94,0.22);filter:saturate(1.05)}
+  .btn-ghost{
+    background:transparent;color:${C.t1};border:1px solid rgba(160,210,160,0.22);
+    border-radius:10px;padding:12px 16px;font-family:monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    transition:transform .18s ease,border-color .18s ease, background .18s ease;
+  }
+  .btn-ghost:hover{transform:translate3d(0,-1px,0);border-color:rgba(244,211,94,0.55);background:rgba(244,211,94,0.05)}
+  .hero{padding:64px 0 28px}
+  .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;align-items:center}
+  .hero-kicker{font-family:monospace;color:${C.ga};letter-spacing:.22em;font-size:10px;text-transform:uppercase;margin-bottom:10px}
+  .hero-title{font-family:var(--font-montserrat, Georgia,serif);font-size:clamp(30px,4vw,56px);line-height:1.02;letter-spacing:-.02em;font-weight:800}
+  .hero-sub{font-family:monospace;font-size:14px;color:${C.t2};line-height:1.6;margin-top:14px;max-width:560px}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+  .hero-metrics{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+  .metric-tile{padding:16px;border:1px solid rgba(244,211,94,0.14);background:rgba(10,16,26,0.45);border-radius:16px}
+  .metric-label{font-family:monospace;font-size:10px;color:${C.tm};letter-spacing:.12em;text-transform:uppercase}
+  .metric-value{margin-top:8px;font-family:var(--font-montserrat, Georgia,serif);font-size:24px;color:${C.t1};font-weight:700}
+  .metric-value.gold{color:${C.amL}}
+  .hero-backplate{position:relative;padding:18px;border-radius:18px;border:1px solid rgba(244,211,94,0.18);background:rgba(8,12,20,0.35);overflow:hidden;min-height:260px}
+  .hero-backplate::before{
+    content:"";position:absolute;inset:-80px -80px auto -80px;height:280px;
+    background:radial-gradient(circle at 40% 20%, rgba(245,158,11,0.20), transparent 60%),
+    radial-gradient(circle at 70% 60%, rgba(212,175,55,0.16), transparent 55%);
+    filter: blur(10px);
+    animation: shimmer 10s ease-in-out infinite;
+  }
+  .hero-lineart{position:absolute;inset:0;opacity:.65;pointer-events:none}
+  .section{padding:34px 0}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+  .section-title{font-family:var(--font-montserrat, Georgia,serif);font-size:22px;color:${C.ga};letter-spacing:-.01em;font-weight:800}
+  .section-sub{font-family:monospace;font-size:11px;color:${C.t2};line-height:1.6;max-width:580px}
+  .cards-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{
+    border-radius:18px;border:1px solid rgba(244,211,94,0.14);
+    background:rgba(8,12,20,0.40);
+    box-shadow:0 0 0 rgba(0,0,0,0);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+  }
+  .card:hover{
+    transform:translate3d(0,-2px,0);
+    border-color:rgba(244,211,94,0.30);
+    background:rgba(8,12,20,0.52);
+    box-shadow:0 0 28px rgba(244,211,94,0.10);
+  }
+  .card-pad{padding:18px}
+  .tag-k{font-family:monospace;font-size:10px;color:${C.tm};letter-spacing:.18em;text-transform:uppercase}
+  .big-num{font-family:var(--font-montserrat, Georgia,serif);font-size:34px;color:${C.ga};font-weight:800;margin-top:10px}
+  .divider{height:1px;background:linear-gradient(90deg, rgba(244,211,94,0.0), rgba(245,158,11,0.35), rgba(244,211,94,0.0));margin:14px 0}
+  .featured-rail{display:flex;gap:14px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .featured-rail::-webkit-scrollbar{height:6px}
+  .featured-rail::-webkit-scrollbar-thumb{background:rgba(244,211,94,0.25);border-radius:999px}
+  .prop-card{min-width:280px;scroll-snap-align:start;position:relative}
+  .prop-img{
+    height:128px;border-radius:14px;border:1px solid rgba(244,211,94,0.14);
+    background:linear-gradient(135deg, rgba(245,158,11,0.22), rgba(212,175,55,0.10), rgba(8,12,20,0.55));
+    position:relative;overflow:hidden;
+  }
+  .prop-img::after{
+    content:"";position:absolute;inset:-30px -30px auto -30px;height:160px;
+    background:radial-gradient(circle at 30% 40%, rgba(245,158,11,0.35), transparent 65%);
+    filter:blur(8px);
+    opacity:.7;
+  }
+  .prop-body{margin-top:14px}
+  .prop-price{font-family:monospace;font-size:10px;color:${C.tm};letter-spacing:.18em;text-transform:uppercase}
+  .prop-type{font-family:var(--font-montserrat, Georgia,serif);font-size:18px;color:${C.t1};font-weight:800;margin-top:8px}
+  .prop-metrics{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .pill{
+    padding:8px 10px;border-radius:999px;border:1px solid rgba(244,211,94,0.18);
+    background:rgba(8,12,20,0.35);font-family:monospace;font-size:10px;color:${C.t2}
+  }
+  .strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .step-list{display:flex;flex-direction:column;gap:10px}
+  .step{
+    padding:14px 14px;border-radius:16px;border:1px solid rgba(244,211,94,0.14);background:rgba(8,12,20,0.40);
+    display:flex;gap:12px;align-items:flex-start
+  }
+  .step-dot{width:26px;height:26px;border-radius:999px;background:rgba(245,158,11,0.22);border:1px solid rgba(245,158,11,0.35);box-shadow:0 0 18px rgba(245,158,11,0.14);display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:11px;color:${C.amL}}
+  .step-title{font-family:var(--font-montserrat, Georgia,serif);font-size:14px;color:${C.t1};font-weight:800}
+  .step-sub{font-family:monospace;font-size:10px;color:${C.t2};margin-top:6px;line-height:1.6}
+  .perf-block{padding:22px;border-radius:22px;border:1px solid rgba(244,211,94,0.14);background:linear-gradient(180deg, rgba(245,158,11,0.08), rgba(8,12,20,0.40))}
+  .perf-copy{font-family:var(--font-montserrat, Georgia,serif);font-size:24px;color:${C.ga};font-weight:800;line-height:1.2}
+  .pulse-ring{width:140px;height:140px;border-radius:999px;border:1px solid rgba(245,158,11,0.35);position:relative;display:flex;align-items:center;justify-content:center}
+  .pulse-ring::before{
+    content:"";position:absolute;inset:-10px;border-radius:999px;border:1px solid rgba(245,158,11,0.20);
+    animation: floaty 3.8s ease-in-out infinite;
+  }
+  .results-carousel{position:relative}
+  .quote{font-family:var(--font-montserrat, Georgia,serif);font-size:16px;color:${C.t1};line-height:1.7}
+  .carousel-fade{transition:opacity .35s ease, transform .35s ease}
+  .carousel-fade[data-state="out"]{opacity:0;transform:translate3d(0,10px,0)}
+  .carousel-fade[data-state="in"]{opacity:1;transform:translate3d(0,0,0)}
+  .cta-block{
+    padding:26px;border-radius:24px;border:1px solid rgba(244,211,94,0.18);
+    background:linear-gradient(135deg, rgba(244,211,94,0.12), rgba(245,158,11,0.10), rgba(8,12,20,0.55));
+  }
+  .cta-title{font-family:var(--font-montserrat, Georgia,serif);font-size:24px;color:${C.ga};font-weight:800;line-height:1.2}
+  .cta-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+  .sticky-cta{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;
+    padding:12px max(clamp(16px,4vw,32px),env(safe-area-inset-right,0px)) 12px max(clamp(16px,4vw,32px),env(safe-area-inset-left,0px));
+    background:rgba(3,4,8,0.65);backdrop-filter: blur(10px);border-top:1px solid rgba(244,211,94,0.16);
+    display:none;
+  }
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:14px}
+    .cards-3{grid-template-columns:1fr}
+    .cards-2{grid-template-columns:1fr}
+    .strategy-grid{grid-template-columns:1fr}
+  }
+  @media (max-width:720px){
+    .sticky-cta{display:block}
+    .hero{padding:44px 0 18px}
+    .prop-card{min-width:250px}
+  }
+`;
+
+function MobileStickyCTA({ dashboardHref }) {
+  return (
+    <div className="sticky-cta">
+      <a className="btn-gold" href={dashboardHref} style={{ display: 'block', textAlign: 'center', width: '100%' }}>
+        View Off-Market Deals
+      </a>
+    </div>
+  );
+}
+
+function LineChartMini({ value = 0 }) {
+  const pct = Math.max(0, Math.min(100, Number(value) || 0));
+  return (
+    <svg viewBox="0 0 220 60" width="100%" height="60" preserveAspectRatio="none" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id="gld" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor={C.amL} stopOpacity="0.15" />
+          <stop offset="50%" stopColor={C.ga} stopOpacity="0.65" />
+          <stop offset="100%" stopColor={C.amL} stopOpacity="0.20" />
+        </linearGradient>
+      </defs>
+      <path
+        d={`M 0 52 C 40 ${52 - pct * 0.28}, 80 ${52 - pct * 0.18}, 110 ${52 - pct * 0.35} S 180 ${52 - pct * 0.22}, 220 ${52 - pct * 0.30}`}
+        fill="none"
+        stroke="url(#gld)"
+        strokeWidth="2"
+        opacity="0.95"
+      />
+      <path
+        d={`M 0 52 C 40 ${52 - pct * 0.28}, 80 ${52 - pct * 0.18}, 110 ${52 - pct * 0.35} S 180 ${52 - pct * 0.22}, 220 ${52 - pct * 0.30}`}
+        fill="none"
+        stroke={C.border}
+        strokeWidth="6"
+        opacity="0.15"
+      />
+    </svg>
+  );
+}
+
+function CountUp({ to = 0, suffix = '', durationMs = 900 }) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const start = performance.now();
+    const from = 0;
+    const tick = (t) => {
+      const p = Math.min(1, (t - start) / durationMs);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const next = from + (to - from) * eased;
+      setVal(next);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [to, durationMs]);
+  const shown = Number.isFinite(val) ? Math.round(val) : 0;
+  return <span>{shown.toLocaleString('en-US')}{suffix}</span>;
+}
+
+export default function Page() {
+  const [adminToken, setAdminToken] = useState('');
+  const [intel, setIntel] = useState(null);
+  const [prop, setProp] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    try {
+      const u = new URL(window.location.href);
+      setAdminToken((u.searchParams.get('adminToken') || '').trim());
+    } catch {
+      setAdminToken('');
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const [ir, pr] = await Promise.all([
+          fetch('/api/intelligence-read', { cache: 'no-store' }),
+          fetch('/api/property', { cache: 'no-store' }),
+        ]);
+        const d1 = await ir.json().catch(() => ({}));
+        const d2 = await pr.json().catch(() => ({}));
+        if (cancelled) return;
+        if (!ir.ok || !d1?.ok) throw new Error(d1?.error || `HTTP ${ir.status}`);
+        if (!pr.ok || !d2?.ok) {
+          // Property endpoint always returns ok on success; keep landing resilient.
+          // We'll still allow UI to render without metrics.
+        }
+        setIntel(d1);
+        setProp(d2?.ok ? d2 : d2);
+      } catch (e) {
+        if (!cancelled) setError(e?.message || 'Failed to load landing data');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const dashboardHref = adminToken ? `/dashboard?adminToken=${encodeURIComponent(adminToken)}` : '/dashboard';
+  const contactTel = '+971585792599';
+  const whatsappUrl = 'https://wa.me/message/7XKXFQ6XBQ2KF1';
+
+  const composite = intel?.composite ?? 0;
+  const topAreasCount = prop?.top_areas?.length ?? 0;
+  const aptYield = parseFloat(prop?.yields?.apt_gross_yield || 0) || 0;
+
+  const featuredCards = [
+    {
+      type: 'Villas',
+      price: 'AED —',
+      yieldPct: parseFloat(prop?.yields?.villa_gross_yield || 0) || 0,
+    },
+    {
+      type: 'Apartments',
+      price: 'AED —',
+      yieldPct: aptYield,
+    },
+    {
+      type: 'Townhouses',
+      price: 'AED —',
+      yieldPct: parseFloat(prop?.yields?.townhouse_gross_yield || 0) || 0,
+    },
+  ];
+
+  const testimonials = [
+    intel?.action || null,
+    prop?.owner_briefing || null,
+    prop?.market_split?.note || null,
+  ].filter(Boolean).slice(0, 3);
+
+  const [qIdx, setQIdx] = useState(0);
+  useEffect(() => {
+    if (!testimonials.length) return;
+    const t = setInterval(() => setQIdx((i) => (i + 1) % testimonials.length), 4200);
+    return () => clearInterval(t);
+  }, [testimonials.length]);
+
+  return (
+    <div className="landing-root">
+      <style>{landingCss}</style>
+      <div className="landing-glow" />
+
+      <div className="landing-topbar">
+        <div className="landing-container">
+          <div className="landing-nav">
+            <div className="brand-mark">
+              <div className="brand-dot" />
+              <div style={{ minWidth: 0 }}>
+                <div className="brand-name">Kyle Caruana</div>
+                <div className="brand-sub">Dubai Real Estate Broker</div>
+              </div>
+            </div>
+
+            <div className="landing-actions">
+              {adminToken ? (
+                <a className="btn-ghost" href={dashboardHref} style={{ padding: '12px 14px' }}>Admin Dashboard</a>
+              ) : null}
+              <a className="btn-ghost" href={whatsappUrl} target="_blank" rel="noreferrer" style={{ padding: '12px 14px' }}>
+                Work With Kyle
+              </a>
+              <a className="btn-gold" href={dashboardHref} style={{ padding: '12px 14px' }}>
+                View Opportunities
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="hero">
+        <div className="landing-container">
+          <div className="hero-grid">
+            <div>
+              <div className="hero-kicker">Private wealth meets performance lab</div>
+              <div className="hero-title">
+                Dubai Real Estate. Engineered for Performance.
+              </div>
+              <div className="hero-sub">
+                Luxury advisory powered by data, discipline, and market intelligence.
+              </div>
+
+              <div className="hero-cta">
+                <a className="btn-gold" href={dashboardHref}>View Opportunities</a>
+                <a className="btn-ghost" href={whatsappUrl} target="_blank" rel="noreferrer">Work With Kyle</a>
+              </div>
+
+              <div className="hero-metrics">
+                <div className="metric-tile">
+                  <div className="metric-label">Top-performing listings tracked weekly</div>
+                  <div className="metric-value gold">
+                    {loading ? '—' : <CountUp to={topAreasCount} suffix="" />}
+                  </div>
+                </div>
+                <div className="metric-tile">
+                  <div className="metric-label">Real-time market positioning</div>
+                  <div className="metric-value">
+                    {loading ? '—' : <span>{composite || '—'}</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="hero-backplate">
+              <div className="hero-lineart">
+                <LineChartMini value={composite * 16} />
+              </div>
+              <div style={{ position: 'relative', zIndex: 2, paddingTop: 8 }}>
+                <div className="tag-k">Precision pricing strategies</div>
+                <div className="big-num" style={{ marginTop: 10 }}>
+                  {loading ? '—' : `${aptYield ? aptYield.toFixed(1) : '—'}%`}
+                </div>
+                <div className="divider" />
+                <div className="section-sub">
+                  A trading-dashboard approach to pricing, timing, and buyer positioning.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section">
+        <div className="landing-container">
+          <div className="section-head">
+            <div>
+              <div className="section-title">DATA-DRIVEN EDGE</div>
+              <div className="section-sub">
+                Trading dashboard meets luxury UI — controlled motion, precision signals, and high-contrast clarity.
+              </div>
+            </div>
+          </div>
+          <div className="cards-3">
+            <div className="card card-pad">
+              <div className="tag-k">Top-performing listings tracked weekly</div>
+              <div className="big-num">{loading ? '—' : topAreasCount.toLocaleString('en-US')}</div>
+              <div className="divider" />
+              <div className="section-sub">Ranked momentum for your next move.</div>
+            </div>
+            <div className="card card-pad">
+              <div className="tag-k">Real-time market positioning</div>
+              <div className="big-num">{loading ? '—' : `${composite || '—'} / 5`}</div>
+              <div className="divider" />
+              <div className="section-sub">Composite score from market drivers.</div>
+            </div>
+            <div className="card card-pad">
+              <div className="tag-k">Precision pricing strategies</div>
+              <div className="big-num">{loading ? '—' : `${(aptYield || 0).toFixed(1)}%`}</div>
+              <div className="divider" />
+              <div className="section-sub">Yield-aware pricing and timing.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section">
+        <div className="landing-container">
+          <div className="section-head">
+            <div>
+              <div className="section-title">FEATURED PROPERTIES</div>
+              <div className="section-sub">Swipe to explore. Subtle lift + gold glow on focus.</div>
+            </div>
+          </div>
+
+          <div className="featured-rail" aria-label="Featured properties">
+            {featuredCards.map((c) => {
+              const demand = intel?.composite ?? 0;
+              const demandScore = demand ? Math.round(demand * 20) : null;
+              const yieldVal = c.yieldPct || 0;
+              return (
+                <div key={c.type} className="card prop-card">
+                  <div className="card-pad">
+                    <div className="prop-img" />
+                    <div className="prop-body">
+                      <div className="prop-price">{c.price}</div>
+                      <div className="prop-type">{c.type}</div>
+                      <div className="prop-metrics">
+                        <div className="pill">ROI: {loading ? '—' : `${yieldVal.toFixed(1)}%`}</div>
+                        <div className="pill">Yield: {loading ? '—' : `${yieldVal.toFixed(1)}%`}</div>
+                        <div className="pill">Demand Score: {loading ? '—' : (demandScore ?? '—')}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="section">
+        <div className="landing-container">
+          <div className="section-head">
+            <div>
+              <div className="section-title">THE STRATEGY</div>
+              <div className="section-sub">This isn’t brokerage. This is positioning.</div>
+            </div>
+          </div>
+          <div className="strategy-grid">
+            <div className="perf-block" style={{ padding: '22px 20px' }}>
+              <div className="tag-k">Kyle’s USP</div>
+              <div className="perf-copy" style={{ marginTop: 10 }}>This isn’t brokerage. This is positioning.</div>
+              <div className="divider" />
+              <div className="section-sub">Measured decisions. Discipline-first execution. Precision in deals.</div>
+            </div>
+            <div className="step-list">
+              {[
+                { t: 'Market Analysis', s: 'Signal extraction across global, local, and buyer-origin drivers.' },
+                { t: 'Price Optimization', s: 'Yield-aware pricing strategy aligned to investor confidence.' },
+                { t: 'Buyer Targeting', s: 'Right buyer cohort, right timing, right risk posture.' },
+                { t: 'Deal Execution', s: 'Controlled steps from underwriting to closing — no chaos.' },
+              ].map((st, i) => (
+                <div key={st.t} className="step">
+                  <div className="step-dot">{i + 1}</div>
+                  <div>
+                    <div className="step-title">{st.t}</div>
+                    <div className="step-sub">{st.s}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section">
+        <div className="landing-container">
+          <div className="section-head">
+            <div>
+              <div className="section-title">PERFORMANCE LIFESTYLE</div>
+              <div className="section-sub">Discipline in life. Precision in deals.</div>
+            </div>
+          </div>
+
+          <div className="cards-2">
+            <div className="perf-block">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+                <div className="pulse-ring" aria-hidden="true">
+                  <div style={{ fontFamily: 'monospace', fontSize: 11, letterSpacing: '.12em', color: C.amL }}>DISCIPLINE</div>
+                </div>
+                <div>
+                  <div className="perf-copy">Discipline in life. Precision in deals.</div>
+                  <div className="divider" />
+                  <div className="section-sub">Controlled motion. Focused decisions. Elite execution under uncertainty.</div>
+                </div>
+              </div>
+            </div>
+            <div className="card card-pad">
+              <div className="tag-k">Micro-interactions</div>
+              <div style={{ marginTop: 14 }}>
+                <div style={{ fontFamily: 'monospace', fontSize: 11, color: C.t2, lineHeight: 1.7 }}>
+                  Pulse effects, scroll-trigger reveals, and button micro-glow — intentional, not flashy.
+                </div>
+              </div>
+              <div className="divider" />
+              <LineChartMini value={Math.min(100, composite * 18)} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section">
+        <div className="landing-container">
+          <div className="section-head">
+            <div>
+              <div className="section-title">CLIENT RESULTS</div>
+              <div className="section-sub">Minimal testimonials with soft gold borders.</div>
+            </div>
+          </div>
+
+          <div className="results-carousel">
+            {testimonials.length ? (
+              <div className="card card-pad" style={{ padding: 22 }}>
+                <div className="tag-k">Verified perspective</div>
+                <div style={{ marginTop: 14 }}>
+                  <div className="carousel-fade" data-state="in">
+                    <div className="quote">“{testimonials[qIdx]}”</div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="card card-pad">
+                <div className="tag-k">Verified perspective</div>
+                <div style={{ marginTop: 14, fontFamily: 'monospace', color: C.t2, lineHeight: 1.7 }}>
+                  Loading client results…
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="section" style={{ paddingBottom: 88 }}>
+        <div className="landing-container">
+          <div className="cta-block">
+            <div className="cta-title">Access Dubai’s Top Opportunities Before the Market Does.</div>
+            <div className="cta-actions">
+              <a className="btn-gold" href={`tel:${contactTel}`}>Book Consultation</a>
+              <a className="btn-ghost" href={dashboardHref}>View Off-Market Deals</a>
+            </div>
+            {error ? (
+              <div style={{ marginTop: 14, fontFamily: 'monospace', fontSize: 11, color: C.amL, lineHeight: 1.5 }}>
+                Note: {error}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      <MobileStickyCTA dashboardHref={dashboardHref} />
+    </div>
+  );
+}
 function Skel({ w='100%', h=12, mb=0 }) {
   return <div style={{ width:w, height:h, marginBottom:mb, background:C.border, borderRadius:2, animation:'pulse 1.4s ease-in-out infinite' }}/>;
 }
@@ -449,8 +1018,7 @@ function cloneNodeNoNoPrint(el) {
 // ═══════════════════════════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════════════════════════
-export default function Page() {
-  const [viewMode, setViewMode] = useState('client'); // 'admin' | 'client'
+export function DashboardView() {
   const [adminToken, setAdminToken] = useState('');
   const [intel,     setIntel]     = useState(null);
   const [prop,      setProp]      = useState(null);
@@ -473,21 +1041,13 @@ export default function Page() {
   useEffect(() => {
     try {
       const u = new URL(window.location.href);
-      const fromQuery = (u.searchParams.get('view') || '').toLowerCase();
-      const fromEnv = String(process.env.NEXT_PUBLIC_DASHBOARD_VIEW_MODE || '').toLowerCase();
-      const mode = fromQuery === 'client' || fromQuery === 'admin'
-        ? fromQuery
-        : (fromEnv === 'client' ? 'client' : 'admin');
-      setViewMode(mode);
       setAdminToken((u.searchParams.get('adminToken') || '').trim());
     } catch {
-      setViewMode('admin');
       setAdminToken('');
     }
   }, []);
 
-  const canAdmin = viewMode === 'admin' && !!adminToken;
-  const isClientView = viewMode === 'client' || !canAdmin;
+  const isClientView = !adminToken;
 
   const refreshIntel = useCallback(async () => {
     setLoadIntel(true); setError(null);
