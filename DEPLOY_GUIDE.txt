@@ -1,0 +1,66 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STRADA INTELLIGENCE TRACKER — DEPLOY GUIDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ARCHITECTURE
+────────────
+Market prices  → Yahoo Finance API (free, no key needed)
+News/narrative → Claude Haiku + web search
+Property data  → Claude Haiku + web search (DLD-scoped)
+
+ONLY ONE API KEY IS REQUIRED: your Anthropic key.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DATA SOURCES BY INSTRUMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Instrument          Yahoo Finance symbol
+─────────────────── ────────────────────
+DFM General Index   DFMGI.AE
+Emaar Properties    EMAAR.AE
+Emirates NBD        ENBD.AE
+Dubai Islamic Bank  DIB.AE
+Brent Crude         BZ=F
+Gold Spot           GC=F
+S&P 500             ^GSPC
+VIX Fear Index      ^VIX
+US 10Y Yield        ^TNX
+
+Note: DFM stocks trade Mon–Fri 10:00–14:45 GST.
+Outside trading hours, the last close price is shown.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEPLOY STEPS (API KEY LIVES IN VERCEL ONLY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Vercel → Settings → Environment Variables
+   ANTHROPIC_API_KEY = sk-ant-api03-... (console.anthropic.com)
+   TAVILY_API_KEY   = tvly-... (tavily.com — web-backed scorecards; avoids Anthropic web_search billing errors)
+   Redeploy after changing.
+
+2. Push to GitHub — Vercel build injects ANTHROPIC_API_KEY at runtime.
+   No key in repo. Same as before.
+
+LOCAL DEV (match Vercel)
+────────────────────────
+  npx vercel link          (once)
+  npm run env:pull         → writes .env.local from Vercel
+  npm run dev
+
+  See docs/VERCEL_ANTHROPIC.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STATUS BADGE (top of dashboard)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+● LIVE PRICES · Yahoo Finance (9/9 live)   = all good
+● LIVE PRICES · Yahoo Finance (7/9 live)   = minor issue
+⚠ Yahoo Finance (partial)                  = some failed
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CLIENT PACK (share without burning API credits)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dashboard → "Client pack": tick sections → **Open PDF view (recommended)**.
+A new window opens with a clean, presentable report; in that window use Print → Save as PDF. Each section starts on a new page. Alternatively: Download HTML brief (email the file) or Print selected from this page. "Print full page" = entire report. No Tavily/Anthropic calls when clients open the HTML or PDF.
+
