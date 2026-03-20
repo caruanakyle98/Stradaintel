@@ -226,7 +226,6 @@
     width: 100%; height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition: opacity 2s ease-in-out;
     will-change: opacity;
   }
   .bg-vid.is-active { opacity: 1; }
@@ -1965,58 +1964,96 @@
     }, { passive: true });
   }
 
-  /* ── Hero background video playlist ── */
+  /* ── Hero background video — segmented montage, straight cuts ── */
   (function(){
-    const playlist = [
-      '/videos/marina-skyline.mp4',
-      '/videos/kyle-walks-in.mp4',
-      '/videos/office-meeting.mp4',
-      '/videos/walking-into-meeting.mp4',
-      '/videos/office-final-scene.mp4',
+    /* Each entry: clip file, start second, duration to show */
+    const segs = [
+      { f:'/videos/marina-skyline.mp4',       s:0,    d:2.5 },
+      { f:'/videos/kyle-walks-in.mp4',        s:0,    d:4   },
+      { f:'/videos/pots-money.mp4',           s:0,    d:4   },
+      { f:'/videos/office-meeting.mp4',       s:0,    d:3.5 },
+      { f:'/videos/kyle-walks-in.mp4',        s:5,    d:4   },
+      { f:'/videos/walking-into-meeting.mp4', s:0,    d:3.5 },
+      { f:'/videos/office-final-scene.mp4',   s:0,    d:4   },
+      { f:'/videos/pots-money.mp4',           s:3.5,  d:4   },
+      { f:'/videos/marina-skyline.mp4',       s:1.5,  d:3   },
+      { f:'/videos/kyle-walks-in.mp4',        s:10,   d:4.5 },
+      { f:'/videos/office-final-scene.mp4',   s:4,    d:5   },
+      { f:'/videos/office-meeting.mp4',       s:3,    d:3   },
     ];
-    let slot = 0;          // index into vids[] that is currently active
-    let nextClip = 1;      // next clip index in playlist
-    let busy = false;      // debounce crossfade calls
+
+    let idx   = 0;   // current segment index
+    let slot  = 0;   // which vids[] element is active
+    let sbOk  = false;
+    let armed = false;
+
     const vids = [
       document.getElementById('bgVid1'),
       document.getElementById('bgVid2'),
     ];
     if(!vids[0] || !vids[1]) return;
 
-    function crossFade() {
-      if(busy) return;
-      busy = true;
-      const incoming = vids[1 - slot];
-      incoming.src = playlist[nextClip];
-      incoming.load();
+    const a  = () => vids[slot];
+    const sb = () => vids[1 - slot];
+
+    /* Preload a segment into the standby video element */
+    function preload(segIdx) {
+      const seg = segs[segIdx % segs.length];
+      sbOk = false;
+      const v = sb();
+      v.pause();
+      v.src = seg.f;
+      v.load();
       const onReady = () => {
-        incoming.removeEventListener('canplaythrough', onReady);
-        incoming.play().catch(()=>{});
-        incoming.classList.add('is-active');
-        vids[slot].classList.remove('is-active');
-        setTimeout(() => {
-          vids[slot].pause();
-          vids[slot].removeAttribute('src');
-          vids[slot].load();
-          slot    = 1 - slot;
-          nextClip = (nextClip + 1) % playlist.length;
-          busy    = false;
-        }, 2200);
+        v.removeEventListener('canplay', onReady);
+        try { v.currentTime = seg.s; } catch(e){}
+        sbOk = true;
       };
-      incoming.addEventListener('canplaythrough', onReady);
+      v.addEventListener('canplay', onReady);
     }
 
-    // Bootstrap first clip
-    vids[0].src = playlist[0];
+    /* Execute a straight cut to the preloaded standby */
+    function cut() {
+      if(!sbOk){ setTimeout(cut, 80); return; }
+      idx = (idx + 1) % segs.length;
+      const next = sb();
+      next.play().catch(()=>{});
+      next.classList.add('is-active');
+      a().classList.remove('is-active');
+      a().pause();
+      slot  = 1 - slot;
+      armed = false;
+      watchSeg();
+      preload(idx + 1);
+    }
+
+    /* Watch the active video's currentTime and cut at the segment end */
+    function watchSeg() {
+      const endAt = segs[idx].s + segs[idx].d;
+      const v = a();
+      armed = true;
+      const tick = () => {
+        if(!armed){ v.removeEventListener('timeupdate', tick); return; }
+        if(v.currentTime >= endAt){
+          v.removeEventListener('timeupdate', tick);
+          cut();
+        }
+      };
+      v.addEventListener('timeupdate', tick);
+    }
+
+    /* Bootstrap — load and play first segment */
+    const first = segs[0];
+    vids[0].src = first.f;
     vids[0].load();
-    vids[0].addEventListener('canplaythrough', function start() {
-      vids[0].removeEventListener('canplaythrough', start);
+    vids[0].addEventListener('canplay', function go(){
+      vids[0].removeEventListener('canplay', go);
+      vids[0].currentTime = first.s;
       vids[0].classList.add('is-active');
       vids[0].play().catch(()=>{});
+      watchSeg();
+      preload(1);
     });
-
-    vids[0].addEventListener('ended', crossFade);
-    vids[1].addEventListener('ended', crossFade);
   })();
 
 })();
