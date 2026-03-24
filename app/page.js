@@ -1240,6 +1240,9 @@ export function DashboardView() {
         const msg = d?.detail ? `${d.error || `HTTP ${r.status}`} (${d.detail})` : (d?.error || `HTTP ${r.status}`);
         throw new Error(msg);
       }
+      // #region agent log
+      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:setProp',message:'prop data shape',data:{prices_apt_psf:d?.prices?.apt_psf_aed,prices_villa_psf:d?.prices?.villa_psf_aed,rental_1br:d?.rental?.apt_1br_avg_aed,rental_2br:d?.rental?.apt_2br_avg_aed,rental_studio:d?.rental?.studio_avg_aed,listings_by_beds:d?.listings?.by_beds?Object.fromEntries(Object.entries(d.listings.by_beds).map(([k,v])=>[k,{count:v.count,avg:v.avg_price_fmt}])):null,listings_cmp:d?.listings?.asking_vs_txn_by_beds?Object.keys(d.listings.asking_vs_txn_by_beds):null},hypothesisId:'H1-H4',runId:'pre-fix',timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       setProp(d);
     } catch(e) { setPropError(e.message); }
     finally { setLoadProp(false); }
