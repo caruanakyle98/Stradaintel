@@ -826,7 +826,7 @@ function StatRow({ label, value, sub, highlight, last, source }) {
   );
 }
 
-function AreaRow({ rank, area, vol, psf, trend, maxVol, last }) {
+function AreaRow({ rank, area, vol, psf, trend, maxVol, last, volLabel = 'deals', psfDisplay }) {
   const pct = maxVol?Math.round((parseInt(vol?.replace(/,/g,''))||0)/maxVol*100):0;
   const tc = trendCol(trend);
   return (
@@ -838,8 +838,8 @@ function AreaRow({ rank, area, vol, psf, trend, maxVol, last }) {
           <span style={{ fontSize:11, flexShrink:0 }}>{trendArrow(trend)}</span>
         </div>
         <div style={{ display:'flex', gap:14, alignItems:'center', flexWrap:'wrap' }}>
-          <span style={{ fontSize:10, color:'var(--muted)' }}>{na(vol)} deals</span>
-          <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:13, color:tc, fontWeight:700 }}>AED {na(psf)}/sqft</span>
+          <span style={{ fontSize:10, color:'var(--muted)' }}>{na(vol)} {volLabel}</span>
+          <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:13, color:tc, fontWeight:700 }}>{psfDisplay ?? `AED ${na(psf)}/sqft`}</span>
         </div>
       </div>
       <div style={{ height:3, background:'rgba(201,168,76,0.10)', borderRadius:2 }}>
@@ -1266,6 +1266,9 @@ export function DashboardView() {
         const msg = d?.detail ? `${d.error || `HTTP ${r.status}`} (${d.detail})` : (d?.error || `HTTP ${r.status}`);
         throw new Error(msg);
       }
+      // #region agent log
+      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:setProp',message:'prop data received',data:{hasCharts30d:!!d?.charts_30d,hasRentalCharts30d:!!d?.rental_charts_30d,hasTopAreas:!!d?.top_areas,hasRentalTopAreas:!!d?.rental_top_areas,rentalTopAreasCount:d?.rental_top_areas?.length,rentalChartsVolLen:d?.rental_charts_30d?.rent_volume?.length},hypothesisId:'H1-data-flow',runId:'post-fix',timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       setProp(d);
     } catch(e) { setPropError(e.message); }
     finally { setLoadProp(false); }
@@ -1360,7 +1363,8 @@ export function DashboardView() {
   const pillarOrder  = ['security','oil','equities','macro','buyer_demand','aviation','property'];
   const pillarsWithKey = pillarOrder.map(k => pl?.[k] ? { ...pl[k], key:k } : null);
 
-  const maxVol   = prop?.top_areas ? Math.max(...prop.top_areas.map(a=>parseInt(a.vol?.replace(/,/g,''))||0)) : 1;
+  const maxVol        = prop?.top_areas        ? Math.max(...prop.top_areas.map(a=>parseInt(a.vol?.replace(/,/g,''))||0))        : 1;
+  const maxVolRental  = prop?.rental_top_areas ? Math.max(...prop.rental_top_areas.map(a=>parseInt(a.vol)||0)) : 1;
   const brentRaw  = mkt?.brent?.raw || 0;
   const vixRaw    = mkt?.vix?.raw   || 0;
   const r10Raw    = mkt?.us10y?.raw  || 0;
@@ -1855,7 +1859,8 @@ export function DashboardView() {
           </div>
 
           {/* 30-day trends: daily + 7d MA + weekly */}
-          {(prop?.charts_30d || loadProp) && (
+          {/* ── Sales tab: 30-day sales charts ── */}
+          {propTab === 'sales' && (prop?.charts_30d || loadProp) && (
             <div className="reveal print-keep-together" style={{ marginBottom:16 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:8 }}>
                 Market Trend (Dubai) · {prop?.charts_30d?.window_label || '30 days'}
@@ -1911,6 +1916,73 @@ export function DashboardView() {
                         Median WoW:{' '}
                         {prop?.charts_30d?.wow_psf_pct != null && Number.isFinite(prop.charts_30d.wow_psf_pct)
                           ? `${prop.charts_30d.wow_psf_pct >= 0 ? '+' : ''}${prop.charts_30d.wow_psf_pct}%`
+                          : 'N/A'}
+                      </div>
+                    </div>
+                  </>
+                )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Rental tab: 30-day rental charts ── */}
+          {propTab === 'rental' && (prop?.rental_charts_30d || loadProp) && (
+            <div className="reveal print-keep-together" style={{ marginBottom:16 }}>
+              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:8 }}>
+                Rental Trend (Dubai) · {prop?.rental_charts_30d?.window_label || '30 days'}
+              </div>
+              <div style={{ fontSize:12, color:'var(--muted)', marginBottom:14, maxWidth:720, lineHeight:1.55 }}>
+                Daily registration counts can be noisy. <strong style={{ color:C.t2 }}>7-day moving average</strong> shows the underlying rental activity trend.
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap:12 }}>
+                <TrendDualChart
+                  title="Rental volume"
+                  subtitle="Registrations per day vs smoothed trend"
+                  daily={prop?.rental_charts_30d?.rent_volume || []}
+                  ma7={prop?.rental_charts_30d?.rent_volume_ma7 || []}
+                  dailyColor={C.ga}
+                  maColor={C.gm}
+                  yZero
+                  loading={loadProp}
+                />
+                <TrendDualChart
+                  title="Avg annual rent (AED)"
+                  subtitle="Daily avg (filled) vs 7-day average"
+                  daily={prop?.rental_charts_30d?.rent_avg_aed || []}
+                  ma7={prop?.rental_charts_30d?.rent_avg_aed_ma7 || []}
+                  dailyColor={C.amL}
+                  maColor="#e8a060"
+                  loading={loadProp}
+                />
+              </div>
+              <div className="print-keep-together" style={{ marginTop:12 }}>
+                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', margin:'16px 0 10px' }}>Weekly Rental Pulse (30-Day Window · Dubai Mon–Sun)</div>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap:12 }}>
+                {loadProp ? (
+                  <>
+                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}><Tag color={C.gm}>Weekly volume</Tag><Skel h={36} /></div>
+                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}><Tag color={C.gm}>Weekly avg rent</Tag><Skel h={36} /></div>
+                  </>
+                ) : (
+                  <>
+                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
+                      <Tag color={C.gm}>Weekly volume</Tag>
+                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Total rental registrations Mon–Sun (Dubai)</div>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:13, fontWeight:700, color:(prop?.rental_charts_30d?.wow_volume_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:10 }}>
+                        Latest week vs prior:{' '}
+                        {prop?.rental_charts_30d?.wow_volume_pct != null && Number.isFinite(prop.rental_charts_30d.wow_volume_pct)
+                          ? `${prop.rental_charts_30d.wow_volume_pct >= 0 ? '+' : ''}${prop.rental_charts_30d.wow_volume_pct}%`
+                          : 'N/A'}
+                      </div>
+                    </div>
+                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
+                      <Tag color={C.gm}>Weekly avg rent</Tag>
+                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Avg annualised rent (AED) — 7-day trend</div>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:13, fontWeight:700, color:(prop?.rental_charts_30d?.wow_rent_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:10 }}>
+                        Avg WoW:{' '}
+                        {prop?.rental_charts_30d?.wow_rent_pct != null && Number.isFinite(prop.rental_charts_30d.wow_rent_pct)
+                          ? `${prop.rental_charts_30d.wow_rent_pct >= 0 ? '+' : ''}${prop.rental_charts_30d.wow_rent_pct}%`
                           : 'N/A'}
                       </div>
                     </div>
@@ -2055,8 +2127,8 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* Hottest areas — both tabs */}
-          {(prop?.top_areas||loadProp) && (
+          {/* Hottest areas — sales tab: ranked by sales deals */}
+          {propTab === 'sales' && (prop?.top_areas||loadProp) && (
             <div className="reveal" style={{ marginBottom:12 }}>
               <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
                 <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:6 }}>
@@ -2067,7 +2139,7 @@ export function DashboardView() {
                 <div style={{ fontSize:11, color:'var(--muted)', marginBottom:14 }}>
                   {prop?.top_areas_mode === 'sub_community'
                     ? `Inside ${prop?.filter_area || 'selected area'} · ranked by deals`
-                    : 'Ranked by number of deals'}
+                    : 'Ranked by number of sales deals'}
                 </div>
                 {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={32} mb={8}/>):
                   (prop?.top_areas?.length
@@ -2076,7 +2148,37 @@ export function DashboardView() {
                       ))
                     : prop?.top_areas_mode === 'sub_community' && prop?.top_areas_empty_hint ? (
                         <div style={{ fontSize: 10, color: C.tm, lineHeight: 1.5, padding: '8px 0' }}>{prop.top_areas_empty_hint}</div>
-                      )                     : null)}
+                      ) : null)}
+              </div>
+            </div>
+          )}
+
+          {/* Hottest areas — rental tab: ranked by rental registrations */}
+          {propTab === 'rental' && (prop?.rental_top_areas||loadProp) && (
+            <div className="reveal" style={{ marginBottom:12 }}>
+              <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
+                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:6 }}>
+                  Most Active Rental Areas This Week
+                </div>
+                <div style={{ fontSize:11, color:'var(--muted)', marginBottom:14 }}>
+                  Ranked by number of rental registrations
+                </div>
+                {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={32} mb={8}/>):
+                  (prop?.rental_top_areas?.length
+                    ? prop.rental_top_areas.map((a, i) => (
+                        <AreaRow
+                          key={i}
+                          rank={`#${i + 1}`}
+                          area={na(a.area)}
+                          vol={na(a.vol)}
+                          volLabel="rentals"
+                          psfDisplay={a.avg_rent_label ? `AED ${a.avg_rent_label}/yr` : undefined}
+                          trend={a.trend}
+                          maxVol={maxVolRental}
+                          last={i === prop.rental_top_areas.length - 1}
+                        />
+                      ))
+                    : <div style={{ fontSize:10, color:C.tm }}>No rental area data available</div>)}
               </div>
             </div>
           )}
