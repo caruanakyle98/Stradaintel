@@ -1267,7 +1267,7 @@ export function DashboardView() {
         throw new Error(msg);
       }
       // #region agent log
-      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:setProp',message:'prop data received',data:{hasCharts30d:!!d?.charts_30d,hasRentalCharts30d:!!d?.rental_charts_30d,hasTopAreas:!!d?.top_areas,hasRentalTopAreas:!!d?.rental_top_areas,rentalTopAreasCount:d?.rental_top_areas?.length,rentalChartsVolLen:d?.rental_charts_30d?.rent_volume?.length},hypothesisId:'H1-data-flow',runId:'post-fix',timestamp:Date.now()})}).catch(()=>{});
+      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:setProp',message:'prop data received',data:{hasCharts30d:!!d?.charts_30d,hasRentalCharts30d:!!d?.rental_charts_30d,hasTopAreas:!!d?.top_areas,hasRentalTopAreas:!!d?.rental_top_areas,rentalTopAreasCount:d?.rental_top_areas?.length,rentalChartsVolLen:d?.rental_charts_30d?.rent_volume?.length,rentalTopAreasMode:d?.rental_top_areas_mode,filterArea:d?.filter_area,rentalTopAreasSample:d?.rental_top_areas?.slice(0,3)},hypothesisId:'H1-drill-down',runId:'post-fix',timestamp:Date.now()})}).catch(()=>{});
       // #endregion
       setProp(d);
     } catch(e) { setPropError(e.message); }
@@ -2158,10 +2158,14 @@ export function DashboardView() {
             <div className="reveal" style={{ marginBottom:12 }}>
               <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
                 <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:6 }}>
-                  Most Active Rental Areas This Week
+                  {prop?.rental_top_areas_mode === 'sub_community'
+                    ? 'Most Active Rental Sub-Communities / Buildings'
+                    : 'Most Active Rental Areas This Week'}
                 </div>
                 <div style={{ fontSize:11, color:'var(--muted)', marginBottom:14 }}>
-                  Ranked by number of rental registrations
+                  {prop?.rental_top_areas_mode === 'sub_community'
+                    ? `Inside ${prop?.filter_area || 'selected area'} · ranked by rental registrations`
+                    : 'Ranked by number of rental registrations'}
                 </div>
                 {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={32} mb={8}/>):
                   (prop?.rental_top_areas?.length
