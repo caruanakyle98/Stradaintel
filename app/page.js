@@ -2122,19 +2122,27 @@ export function DashboardView() {
               )}
 
               {/* Top communities by rental listing supply */}
-              {(loadProp || prop?.listings?.top_communities?.length > 0) && (
+              {(loadProp || prop?.listings?.top_communities?.length > 0 || prop?.listings?.top_buildings?.length > 0) && (
                 <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
                   <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:6 }}>
-                    Top Communities by Rental Listing Volume
+                    {prop?.listings?.listings_top_mode === 'building'
+                      ? 'Top Buildings by Rental Listing Volume'
+                      : 'Top Communities by Rental Listing Volume'}
                   </div>
-                  <div style={{ fontSize:11, color:C.tm, marginBottom:14 }}>Where rental supply is concentrated · last 15 days</div>
+                  <div style={{ fontSize:11, color:C.tm, marginBottom:14 }}>
+                    {prop?.listings?.listings_top_mode === 'building'
+                      ? `Inside ${prop.listings.filter_area} · ranked by active listings`
+                      : 'Where rental supply is concentrated · last 15 days'}
+                  </div>
                   {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={32} mb={8}/>):(()=>{
-                    const comms = prop?.listings?.top_communities || [];
-                    if (!comms.length) return null;
-                    const maxCount = comms[0]?.count || 1;
-                    return comms.slice(0,10).map((c, i) => {
+                    const items = prop?.listings?.listings_top_mode === 'building'
+                      ? (prop?.listings?.top_buildings || [])
+                      : (prop?.listings?.top_communities || []);
+                    if (!items.length) return null;
+                    const maxCount = items[0]?.count || 1;
+                    return items.slice(0,10).map((c, i) => {
                       const pct = Math.round((c.count / maxCount) * 100);
-                      const isLast = i === Math.min(comms.length,10)-1;
+                      const isLast = i === Math.min(items.length,10)-1;
                       return (
                         <div key={i} style={{ marginBottom: isLast?0:10 }}>
                           <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
