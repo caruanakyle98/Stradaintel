@@ -348,9 +348,13 @@ export async function GET(request) {
           '3br':  parseFloat(result.body.rental?.villa_3br_avg_aed) || null,
         };
 
+        // #region agent log
+        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'route.js:listings-filter',message:'listings filter applied',data:{areaParam,areaFilterActive,filterArea:areaFilterActive?areaParam:''},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         const listingsResult = buildListingsPayload(listingsRaw, listingsLabel, {
           rentalTxnAvgByBeds,
           dataType: 'rental',
+          filterArea: areaFilterActive ? areaParam : '',
         });
 
         if (listingsResult.ok && listingsResult.listings) {

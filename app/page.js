@@ -2017,6 +2017,9 @@ export function DashboardView() {
             <div className="reveal" style={{ marginBottom:12 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>
                 Rental Listings — Active Supply Pipeline
+                {prop?.listings?.filter_area && (
+                  <span style={{ color:C.tm, fontWeight:400, marginLeft:6 }}>· {prop.listings.filter_area}</span>
+                )}
               </div>
 
               {/* Summary stat row */}
