@@ -1196,6 +1196,7 @@ export function DashboardView() {
   const [clientSections, setClientSections] = useState(() => defaultClientSections());
   const [clientPackOpen, setClientPackOpen] = useState(false);
   const [printScope, setPrintScope] = useState(false);
+  const [propTab, setPropTab] = useState('sales'); // 'sales' | 'rental'
   const [refreshingSnapshot, setRefreshingSnapshot] = useState(false);
 
   useEffect(() => {
@@ -1724,7 +1725,24 @@ export function DashboardView() {
           <SectionHead n="01" title="Dubai Property Market — The Numbers"
             desc="Live transaction data from Dubai Land Department, rental yields, asking prices and the most active areas this week."/>
 
-          {/* Owner briefing */}
+          {/* ── Sales / Rental toggle ── */}
+          <div style={{ display:'flex', gap:6, marginBottom:24, flexWrap:'wrap' }}>
+            {[['sales','Sales Data'],['rental','Rental Data']].map(([tab, label]) => (
+              <button key={tab} onClick={() => setPropTab(tab)} style={{
+                padding:'8px 22px',
+                background: propTab===tab ? C.amL : 'transparent',
+                color: propTab===tab ? C.bg : C.t2,
+                border: `1px solid ${propTab===tab ? C.amL : C.border}`,
+                borderRadius: 40,
+                fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)",
+                fontSize:10, fontWeight:700, letterSpacing:'2px',
+                textTransform:'uppercase', cursor:'pointer',
+                transition:'background 0.2s, color 0.2s, border-color 0.2s',
+              }}>{label}</button>
+            ))}
+          </div>
+
+          {/* Owner briefing — always visible */}
           {(prop?.owner_briefing||loadProp) && (
             <div className="reveal print-keep-together lp-card" style={{ marginBottom:20, padding:'20px 24px', borderLeft:`4px solid ${C.g}` }}>
               <Tag color={C.ga}>Strada's Market Summary · {prop?.data_freshness||'Latest data'}</Tag>
@@ -1734,60 +1752,62 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* Transactions this week */}
-          <div className="reveal" style={{ marginBottom:16 }}>
-            <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>HOW MANY DEALS ARE HAPPENING · {prop?.weekly?.period_label||'Latest week'}</div>
-            <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-              <TxCard label="Properties Sold" value={prop?.weekly?.sale_volume?.value} wowChg={prop?.weekly?.sale_volume?.chg_wow} yoyChg={prop?.weekly?.sale_volume?.chg_yoy} trend={prop?.weekly?.sale_volume?.trend} period={prop?.weekly?.sale_volume?.period} source={prop?.weekly?.sale_volume?.source} loading={loadProp}/>
-              <TxCard label="Total Sales Value" value={prop?.weekly?.sale_value_aed?.value} wowChg={prop?.weekly?.sale_value_aed?.chg_wow} yoyChg={prop?.weekly?.sale_value_aed?.chg_yoy} trend={prop?.weekly?.sale_value_aed?.trend} period={prop?.weekly?.sale_value_aed?.period} source={prop?.weekly?.sale_value_aed?.source} loading={loadProp}/>
-              <TxCard label="Rental registrations" value={prop?.weekly?.rent_volume?.value} wowChg={prop?.weekly?.rent_volume?.chg_wow} yoyChg={prop?.weekly?.rent_volume?.chg_yoy} trend={prop?.weekly?.rent_volume?.trend} period={prop?.weekly?.rent_volume?.period} source={prop?.weekly?.rent_volume?.source} loading={loadProp}/>
-              <TxCard label="Annualised rent (week)" value={prop?.weekly?.rent_value_aed?.value} wowChg={prop?.weekly?.rent_value_aed?.chg_wow} yoyChg={prop?.weekly?.rent_value_aed?.chg_yoy} trend={prop?.weekly?.rent_value_aed?.trend} period={prop?.weekly?.rent_value_aed?.period} source={prop?.weekly?.rent_value_aed?.source} loading={loadProp}/>
-            </div>
-            {prop?.weekly?.rent_new_vs_renewal && !loadProp && (
-              <div className="reveal print-keep-together lp-card" style={{ marginTop:12, padding:'20px 22px' }}>
-                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>NEW VS RENEWAL · SAME WEEK (BY REGISTRATION DATE)</div>
-                <div style={{ display:'flex', gap:16, flexWrap:'wrap', alignItems:'center', marginBottom:12 }}>
-                  <div style={{ flex:1, minWidth:140 }}>
-                    <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.ga, marginBottom:6 }}>New Contract</div>
-                    <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:28, fontWeight:800, color:C.ga, textShadow:C.glowGa }}>{prop.weekly.rent_new_vs_renewal.new_count}</div>
-                    <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>{prop.weekly.rent_new_vs_renewal.new_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.new_chg_wow}</div>
-                  </div>
-                  <div style={{ flex:1, minWidth:140 }}>
-                    <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.am, marginBottom:6 }}>Renewal</div>
-                    <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:28, fontWeight:800, color:C.am, textShadow:C.glowAm }}>{prop.weekly.rent_new_vs_renewal.renewal_count}</div>
-                    <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>{prop.weekly.rent_new_vs_renewal.renewal_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.renewal_chg_wow}</div>
-                  </div>
-                  {Number(prop.weekly.rent_new_vs_renewal.other_count) > 0 && (
-                    <div style={{ flex:1, minWidth:140 }}>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.t2, marginBottom:6 }}>Other / Unspecified</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:28, fontWeight:800, color:C.t2 }}>{prop.weekly.rent_new_vs_renewal.other_count}</div>
-                      <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>Rows not tagged as new or renewal</div>
-                    </div>
-                  )}
-                </div>
-                <div style={{ height:8, background:C.border, borderRadius:4, overflow:'hidden', display:'flex' }}>
-                  <div style={{ width:`${prop.weekly.rent_new_vs_renewal.new_pct}%`, background:C.ga, minWidth: Number(prop.weekly.rent_new_vs_renewal.new_count) > 0 ? 2 : 0 }} title="New" />
-                  <div style={{ width:`${prop.weekly.rent_new_vs_renewal.renewal_pct}%`, background:C.am, minWidth: Number(prop.weekly.rent_new_vs_renewal.renewal_count) > 0 ? 2 : 0 }} title="Renewal" />
-                  {Number(prop.weekly.rent_new_vs_renewal.other_count) > 0 && (
-                    <div
-                      style={{
-                        width: `${Math.max(0, 100 - Number(prop.weekly.rent_new_vs_renewal.new_pct || 0) - Number(prop.weekly.rent_new_vs_renewal.renewal_pct || 0))}%`,
-                        background: C.td,
-                        minWidth: 2,
-                      }}
-                      title="Other / unspecified"
-                    />
-                  )}
-                </div>
-                <div style={{ fontSize:10, color:'rgba(201,168,76,0.35)', marginTop:10 }}>Split = new + renewal + other ({Number(prop.weekly.rent_new_vs_renewal.new_count) + Number(prop.weekly.rent_new_vs_renewal.renewal_count) + Number(prop.weekly.rent_new_vs_renewal.other_count || 0)} of {prop?.weekly?.rent_volume?.value} registrations). Source: {prop.weekly.rent_new_vs_renewal.column}</div>
+          {/* ── SALES TAB: weekly deal counts ── */}
+          {propTab === 'sales' && (
+            <div className="reveal" style={{ marginBottom:16 }}>
+              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>HOW MANY DEALS ARE HAPPENING · {prop?.weekly?.period_label||'Latest week'}</div>
+              <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                <TxCard label="Properties Sold" value={prop?.weekly?.sale_volume?.value} wowChg={prop?.weekly?.sale_volume?.chg_wow} yoyChg={prop?.weekly?.sale_volume?.chg_yoy} trend={prop?.weekly?.sale_volume?.trend} period={prop?.weekly?.sale_volume?.period} source={prop?.weekly?.sale_volume?.source} loading={loadProp}/>
+                <TxCard label="Total Sales Value" value={prop?.weekly?.sale_value_aed?.value} wowChg={prop?.weekly?.sale_value_aed?.chg_wow} yoyChg={prop?.weekly?.sale_value_aed?.chg_yoy} trend={prop?.weekly?.sale_value_aed?.trend} period={prop?.weekly?.sale_value_aed?.period} source={prop?.weekly?.sale_value_aed?.source} loading={loadProp}/>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* Prices & Off-plan split */}
-          <div className="mob-stack-2 reveal" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
+          {/* ── RENTAL TAB: weekly rental counts ── */}
+          {propTab === 'rental' && (
+            <div className="reveal" style={{ marginBottom:16 }}>
+              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>RENTAL ACTIVITY · {prop?.weekly?.period_label||'Latest week'}</div>
+              <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                <TxCard label="Rental registrations" value={prop?.weekly?.rent_volume?.value} wowChg={prop?.weekly?.rent_volume?.chg_wow} yoyChg={prop?.weekly?.rent_volume?.chg_yoy} trend={prop?.weekly?.rent_volume?.trend} period={prop?.weekly?.rent_volume?.period} source={prop?.weekly?.rent_volume?.source} loading={loadProp}/>
+                <TxCard label="Annualised rent (week)" value={prop?.weekly?.rent_value_aed?.value} wowChg={prop?.weekly?.rent_value_aed?.chg_wow} yoyChg={prop?.weekly?.rent_value_aed?.chg_yoy} trend={prop?.weekly?.rent_value_aed?.trend} period={prop?.weekly?.rent_value_aed?.period} source={prop?.weekly?.rent_value_aed?.source} loading={loadProp}/>
+              </div>
+              {prop?.weekly?.rent_new_vs_renewal && !loadProp && (
+                <div className="reveal print-keep-together lp-card" style={{ marginTop:12, padding:'20px 22px' }}>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>NEW VS RENEWAL · SAME WEEK (BY REGISTRATION DATE)</div>
+                  <div style={{ display:'flex', gap:16, flexWrap:'wrap', alignItems:'center', marginBottom:12 }}>
+                    <div style={{ flex:1, minWidth:140 }}>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.ga, marginBottom:6 }}>New Contract</div>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:28, fontWeight:800, color:C.ga, textShadow:C.glowGa }}>{prop.weekly.rent_new_vs_renewal.new_count}</div>
+                      <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>{prop.weekly.rent_new_vs_renewal.new_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.new_chg_wow}</div>
+                    </div>
+                    <div style={{ flex:1, minWidth:140 }}>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.am, marginBottom:6 }}>Renewal</div>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:28, fontWeight:800, color:C.am, textShadow:C.glowAm }}>{prop.weekly.rent_new_vs_renewal.renewal_count}</div>
+                      <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>{prop.weekly.rent_new_vs_renewal.renewal_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.renewal_chg_wow}</div>
+                    </div>
+                    {Number(prop.weekly.rent_new_vs_renewal.other_count) > 0 && (
+                      <div style={{ flex:1, minWidth:140 }}>
+                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.t2, marginBottom:6 }}>Other / Unspecified</div>
+                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:28, fontWeight:800, color:C.t2 }}>{prop.weekly.rent_new_vs_renewal.other_count}</div>
+                        <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>Rows not tagged as new or renewal</div>
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ height:8, background:C.border, borderRadius:4, overflow:'hidden', display:'flex' }}>
+                    <div style={{ width:`${prop.weekly.rent_new_vs_renewal.new_pct}%`, background:C.ga, minWidth: Number(prop.weekly.rent_new_vs_renewal.new_count) > 0 ? 2 : 0 }} title="New" />
+                    <div style={{ width:`${prop.weekly.rent_new_vs_renewal.renewal_pct}%`, background:C.am, minWidth: Number(prop.weekly.rent_new_vs_renewal.renewal_count) > 0 ? 2 : 0 }} title="Renewal" />
+                    {Number(prop.weekly.rent_new_vs_renewal.other_count) > 0 && (
+                      <div style={{ width:`${Math.max(0,100-Number(prop.weekly.rent_new_vs_renewal.new_pct||0)-Number(prop.weekly.rent_new_vs_renewal.renewal_pct||0))}%`, background:C.td, minWidth:2 }} title="Other / unspecified"/>
+                    )}
+                  </div>
+                  <div style={{ fontSize:10, color:'rgba(201,168,76,0.35)', marginTop:10 }}>Split = new + renewal + other ({Number(prop.weekly.rent_new_vs_renewal.new_count) + Number(prop.weekly.rent_new_vs_renewal.renewal_count) + Number(prop.weekly.rent_new_vs_renewal.other_count || 0)} of {prop?.weekly?.rent_volume?.value} registrations). Source: {prop.weekly.rent_new_vs_renewal.column}</div>
+                </div>
+              )}
+            </div>
+          )}
 
-            {/* Prices */}
+          {/* ── Prices card — both tabs ── */}
+          <div className={`reveal ${propTab === 'sales' ? 'mob-stack-2' : ''}`} style={{ display:'grid', gridTemplateColumns: propTab === 'sales' ? '1fr 1fr' : '1fr', gap:12, marginBottom:12 }}>
             <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>Average Asking Price Per Square Foot · {sanitizeRawGithubLinks(na(prop?.prices?.price_source))}</div>
               <div className="mob-stack-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
@@ -1805,23 +1825,25 @@ export function DashboardView() {
               </div>
             </div>
 
-            {/* Off-plan vs resale */}
-            <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
-              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>What Kind of Property Is Selling? · {na(prop?.market_split?.split_period)}</div>
-              {loadProp?<Skel h={60}/>:prop?.market_split&&(
-                <>
-                  <SplitBar offplan={na(prop.market_split.offplan_pct)} secondary={na(prop.market_split.secondary_pct)} loading={loadProp}/>
-                  <div style={{ marginTop:12, padding:'10px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10 }}>
-                    <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--muted)', marginBottom:5 }}>What This Means</div>
-                    <div style={{ fontSize:11, color:'var(--muted)', lineHeight:1.6 }}>
-                      {parseInt(prop.market_split.offplan_pct)>=65 ? 'New-build off-plan is dominating — developers have pricing power. Good if you own land or new builds; watch for oversupply risk.' :
-                       parseInt(prop.market_split.offplan_pct)<=35 ? 'Resale market is stronger — existing homeowners are in a solid position.' :
-                       prop.market_split.note || 'Balanced market between new builds and resales — healthy sign for all property types.'}
+            {/* Off-plan vs resale — sales tab only */}
+            {propTab === 'sales' && (
+              <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
+                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>What Kind of Property Is Selling? · {na(prop?.market_split?.split_period)}</div>
+                {loadProp?<Skel h={60}/>:prop?.market_split&&(
+                  <>
+                    <SplitBar offplan={na(prop.market_split.offplan_pct)} secondary={na(prop.market_split.secondary_pct)} loading={loadProp}/>
+                    <div style={{ marginTop:12, padding:'10px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10 }}>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--muted)', marginBottom:5 }}>What This Means</div>
+                      <div style={{ fontSize:11, color:'var(--muted)', lineHeight:1.6 }}>
+                        {parseInt(prop.market_split.offplan_pct)>=65 ? 'New-build off-plan is dominating — developers have pricing power. Good if you own land or new builds; watch for oversupply risk.' :
+                         parseInt(prop.market_split.offplan_pct)<=35 ? 'Resale market is stronger — existing homeowners are in a solid position.' :
+                         prop.market_split.note || 'Balanced market between new builds and resales — healthy sign for all property types.'}
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
-            </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           {/* 30-day trends: daily + 7d MA + weekly */}
@@ -1891,8 +1913,8 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* Rental yields */}
-          {(prop?.yields||loadProp) && (
+          {/* Rental yields — sales tab only */}
+          {propTab === 'sales' && (prop?.yields||loadProp) && (
             <div className="print-keep-together reveal" style={{ marginBottom:12 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>Annual Rental Yield — How Much Income Your Property Generates</div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
@@ -1903,8 +1925,8 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* ── Active Listings ── */}
-          {(prop?.listings||loadProp) && (
+          {/* ── Active Listings — sales tab only ── */}
+          {propTab === 'sales' && (prop?.listings||loadProp) && (
             <div className="reveal" style={{ marginBottom:12 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>
                 Active Listings — Current Supply Pipeline
@@ -2025,8 +2047,8 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* Hottest areas */}
-          {(prop?.top_areas||loadProp) && (
+          {/* Hottest areas — sales tab only */}
+          {propTab === 'sales' && (prop?.top_areas||loadProp) && (
             <div className="reveal" style={{ marginBottom:12 }}>
               <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
                 <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:6 }}>
