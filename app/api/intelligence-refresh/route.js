@@ -43,9 +43,6 @@ export async function POST(request) {
   const got = tokenFromRequest(request);
   const gotToken = got?.token || '';
   if (!gotToken || gotToken !== expected) {
-    // #region agent log
-    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-debug',hypothesisId:'H1',location:'app/api/intelligence-refresh/route.js',message:'Admin token mismatch/empty',data:{expectedLen:expected.length,gotLen:gotToken.length,gotFrom:got.source,gotHas:!!gotToken,expectedHas:!!expected,match:gotToken===expected},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     return Response.json({ ok: false, error: 'Unauthorized.' }, { status: 401 });
   }
   const token = blobToken();
@@ -54,9 +51,6 @@ export async function POST(request) {
   }
 
   try {
-    // #region agent log
-    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-debug',hypothesisId:'H4',location:'app/api/intelligence-refresh/route.js',message:'Admin token authorized; starting intelligence payload',data:{expectedLen:expected.length},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     const payload = await buildIntelligencePayload();
     const stamped = {
       ...payload,

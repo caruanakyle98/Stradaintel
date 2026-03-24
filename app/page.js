@@ -643,9 +643,6 @@ export default function Page() {
     try {
       const u = new URL(window.location.href);
       const token = (u.searchParams.get('adminToken') || '').trim();
-      // #region agent log
-      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'blank-admin-pre',hypothesisId:'H2',location:'app/page.js:327',message:'landing parsed adminToken',data:{tokenLen:String(token.length)},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       setAdminToken(token);
     } catch {
       setAdminToken('');
@@ -656,28 +653,10 @@ export default function Page() {
     const iframe = iframeRef.current;
     if (!iframe) return;
 
-    // #region agent log
-    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'blank-admin-pre',hypothesisId:'H2',location:'app/page.js:343',message:'landing iframe wiring effect',data:{adminHasToken:String(!!adminToken),iframeReady:String(!!iframe.contentDocument)},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-
-    // #region agent log
-    fetch('/kyle-caruana-ui', { cache: 'no-store' })
-      .then(async (r) => {
-        const t = await r.text().catch(() => '');
-        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'blank-admin-pre',hypothesisId:'H3',location:'app/page.js:iframe-fetch',message:'client fetched kyle-caruana-ui',data:{status:String(r.status),textLen:String(t.length),startsWithFailed:String(t.startsWith('/*'))},timestamp:Date.now()})}).catch(()=>{});
-      })
-      .catch((e) => {
-        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'blank-admin-pre',hypothesisId:'H3',location:'app/page.js:iframe-fetch',message:'client fetch failed',data:{error:String(e?.message||e)},timestamp:Date.now()})}).catch(()=>{});
-      });
-    // #endregion
-
     const apply = () => {
       try {
         const doc = iframe.contentDocument;
         if (!doc) {
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'blank-admin-pre',hypothesisId:'H2',location:'app/page.js:350',message:'no iframe contentDocument',data:{},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
           return;
         }
 
@@ -725,13 +704,8 @@ export default function Page() {
         let mailLinkFound = false;
         if (mailLink) { mailLink.setAttribute('href', `mailto:${adminEmail}`); mailLinkFound = true; }
 
-        // #region agent log
-        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'blank-admin-pre',hypothesisId:'H2',location:'app/page.js:405',message:'landing iframe apply complete',data:{logoFound:String(!!logo),ctaHasBook:String(ctaHasBook),ctaHasDeals:String(ctaHasDeals),ctaHasDashboard:String(ctaHasDashboard),stickyHasDeals:String(stickyHasDeals),stickyHasBook:String(stickyHasBook),telLinkFound:String(telLinkFound),mailLinkFound:String(mailLinkFound)},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
       } catch (e) {
-        // #region agent log
-        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'blank-admin-pre',hypothesisId:'H2',location:'app/page.js:412',message:'landing iframe apply failed',data:{error:String(e?.message||e)},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
+        // silent — cross-origin or early load
       }
     };
 
@@ -1266,9 +1240,6 @@ export function DashboardView() {
         const msg = d?.detail ? `${d.error || `HTTP ${r.status}`} (${d.detail})` : (d?.error || `HTTP ${r.status}`);
         throw new Error(msg);
       }
-      // #region agent log
-      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:setProp',message:'prop data received',data:{hasCharts30d:!!d?.charts_30d,hasRentalCharts30d:!!d?.rental_charts_30d,hasTopAreas:!!d?.top_areas,hasRentalTopAreas:!!d?.rental_top_areas,rentalTopAreasCount:d?.rental_top_areas?.length,rentalChartsVolLen:d?.rental_charts_30d?.rent_volume?.length,rentalTopAreasMode:d?.rental_top_areas_mode,filterArea:d?.filter_area,rentalTopAreasSample:d?.rental_top_areas?.slice(0,3)},hypothesisId:'H1-drill-down',runId:'post-fix',timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       setProp(d);
     } catch(e) { setPropError(e.message); }
     finally { setLoadProp(false); }
@@ -1345,9 +1316,6 @@ export function DashboardView() {
     const root = document.querySelector('.dashboard-root');
     if (!root) return;
     const targets = Array.from(root.querySelectorAll('.reveal:not(.visible)'));
-    // #region agent log
-    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:observer-effect',message:'IntersectionObserver effect ran',data:{propTab,targetsFound:targets.length,hasRoot:!!root},hypothesisId:'H1',timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     if (!targets.length) return;
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => {
@@ -1735,12 +1703,7 @@ export function DashboardView() {
           {/* ── Sales / Rental toggle ── */}
           <div style={{ display:'flex', gap:6, marginBottom:24, flexWrap:'wrap' }}>
             {[['sales','Sales Data'],['rental','Rental Data']].map(([tab, label]) => (
-              <button key={tab} onClick={() => {
-                // #region agent log
-                fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:tab-click',message:'Tab button clicked',data:{clickedTab:tab,currentTab:propTab},hypothesisId:'H2',timestamp:Date.now()})}).catch(()=>{});
-                // #endregion
-                setPropTab(tab);
-              }} style={{
+              <button key={tab} onClick={() => setPropTab(tab)} style={{
                 padding:'8px 22px',
                 background: propTab===tab ? C.amL : 'transparent',
                 color: propTab===tab ? C.bg : C.t2,
@@ -1754,12 +1717,14 @@ export function DashboardView() {
             ))}
           </div>
 
-          {/* Owner briefing — always visible */}
-          {(prop?.owner_briefing||loadProp) && (
+          {/* Owner briefing — switches between sales and rental summary */}
+          {((propTab === 'sales' ? prop?.owner_briefing : prop?.rental_owner_briefing) || loadProp) && (
             <div className="reveal print-keep-together lp-card" style={{ marginBottom:20, padding:'20px 24px', borderLeft:`4px solid ${C.g}` }}>
               <Tag color={C.ga}>Strada's Market Summary · {prop?.data_freshness||'Latest data'}</Tag>
               {loadProp?<><Skel h={14} mb={6}/><Skel w="80%" h={14}/></>:
-                <p style={{ fontSize:13, color:'var(--white)', lineHeight:1.75, marginTop:6 }}>{na(prop?.owner_briefing)}</p>
+                <p style={{ fontSize:13, color:'var(--white)', lineHeight:1.75, marginTop:6 }}>
+                  {na(propTab === 'sales' ? prop?.owner_briefing : (prop?.rental_owner_briefing || prop?.owner_briefing))}
+                </p>
               }
             </div>
           )}
@@ -2005,86 +1970,97 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* ── Active Listings — both tabs ── */}
+          {/* ── Rental Listings — both tabs ── */}
           {(prop?.listings||loadProp) && (
             <div className="reveal" style={{ marginBottom:12 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>
-                Active Listings — Current Supply Pipeline
+                Rental Listings — Active Supply Pipeline
               </div>
 
               {/* Summary stat row */}
               <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:12 }}>
                 {/* Total listings */}
                 <div className="print-keep-together lp-card" style={{ flex:1, minWidth:'min(140px,100%)', padding:'16px 20px', textAlign:'center' }}>
-                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:8 }}>Active Listings</div>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:8 }}>Active Rental Listings</div>
                   {loadProp?<Skel h={32} mb={4}/>:<>
                     <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:26, fontWeight:800, color:C.amL, textShadow:C.glowMetric }}>
                       {prop?.listings?.total != null ? prop.listings.total.toLocaleString() : '—'}
                     </div>
                     {prop?.listings?.new_this_week != null && (
-                      <div style={{ fontSize:10, color:C.g, marginTop:4 }}>+{prop.listings.new_this_week} this week</div>
+                      <div style={{ fontSize:10, marginTop:4 }}>
+                        <span style={{ color:C.g }}>+{prop.listings.new_this_week} last 7 days</span>
+                        {prop?.listings?.wow_new_pct != null && (
+                          <span style={{ color: prop.listings.wow_new_pct >= 0 ? C.g : C.am, marginLeft:6 }}>
+                            ({prop.listings.wow_new_pct >= 0 ? '+' : ''}{prop.listings.wow_new_pct}% WoW)
+                          </span>
+                        )}
+                      </div>
                     )}
                   </>}
                 </div>
 
-                {/* Supply depth */}
+                {/* Absorption / supply depth */}
                 <div className="print-keep-together lp-card" style={{ flex:1, minWidth:'min(140px,100%)', padding:'16px 20px', textAlign:'center' }}>
-                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:8 }}>Weeks of Supply</div>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:8 }}>Listing Cover (Weeks)</div>
                   {loadProp?<Skel h={32} mb={4}/>:<>
                     {prop?.listings?.supply_depth ? (
                       <>
-                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:26, fontWeight:800, color:prop.listings.supply_depth.weeks<=8?C.g:prop.listings.supply_depth.weeks<=16?C.am:C.red, textShadow:C.glowMetric }}>
+                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:26, fontWeight:800, color:prop.listings.supply_depth.weeks<=4?C.g:prop.listings.supply_depth.weeks<=8?C.am:C.red, textShadow:C.glowMetric }}>
                           {prop.listings.supply_depth.weeks}
                         </div>
                         <div style={{ fontSize:9, color:C.tm, marginTop:4 }}>
-                          {prop.listings.supply_depth.listings_total} listings / {prop.listings.supply_depth.weekly_sales} sales/wk
+                          {prop.listings.supply_depth.listings_total} listings / {prop.listings.supply_depth.weekly_registrations} registrations/wk
                         </div>
                       </>
                     ) : <div style={{ fontSize:18, fontWeight:700, color:C.t2 }}>—</div>}
                   </>}
                 </div>
-
-                {/* Emirate card hidden — emirate column not in listings CSV */}
               </div>
 
-              {/* Asking price by bedrooms */}
+              {/* Asking rent by bedrooms — rental context */}
               {(loadProp || prop?.listings?.by_beds) && (
                 <div className="print-keep-together lp-card" style={{ padding:'20px 22px', marginBottom:8 }}>
                   <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:14 }}>
-                    Asking Price by Bedroom Type
+                    Asking Rent by Bedroom Type
                   </div>
                   {loadProp?[1,2,3,4].map(i=><Skel key={i} h={28} mb={8}/>):(()=>{
                     const beds = prop?.listings?.by_beds || {};
-                    const yieldMap = prop?.listings?.asking_yield_by_beds || {};
+                    const cmpMap = prop?.listings?.asking_vs_txn_by_beds || {};
                     const bedOrder = ['Studio','1','2','3','4+'];
-                    const rows = bedOrder.filter(k => beds[k]);
-                    if (!rows.length) return <div style={{ fontSize:11, color:C.tm }}>No bedroom data available.</div>;
+                    const visibleRows = bedOrder.filter(k => beds[k]);
+                    if (!visibleRows.length) return <div style={{ fontSize:11, color:C.tm }}>No bedroom data available.</div>;
+                    const hasCmp = Object.keys(cmpMap).length > 0;
+                    const cols = hasCmp ? '80px 1fr 1fr 1fr' : '80px 1fr 1fr 1fr';
                     return (
                       <div>
-                        {/* header */}
-                        <div style={{ display:'grid', gridTemplateColumns:'80px 1fr 1fr 1fr', gap:4, marginBottom:8 }}>
-                          {['Beds','Listings','Avg Asking','Asking Yield'].map(h=>(
+                        <div style={{ display:'grid', gridTemplateColumns:cols, gap:4, marginBottom:8 }}>
+                          {['Beds','Listings','Avg Asking Rent', hasCmp ? 'vs Transacted' : 'Range'].map(h=>(
                             <div key={h} style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:8, fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase', color:C.tm }}>{h}</div>
                           ))}
                         </div>
-                        {rows.map((key, i) => {
+                        {visibleRows.map((key) => {
                           const d = beds[key];
-                          const y = yieldMap[key];
-                          const isLast = i === rows.length - 1;
+                          const cmp = cmpMap[key];
+                          const dpct = cmp?.delta_pct;
+                          const cmpColor = dpct == null ? C.tm : dpct > 5 ? C.red : dpct < -5 ? C.g : C.am;
+                          const cmpLabel = dpct == null
+                            ? (hasCmp ? '—' : `${d.min_price_fmt} – ${d.max_price_fmt}`)
+                            : `${dpct > 0 ? '+' : ''}${dpct}%`;
                           return (
-                            <div key={key} style={{ display:'grid', gridTemplateColumns:'80px 1fr 1fr 1fr', gap:4, padding:'8px 0', borderTop:`1px solid ${C.border}` }}>
+                            <div key={key} style={{ display:'grid', gridTemplateColumns:cols, gap:4, padding:'8px 0', borderTop:`1px solid ${C.border}` }}>
                               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontWeight:700, fontSize:13, color:C.amL }}>{key === 'Studio' ? 'Studio' : `${key} Bed`}</div>
                               <div style={{ fontSize:12, color:C.t1 }}>{d.count.toLocaleString()}</div>
-                              <div style={{ fontSize:12, color:C.t1, fontWeight:600 }}>{d.avg_price_fmt}</div>
-                              <div style={{ fontSize:12, color: y ? (parseFloat(y.ask_yield)>=6?C.g:parseFloat(y.ask_yield)>=4.5?C.am:C.red) : C.tm, fontWeight: y ? 700 : 400 }}>
-                                {y ? `${y.ask_yield}%` : '—'}
-                                {y?.txn_yield && <span style={{ fontSize:9, color:C.tm, marginLeft:4 }}>txn {y.txn_yield}%</span>}
+                              <div style={{ fontSize:12, color:C.t1, fontWeight:600 }}>{d.avg_price_fmt}/yr</div>
+                              <div style={{ fontSize:12, color:cmpColor, fontWeight: dpct != null ? 700 : 400 }}>
+                                {cmpLabel}
                               </div>
                             </div>
                           );
                         })}
                         <div style={{ fontSize:9, color:C.tm, marginTop:10 }}>
-                          Asking yield = avg annual rent ÷ avg listing price. Txn yield uses recent transaction price.
+                          {hasCmp
+                            ? '"vs Transacted" = asking rent vs avg recently registered rent. Negative = asking below market; positive = above.'
+                            : 'Min–max range of asking rents across active listings.'}
                         </div>
                       </div>
                     );
@@ -2092,20 +2068,20 @@ export function DashboardView() {
                 </div>
               )}
 
-              {/* Top communities by supply */}
+              {/* Top communities by rental listing supply */}
               {(loadProp || prop?.listings?.top_communities?.length > 0) && (
                 <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
                   <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:6 }}>
-                    Top Communities by Listing Volume
+                    Top Communities by Rental Listing Volume
                   </div>
-                  <div style={{ fontSize:11, color:C.tm, marginBottom:14 }}>Where supply is concentrated right now</div>
+                  <div style={{ fontSize:11, color:C.tm, marginBottom:14 }}>Where rental supply is concentrated · last 15 days</div>
                   {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={32} mb={8}/>):(()=>{
                     const comms = prop?.listings?.top_communities || [];
                     if (!comms.length) return null;
                     const maxCount = comms[0]?.count || 1;
-                    return comms.slice(0,7).map((c, i) => {
+                    return comms.slice(0,10).map((c, i) => {
                       const pct = Math.round((c.count / maxCount) * 100);
-                      const isLast = i === Math.min(comms.length,7)-1;
+                      const isLast = i === Math.min(comms.length,10)-1;
                       return (
                         <div key={i} style={{ marginBottom: isLast?0:10 }}>
                           <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
@@ -2113,7 +2089,7 @@ export function DashboardView() {
                               <span style={{ color:C.amL, fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontWeight:700, marginRight:8 }}>#{i+1}</span>
                               {c.name}
                             </span>
-                            <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:12, color:C.amL, fontWeight:700 }}>{c.count}</span>
+                            <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:12, color:C.amL, fontWeight:700 }}>{c.count} listings</span>
                           </div>
                           <div style={{ height:3, background:`${C.amL}18`, borderRadius:2 }}>
                             <div style={{ width:`${pct}%`, height:'100%', background:`${C.amL}60`, borderRadius:2, transition:'width 1.2s ease' }}/>

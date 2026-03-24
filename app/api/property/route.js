@@ -340,36 +340,29 @@ export async function GET(request) {
       try {
         const { text: listingsRaw, label: listingsLabel } = await loadListingsCsvText();
 
-        // Build rental averages map from merged rental payload for yield cross-reference
-        const rentalAvgByBeds = {
+        // Rental transaction averages (from rental CSV) — used to compare asking rent vs transacted rent
+        const rentalTxnAvgByBeds = {
           studio: parseFloat(result.body.rental?.studio_avg_aed) || null,
           '1br':  parseFloat(result.body.rental?.apt_1br_avg_aed) || null,
           '2br':  parseFloat(result.body.rental?.apt_2br_avg_aed) || null,
           '3br':  parseFloat(result.body.rental?.villa_3br_avg_aed) || null,
         };
 
-        // Build transaction price map from sales payload
-        const txnAvgByBeds = {
-          '1br': result.body.prices?.apt_avg_aed_num || null,
-          '2br': result.body.prices?.apt_avg_aed_num || null,
-          '3br': result.body.prices?.villa_avg_aed_num || null,
-        };
-
         const listingsResult = buildListingsPayload(listingsRaw, listingsLabel, {
-          rentalAvgByBeds,
-          txnAvgByBeds,
+          rentalTxnAvgByBeds,
+          dataType: 'rental',
         });
 
         if (listingsResult.ok && listingsResult.listings) {
-          // Cross-compute supply depth: total listings / weekly sales count
-          const weeklySales = parseInt(result.body.weekly?.sale_volume?.value) || null;
-          if (weeklySales && weeklySales > 0) {
-            const weeksOfSupply = listingsResult.listings.total / weeklySales;
+          // Supply depth: rental listings / weekly rental registrations
+          const weeklyRentals = parseInt(result.body.weekly?.rent_volume?.value) || null;
+          if (weeklyRentals && weeklyRentals > 0) {
+            const weeksOfSupply = listingsResult.listings.total / weeklyRentals;
             listingsResult.listings.supply_depth = {
               weeks: parseFloat(weeksOfSupply.toFixed(1)),
               listings_total: listingsResult.listings.total,
-              weekly_sales: weeklySales,
-              label: `${weeksOfSupply.toFixed(1)} weeks of supply`,
+              weekly_registrations: weeklyRentals,
+              label: `${weeksOfSupply.toFixed(1)} weeks of rental listing cover`,
             };
           }
           result.body.listings = listingsResult.listings;
