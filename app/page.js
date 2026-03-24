@@ -1903,6 +1903,128 @@ export function DashboardView() {
             </div>
           )}
 
+          {/* ── Active Listings ── */}
+          {(prop?.listings||loadProp) && (
+            <div className="reveal" style={{ marginBottom:12 }}>
+              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>
+                Active Listings — Current Supply Pipeline
+              </div>
+
+              {/* Summary stat row */}
+              <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:12 }}>
+                {/* Total listings */}
+                <div className="print-keep-together lp-card" style={{ flex:1, minWidth:'min(140px,100%)', padding:'16px 20px', textAlign:'center' }}>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:8 }}>Active Listings</div>
+                  {loadProp?<Skel h={32} mb={4}/>:<>
+                    <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:26, fontWeight:800, color:C.amL, textShadow:C.glowMetric }}>
+                      {prop?.listings?.total != null ? prop.listings.total.toLocaleString() : '—'}
+                    </div>
+                    {prop?.listings?.new_this_week != null && (
+                      <div style={{ fontSize:10, color:C.g, marginTop:4 }}>+{prop.listings.new_this_week} this week</div>
+                    )}
+                  </>}
+                </div>
+
+                {/* Supply depth */}
+                <div className="print-keep-together lp-card" style={{ flex:1, minWidth:'min(140px,100%)', padding:'16px 20px', textAlign:'center' }}>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:8 }}>Weeks of Supply</div>
+                  {loadProp?<Skel h={32} mb={4}/>:<>
+                    {prop?.listings?.supply_depth ? (
+                      <>
+                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:26, fontWeight:800, color:prop.listings.supply_depth.weeks<=8?C.g:prop.listings.supply_depth.weeks<=16?C.am:C.red, textShadow:C.glowMetric }}>
+                          {prop.listings.supply_depth.weeks}
+                        </div>
+                        <div style={{ fontSize:9, color:C.tm, marginTop:4 }}>
+                          {prop.listings.supply_depth.listings_total} listings / {prop.listings.supply_depth.weekly_sales} sales/wk
+                        </div>
+                      </>
+                    ) : <div style={{ fontSize:18, fontWeight:700, color:C.t2 }}>—</div>}
+                  </>}
+                </div>
+
+                {/* Emirate card hidden — emirate column not in listings CSV */}
+              </div>
+
+              {/* Asking price by bedrooms */}
+              {(loadProp || prop?.listings?.by_beds) && (
+                <div className="print-keep-together lp-card" style={{ padding:'20px 22px', marginBottom:8 }}>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:14 }}>
+                    Asking Price by Bedroom Type
+                  </div>
+                  {loadProp?[1,2,3,4].map(i=><Skel key={i} h={28} mb={8}/>):(()=>{
+                    const beds = prop?.listings?.by_beds || {};
+                    const yieldMap = prop?.listings?.asking_yield_by_beds || {};
+                    const bedOrder = ['Studio','1','2','3','4+'];
+                    const rows = bedOrder.filter(k => beds[k]);
+                    if (!rows.length) return <div style={{ fontSize:11, color:C.tm }}>No bedroom data available.</div>;
+                    return (
+                      <div>
+                        {/* header */}
+                        <div style={{ display:'grid', gridTemplateColumns:'80px 1fr 1fr 1fr', gap:4, marginBottom:8 }}>
+                          {['Beds','Listings','Avg Asking','Asking Yield'].map(h=>(
+                            <div key={h} style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:8, fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase', color:C.tm }}>{h}</div>
+                          ))}
+                        </div>
+                        {rows.map((key, i) => {
+                          const d = beds[key];
+                          const y = yieldMap[key];
+                          const isLast = i === rows.length - 1;
+                          return (
+                            <div key={key} style={{ display:'grid', gridTemplateColumns:'80px 1fr 1fr 1fr', gap:4, padding:'8px 0', borderTop:`1px solid ${C.border}` }}>
+                              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontWeight:700, fontSize:13, color:C.amL }}>{key === 'Studio' ? 'Studio' : `${key} Bed`}</div>
+                              <div style={{ fontSize:12, color:C.t1 }}>{d.count.toLocaleString()}</div>
+                              <div style={{ fontSize:12, color:C.t1, fontWeight:600 }}>{d.avg_price_fmt}</div>
+                              <div style={{ fontSize:12, color: y ? (parseFloat(y.ask_yield)>=6?C.g:parseFloat(y.ask_yield)>=4.5?C.am:C.red) : C.tm, fontWeight: y ? 700 : 400 }}>
+                                {y ? `${y.ask_yield}%` : '—'}
+                                {y?.txn_yield && <span style={{ fontSize:9, color:C.tm, marginLeft:4 }}>txn {y.txn_yield}%</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
+                        <div style={{ fontSize:9, color:C.tm, marginTop:10 }}>
+                          Asking yield = avg annual rent ÷ avg listing price. Txn yield uses recent transaction price.
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {/* Top communities by supply */}
+              {(loadProp || prop?.listings?.top_communities?.length > 0) && (
+                <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:6 }}>
+                    Top Communities by Listing Volume
+                  </div>
+                  <div style={{ fontSize:11, color:C.tm, marginBottom:14 }}>Where supply is concentrated right now</div>
+                  {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={32} mb={8}/>):(()=>{
+                    const comms = prop?.listings?.top_communities || [];
+                    if (!comms.length) return null;
+                    const maxCount = comms[0]?.count || 1;
+                    return comms.slice(0,7).map((c, i) => {
+                      const pct = Math.round((c.count / maxCount) * 100);
+                      const isLast = i === Math.min(comms.length,7)-1;
+                      return (
+                        <div key={i} style={{ marginBottom: isLast?0:10 }}>
+                          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
+                            <span style={{ fontSize:11, color:C.t1, fontWeight:i===0?700:400 }}>
+                              <span style={{ color:C.amL, fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontWeight:700, marginRight:8 }}>#{i+1}</span>
+                              {c.name}
+                            </span>
+                            <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:12, color:C.amL, fontWeight:700 }}>{c.count}</span>
+                          </div>
+                          <div style={{ height:3, background:`${C.amL}18`, borderRadius:2 }}>
+                            <div style={{ width:`${pct}%`, height:'100%', background:`${C.amL}60`, borderRadius:2, transition:'width 1.2s ease' }}/>
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Hottest areas */}
           {(prop?.top_areas||loadProp) && (
             <div className="reveal" style={{ marginBottom:12 }}>

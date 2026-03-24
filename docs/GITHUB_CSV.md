@@ -24,8 +24,20 @@ Open each in a browser — you must see CSV text (HTTP 200).
 |----------|--------|
 | `PROPERTY_SALES_CSV_URL` | raw URL for sales |
 | `PROPERTY_RENTAL_CSV_URL` | raw URL for rentals |
+| `PROPERTY_LISTINGS_CSV_URL` | raw URL for active listings (optional — enables supply pipeline section) |
 
-**Redeploy** after saving.
+**Redeploy** after saving (only needed when adding a new env var for the first time).
+
+### Listings CSV expected columns
+
+| Column | Required | Notes |
+|--------|----------|-------|
+| `price_aed` | Yes | Asking price in AED |
+| `community` | Recommended | Area / master community |
+| `bedrooms` | Recommended | Numeric (0=Studio) or "Studio" |
+| `listed_date` | Recommended | Enables "new this week" count |
+| `building` | Optional | Tower / building name |
+| `bathrooms` | Optional | Numeric |
 
 You may **remove** Blob vars (`BLOB_READ_WRITE_TOKEN`, `BLOB_SALES_PATHNAME`, …) if you no longer use Blob.
 

@@ -6,6 +6,7 @@ export const runtime = 'nodejs';
 
 import { buildPayloadFromCsvText, deriveAnalysisWindows } from '../../../lib/salesCsvPayload.js';
 import { mergeRentalIntoPayload } from '../../../lib/rentalCsvPayload.js';
+import { buildListingsPayload } from '../../../lib/listingsCsvPayload.js';
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
 
@@ -183,6 +184,25 @@ async function loadRentalCsvText() {
   );
 }
 
+async function loadListingsCsvText() {
+  const listingsUrls = (process.env.PROPERTY_LISTINGS_CSV_URL || '')
+    .split(/[,\n\r]+/)
+    .map((s) => s.trim())
+    .filter((u) => u.startsWith('http'));
+
+  let urlErr = null;
+  for (const url of listingsUrls) {
+    try {
+      return { text: await fetchText(url), label: url };
+    } catch (e) {
+      urlErr = e?.message || String(e);
+    }
+  }
+  throw new Error(
+    `Listings CSV failed. Set PROPERTY_LISTINGS_CSV_URL (GitHub raw). ${urlErr || ''} docs/GITHUB_CSV.md`,
+  );
+}
+
 async function buildFromSalesText(csvRaw, label, { area, skipAi } = {}) {
   const result = buildPayloadFromCsvText(csvRaw, label, { area: area || undefined });
   if (!result.ok) return result;
@@ -312,6 +332,52 @@ export async function GET(request) {
       } catch (e) {
         result.body.rental = result.body.rental || {};
         result.body.rental.note = `Rental URL failed: ${e?.message || e}. Sales data still shown.`;
+      }
+    }
+
+    const listingsUrlEnv = process.env.PROPERTY_LISTINGS_CSV_URL;
+    if (listingsUrlEnv) {
+      try {
+        const { text: listingsRaw, label: listingsLabel } = await loadListingsCsvText();
+
+        // Build rental averages map from merged rental payload for yield cross-reference
+        const rentalAvgByBeds = {
+          studio: parseFloat(result.body.rental?.studio_avg_aed) || null,
+          '1br':  parseFloat(result.body.rental?.apt_1br_avg_aed) || null,
+          '2br':  parseFloat(result.body.rental?.apt_2br_avg_aed) || null,
+          '3br':  parseFloat(result.body.rental?.villa_3br_avg_aed) || null,
+        };
+
+        // Build transaction price map from sales payload
+        const txnAvgByBeds = {
+          '1br': result.body.prices?.apt_avg_aed_num || null,
+          '2br': result.body.prices?.apt_avg_aed_num || null,
+          '3br': result.body.prices?.villa_avg_aed_num || null,
+        };
+
+        const listingsResult = buildListingsPayload(listingsRaw, listingsLabel, {
+          rentalAvgByBeds,
+          txnAvgByBeds,
+        });
+
+        if (listingsResult.ok && listingsResult.listings) {
+          // Cross-compute supply depth: total listings / weekly sales count
+          const weeklySales = parseInt(result.body.weekly?.sale_volume?.value) || null;
+          if (weeklySales && weeklySales > 0) {
+            const weeksOfSupply = listingsResult.listings.total / weeklySales;
+            listingsResult.listings.supply_depth = {
+              weeks: parseFloat(weeksOfSupply.toFixed(1)),
+              listings_total: listingsResult.listings.total,
+              weekly_sales: weeklySales,
+              label: `${weeksOfSupply.toFixed(1)} weeks of supply`,
+            };
+          }
+          result.body.listings = listingsResult.listings;
+        } else {
+          result.body.listings = { error: listingsResult.error, source: listingsLabel };
+        }
+      } catch (e) {
+        result.body.listings = { error: `Listings URL failed: ${e?.message || e}. Other data still shown.` };
       }
     }
 
