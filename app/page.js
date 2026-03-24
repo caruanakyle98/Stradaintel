@@ -2030,11 +2030,15 @@ export function DashboardView() {
                     const visibleRows = bedOrder.filter(k => beds[k]);
                     if (!visibleRows.length) return <div style={{ fontSize:11, color:C.tm }}>No bedroom data available.</div>;
                     const hasCmp = Object.keys(cmpMap).length > 0;
-                    const cols = hasCmp ? '80px 1fr 1fr 1fr' : '80px 1fr 1fr 1fr';
+                    // 5 cols when comparison data available, 4 otherwise
+                    const cols = hasCmp ? '70px 60px 1fr 1fr 60px' : '80px 1fr 1fr 1fr';
+                    const headers = hasCmp
+                      ? ['Beds','#','Avg Asking','Avg Transacted','Δ%']
+                      : ['Beds','Listings','Avg Asking Rent','Range'];
                     return (
                       <div>
                         <div style={{ display:'grid', gridTemplateColumns:cols, gap:4, marginBottom:8 }}>
-                          {['Beds','Listings','Avg Asking Rent', hasCmp ? 'vs Transacted' : 'Range'].map(h=>(
+                          {headers.map(h=>(
                             <div key={h} style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:8, fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase', color:C.tm }}>{h}</div>
                           ))}
                         </div>
@@ -2042,24 +2046,28 @@ export function DashboardView() {
                           const d = beds[key];
                           const cmp = cmpMap[key];
                           const dpct = cmp?.delta_pct;
-                          const cmpColor = dpct == null ? C.tm : dpct > 5 ? C.red : dpct < -5 ? C.g : C.am;
-                          const cmpLabel = dpct == null
-                            ? (hasCmp ? '—' : `${d.min_price_fmt} – ${d.max_price_fmt}`)
-                            : `${dpct > 0 ? '+' : ''}${dpct}%`;
+                          const deltaColor = dpct == null ? C.tm : dpct > 5 ? C.red : dpct < -5 ? C.g : C.am;
                           return (
-                            <div key={key} style={{ display:'grid', gridTemplateColumns:cols, gap:4, padding:'8px 0', borderTop:`1px solid ${C.border}` }}>
+                            <div key={key} style={{ display:'grid', gridTemplateColumns:cols, gap:4, padding:'8px 0', borderTop:`1px solid ${C.border}`, alignItems:'center' }}>
                               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontWeight:700, fontSize:13, color:C.amL }}>{key === 'Studio' ? 'Studio' : `${key} Bed`}</div>
                               <div style={{ fontSize:12, color:C.t1 }}>{d.count.toLocaleString()}</div>
                               <div style={{ fontSize:12, color:C.t1, fontWeight:600 }}>{d.avg_price_fmt}/yr</div>
-                              <div style={{ fontSize:12, color:cmpColor, fontWeight: dpct != null ? 700 : 400 }}>
-                                {cmpLabel}
-                              </div>
+                              {hasCmp ? <>
+                                <div style={{ fontSize:12, color:C.tm }}>
+                                  {cmp ? `${cmp.txn_fmt}/yr` : '—'}
+                                </div>
+                                <div style={{ fontSize:12, fontWeight:700, color:deltaColor }}>
+                                  {dpct != null ? `${dpct > 0 ? '+' : ''}${dpct}%` : '—'}
+                                </div>
+                              </> : (
+                                <div style={{ fontSize:11, color:C.tm }}>{d.min_price_fmt} – {d.max_price_fmt}</div>
+                              )}
                             </div>
                           );
                         })}
                         <div style={{ fontSize:9, color:C.tm, marginTop:10 }}>
                           {hasCmp
-                            ? '"vs Transacted" = asking rent vs avg recently registered rent. Negative = asking below market; positive = above.'
+                            ? 'Avg Transacted = avg recently registered rent from rental CSV. Δ% = asking vs transacted (red = asking above market, green = below).'
                             : 'Min–max range of asking rents across active listings.'}
                         </div>
                       </div>
