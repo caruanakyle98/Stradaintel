@@ -1925,8 +1925,8 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* ── Active Listings — sales tab only ── */}
-          {propTab === 'sales' && (prop?.listings||loadProp) && (
+          {/* ── Active Listings — both tabs ── */}
+          {(prop?.listings||loadProp) && (
             <div className="reveal" style={{ marginBottom:12 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>
                 Active Listings — Current Supply Pipeline
@@ -2047,8 +2047,8 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* Hottest areas — sales tab only */}
-          {propTab === 'sales' && (prop?.top_areas||loadProp) && (
+          {/* Hottest areas — both tabs */}
+          {(prop?.top_areas||loadProp) && (
             <div className="reveal" style={{ marginBottom:12 }}>
               <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
                 <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:6 }}>
