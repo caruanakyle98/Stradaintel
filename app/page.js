@@ -1342,6 +1342,9 @@ export function DashboardView() {
     const root = document.querySelector('.dashboard-root');
     if (!root) return;
     const targets = Array.from(root.querySelectorAll('.reveal:not(.visible)'));
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:observer-effect',message:'IntersectionObserver effect ran',data:{propTab,targetsFound:targets.length,hasRoot:!!root},hypothesisId:'H1',timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     if (!targets.length) return;
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => {
@@ -1350,7 +1353,7 @@ export function DashboardView() {
     }, { threshold: 0.08 });
     targets.forEach(el => io.observe(el));
     return () => io.disconnect();
-  }, [intel, prop, showData]);
+  }, [intel, prop, showData, propTab]);
 
   const mkt  = intel?.markets;
   const pl   = intel?.pillars;
@@ -1728,7 +1731,12 @@ export function DashboardView() {
           {/* ── Sales / Rental toggle ── */}
           <div style={{ display:'flex', gap:6, marginBottom:24, flexWrap:'wrap' }}>
             {[['sales','Sales Data'],['rental','Rental Data']].map(([tab, label]) => (
-              <button key={tab} onClick={() => setPropTab(tab)} style={{
+              <button key={tab} onClick={() => {
+                // #region agent log
+                fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:tab-click',message:'Tab button clicked',data:{clickedTab:tab,currentTab:propTab},hypothesisId:'H2',timestamp:Date.now()})}).catch(()=>{});
+                // #endregion
+                setPropTab(tab);
+              }} style={{
                 padding:'8px 22px',
                 background: propTab===tab ? C.amL : 'transparent',
                 color: propTab===tab ? C.bg : C.t2,
