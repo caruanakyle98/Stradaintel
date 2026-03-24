@@ -1241,7 +1241,7 @@ export function DashboardView() {
         throw new Error(msg);
       }
       // #region agent log
-      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:setProp',message:'prop data shape',data:{prices_apt_psf:d?.prices?.apt_psf_aed,prices_villa_psf:d?.prices?.villa_psf_aed,rental_1br:d?.rental?.apt_1br_avg_aed,rental_2br:d?.rental?.apt_2br_avg_aed,rental_studio:d?.rental?.studio_avg_aed,listings_by_beds:d?.listings?.by_beds?Object.fromEntries(Object.entries(d.listings.by_beds).map(([k,v])=>[k,{count:v.count,avg:v.avg_price_fmt}])):null,listings_cmp:d?.listings?.asking_vs_txn_by_beds?Object.keys(d.listings.asking_vs_txn_by_beds):null},hypothesisId:'H1-H4',runId:'pre-fix',timestamp:Date.now()})}).catch(()=>{});
+      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'page.js:setProp',message:'prop data shape',data:{prices_apt_psf:d?.prices?.apt_psf_aed,prices_villa_psf:d?.prices?.villa_psf_aed,rental_1br:d?.rental?.apt_1br_avg_aed,rental_2br:d?.rental?.apt_2br_avg_aed,rental_studio:d?.rental?.studio_avg_aed,listings_by_beds:d?.listings?.by_beds?Object.fromEntries(Object.entries(d.listings.by_beds).map(([k,v])=>[k,{count:v.count,avg:v.avg_price_fmt}])):null,listings_cmp:d?.listings?.asking_vs_txn_by_beds?Object.keys(d.listings.asking_vs_txn_by_beds):null},hypothesisId:'H1-H4',runId:'post-fix',timestamp:Date.now()})}).catch(()=>{});
       // #endregion
       setProp(d);
     } catch(e) { setPropError(e.message); }
@@ -1786,24 +1786,63 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* ── Prices card — both tabs ── */}
+          {/* ── Prices card — sales tab: PSF from sales CSV / rental tab: asking rent by bedroom ── */}
           <div className={`reveal ${propTab === 'sales' ? 'mob-stack-2' : ''}`} style={{ display:'grid', gridTemplateColumns: propTab === 'sales' ? '1fr 1fr' : '1fr', gap:12, marginBottom:12 }}>
-            <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
-              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>Average Asking Price Per Square Foot · {sanitizeRawGithubLinks(na(prop?.prices?.price_source))}</div>
-              <div className="mob-stack-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
-                {[
-                  ['Apartments', prop?.prices?.apt_psf_aed, prop?.prices?.apt_avg_aed, prop?.prices?.apt_chg_yoy||prop?.prices?.price_index_chg_yoy],
-                  ['Villas',     prop?.prices?.villa_psf_aed, prop?.prices?.villa_avg_aed, prop?.prices?.villa_chg_yoy||prop?.prices?.price_index_chg_yoy],
-                ].map(([type,psf,avg,yoy]) => (
-                  <div key={type} style={{ padding:'12px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10 }}>
-                    <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--muted)', marginBottom:8 }}>{type}</div>
-                    <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:24, fontWeight:800, color:C.metric, textShadow:C.glowMetric }}>AED {na(psf)}<span style={{fontSize:10,color:'var(--muted)'}}>/sqft</span></div>
-                    {avg&&<div style={{ fontSize:10, color:'var(--muted)', marginTop:4 }}>Avg deal: AED {na(avg)}</div>}
-                    {yoy&&<div style={{ fontSize:10, fontWeight:600, color:yoy.toString().startsWith('+')?C.g:C.red, marginTop:3 }}>{yoy} vs last year</div>}
-                  </div>
-                ))}
+            {propTab === 'sales' ? (
+              <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
+                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>Average Asking Price Per Square Foot · {sanitizeRawGithubLinks(na(prop?.prices?.price_source))}</div>
+                <div className="mob-stack-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+                  {[
+                    ['Apartments', prop?.prices?.apt_psf_aed, prop?.prices?.apt_avg_aed, prop?.prices?.apt_chg_yoy||prop?.prices?.price_index_chg_yoy],
+                    ['Villas',     prop?.prices?.villa_psf_aed, prop?.prices?.villa_avg_aed, prop?.prices?.villa_chg_yoy||prop?.prices?.price_index_chg_yoy],
+                  ].map(([type,psf,avg,yoy]) => (
+                    <div key={type} style={{ padding:'12px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10 }}>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--muted)', marginBottom:8 }}>{type}</div>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:24, fontWeight:800, color:C.metric, textShadow:C.glowMetric }}>AED {na(psf)}<span style={{fontSize:10,color:'var(--muted)'}}>/sqft</span></div>
+                      {avg&&<div style={{ fontSize:10, color:'var(--muted)', marginTop:4 }}>Avg deal: AED {na(avg)}</div>}
+                      {yoy&&<div style={{ fontSize:10, fontWeight:600, color:yoy.toString().startsWith('+')?C.g:C.red, marginTop:3 }}>{yoy} vs last year</div>}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              /* Rental tab: average asking rent per bedroom from listings CSV */
+              (prop?.listings?.by_beds || loadProp) && (
+                <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>
+                    Average Asking Rent by Bedroom · {sanitizeRawGithubLinks(na(prop?.listings?.source))}
+                  </div>
+                  {loadProp ? <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>{[1,2,3,4].map(i=><Skel key={i} h={72} style={{ flex:1, minWidth:100 }}/>)}</div> : (()=>{
+                    const beds = prop?.listings?.by_beds || {};
+                    const bedOrder = ['Studio','1','2','3','4+'];
+                    const rows = bedOrder.filter(k => beds[k]);
+                    const rentRef = { Studio: prop?.rental?.studio_avg_aed, '1': prop?.rental?.apt_1br_avg_aed, '2': prop?.rental?.apt_2br_avg_aed, '3': prop?.rental?.villa_3br_avg_aed };
+                    return (
+                      <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                        {rows.map(key => {
+                          const d = beds[key];
+                          const txnRaw = parseFloat(rentRef[key]);
+                          const dpct = txnRaw && d.avg_price > 0 ? Math.round(((d.avg_price - txnRaw) / txnRaw) * 100) : null;
+                          const dpctColor = dpct == null ? C.tm : dpct > 5 ? C.red : dpct < -5 ? C.g : C.am;
+                          return (
+                            <div key={key} style={{ flex:'1 1 min(100px,100%)', padding:'12px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10, minWidth:'min(100px,100%)' }}>
+                              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--muted)', marginBottom:8 }}>{key === 'Studio' ? 'Studio' : `${key} Bed`}</div>
+                              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:20, fontWeight:800, color:C.metric, textShadow:C.glowMetric }}>{d.avg_price_fmt}<span style={{fontSize:9,color:'var(--muted)'}}>/yr</span></div>
+                              <div style={{ fontSize:10, color:'var(--muted)', marginTop:3 }}>{d.count.toLocaleString()} listings</div>
+                              {dpct != null && (
+                                <div style={{ fontSize:10, fontWeight:600, color:dpctColor, marginTop:3 }}>
+                                  {dpct > 0 ? '+' : ''}{dpct}% vs transacted
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )
+            )}
 
             {/* Off-plan vs resale — sales tab only */}
             {propTab === 'sales' && (
