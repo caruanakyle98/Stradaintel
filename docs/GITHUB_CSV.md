@@ -36,9 +36,18 @@ Open each in a browser — you must see CSV text (HTTP 200).
 | `price_aed` | Yes | Asking price in AED |
 | `community` | Recommended | Area / master community |
 | `bedrooms` | Recommended | Numeric (0=Studio) or "Studio" |
-| `listed_date` | Recommended | Enables "new this week" count |
+| `listed_date` | Recommended | Enables "new this week" count and **Hot Listings** (must be parseable; last 30 days) |
 | `building` | Optional | Tower / building name |
 | `bathrooms` | Optional | Numeric |
+| `url` / `link` | Optional | Full **https://** listing URL for the Hot Listings table |
+
+### Hot Listings (dashboard)
+
+When listings load successfully, the API adds `listings.hot_listings`: up to **25** active rows with the largest **% below leave-one-out peer average** asking rent for the **same bedroom count** (Studio / 1 / 2 / 3 / 4+). Only listings with a **listed date in the last 30 days** qualify; the **area filter** uses the same community matching as the rest of the pipeline. Rows need **at least two** eligible peers in that bedroom bucket to compute the benchmark. Optional **link** column supplies the outbound URL.
+
+### Metrics snapshot (`PROPERTY_METRICS_JSON_URL`)
+
+If the app returns **cached JSON** from `PROPERTY_METRICS_JSON_URL` (no area filter, no `noSnapshot`), that payload is **not** rebuilt by `buildListingsPayload` on the server. **`hot_listings` appears only when listings are merged from `PROPERTY_LISTINGS_CSV_URL` in that request** — e.g. use an **area filter**, append **`?noSnapshot=1`**, or **regenerate** your snapshot file after deploy so it includes `hot_listings` if you rely on the default snapshot path.
 
 You may **remove** Blob vars (`BLOB_READ_WRITE_TOKEN`, `BLOB_SALES_PATHNAME`, …) if you no longer use Blob.
 

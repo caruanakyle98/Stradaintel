@@ -2239,6 +2239,72 @@ export function DashboardView() {
                 </div>
               </div>
 
+              {/* Hot Listings — top 25 under LOO peer average, ≤30d, area-filtered */}
+              {!prop?.listings?.error && (
+                <div className="reveal print-keep-together lp-card" style={{ marginBottom: 12, padding: 0, overflow: 'hidden' }}>
+                  <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.border}` }}>
+                    <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)' }}>Hot Listings</div>
+                    <div style={{ fontSize: 10, color: C.tm, marginTop: 4, lineHeight: 1.45 }}>
+                      {prop?.listings?.hot_listings_rules || 'Top 25 by % below leave-one-out peer average (same bedroom count), listed in the last 30 days.'}
+                      {prop?.listings?.filter_area && (
+                        <span style={{ fontWeight: 600 }}>{` · ${prop.listings.filter_area}`}</span>
+                      )}
+                    </div>
+                  </div>
+                  {loadProp ? (
+                    <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="65%" /></div>
+                  ) : (prop?.listings?.hot_listings && prop.listings.hot_listings.length > 0) ? (
+                    <div className="tx-scroll-wrap" style={{ maxHeight: 320, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                      <table style={{ minWidth: 560, width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
+                        <thead>
+                          <tr style={{ background: C.card }}>
+                            <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Community</th>
+                            <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Building</th>
+                            <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Price</th>
+                            <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }} title="% below leave-one-out peer average for this bedroom count">% below peer</th>
+                            <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Link</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {prop.listings.hot_listings.map((row, i) => {
+                            let safeHref = null;
+                            if (row.link && typeof row.link === 'string') {
+                              try {
+                                const u = new URL(row.link.trim());
+                                if (u.protocol === 'http:' || u.protocol === 'https:') safeHref = u.href;
+                              } catch { /* ignore */ }
+                            }
+                            const tip = `${row.bed_label || ''} · peer avg (excl. this listing) ${row.market_avg_fmt || ''}`.trim();
+                            return (
+                              <tr key={i} style={{ borderBottom: `1px solid ${C.border}` }}>
+                                <td style={{ padding: '4px 6px', color: C.t2, maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.community}>{row.community}</td>
+                                <td style={{ padding: '4px 6px', color: C.t2, maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.building}>{row.building}</td>
+                                <td style={{ padding: '4px 6px', color: C.metric, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.price_fmt}</td>
+                                <td style={{ padding: '4px 6px', color: C.ga, fontWeight: 700, textAlign: 'right', whiteSpace: 'nowrap' }} title={tip}>{row.pct_drop != null ? `${row.pct_drop}%` : '—'}</td>
+                                <td style={{ padding: '4px 6px', whiteSpace: 'nowrap' }}>
+                                  {safeHref ? (
+                                    <a href={safeHref} target="_blank" rel="noopener noreferrer" style={{ color: C.amL, fontSize: 10, fontWeight: 600 }}>
+                                      View
+                                    </a>
+                                  ) : (
+                                    <span style={{ color: C.tm }}>—</span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div style={{ padding: '14px 18px', fontSize: 12, color: C.tm, lineHeight: 1.5 }}>
+                      {prop?.listings?.hot_listings_note
+                        || 'No hot listings right now — need at least two listings in the same bedroom bucket (last 30 days, parseable listed date) so a peer average can be computed.'}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Asking rent by bedrooms — rental context */}
               {(loadProp || prop?.listings?.by_beds) && (
                 <div className="print-keep-together lp-card" style={{ padding:'20px 22px', marginBottom:8 }}>

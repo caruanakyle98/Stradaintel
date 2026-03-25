@@ -9,7 +9,8 @@
     "start": "next start",
     "upload:sales-blob": "node scripts/upload-sales-to-blob.mjs",
     "upload:blob-all": "node scripts/upload-blob-all.mjs",
-    "verify:blob-read": "node scripts/verify-blob-read.mjs"
+    "verify:blob-read": "node scripts/verify-blob-read.mjs",
+    "test:hot-listings": "node scripts/test-hot-listings.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^2.3.1",
