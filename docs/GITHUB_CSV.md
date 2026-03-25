@@ -25,6 +25,7 @@ Open each in a browser — you must see CSV text (HTTP 200).
 | `PROPERTY_SALES_CSV_URL` | raw URL for sales |
 | `PROPERTY_RENTAL_CSV_URL` | raw URL for rentals |
 | `PROPERTY_LISTINGS_CSV_URL` | raw URL for active listings (optional — enables supply pipeline section) |
+| `COMMUNITY_ALIAS_JSON` | Optional — see [Community names across CSVs](#7-community-names-across-csvs) |
 
 **Redeploy** after saving (only needed when adding a new env var for the first time).
 
@@ -60,3 +61,15 @@ The `/api/property` route loads **sales**, **rentals**, and optionally **listing
 - Temporarily unset `PROPERTY_LISTINGS_CSV_URL` to confirm listings data is the main driver.
 
 Use **Vercel → Functions → Logs** for invocation errors and duration if you need to correlate failures with deploys or data updates.
+
+## 7. Community names across CSVs
+
+Sales, rental, and listing exports may use **slightly different labels** for the same place (e.g. **"The Greens"** in sales/rental vs **"Greens"** in listings). The dashboard normalizes names when applying the area filter: case, spacing, and a leading **"The "** are ignored so filters stay aligned.
+
+For pairs that cannot be matched automatically (e.g. **"JVC"** vs **"Jumeirah Village Circle"**), set optional **`COMMUNITY_ALIAS_JSON`** in Vercel (Production) to a JSON array of synonym groups — the first name in each group is the canonical key:
+
+```json
+[["Jumeirah Village Circle", "JVC"]]
+```
+
+Redeploy after changing env vars. Prefer consistent naming in your CSVs when possible.
