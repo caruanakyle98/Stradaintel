@@ -331,6 +331,17 @@ const css = `
     .mob-alert-grid > span { padding-left:0 !important; padding-right:0 !important; min-width:0 !important; overflow-wrap:break-word; }
     .mob-card-min { min-width:0 !important; flex:1 1 100% !important; max-width:100% !important; }
     .dashboard-root .print-keep-together { min-width:0; overflow-wrap:break-word; word-break:break-word; }
+    /* Recent tx tables: reset inherited break-word from .print-keep-together so nowrap + horizontal scroll work */
+    .dashboard-root .tx-scroll-wrap,
+    .dashboard-root .tx-scroll-wrap table,
+    .dashboard-root .tx-scroll-wrap thead,
+    .dashboard-root .tx-scroll-wrap tbody,
+    .dashboard-root .tx-scroll-wrap tr,
+    .dashboard-root .tx-scroll-wrap th,
+    .dashboard-root .tx-scroll-wrap td {
+      word-break: normal !important;
+      overflow-wrap: normal !important;
+    }
     .dash-header-actions { align-items:stretch !important; width:100% !important; max-width:100% !important; }
     .dash-header-actions button { max-width:100%; }
     .dash-header-actions label { display:flex; flex-wrap:wrap; gap:8px; max-width:100%; }
@@ -1362,6 +1373,17 @@ export function DashboardView() {
           'H5',
         );
       });
+      document.querySelectorAll('.tx-scroll-wrap').forEach((wrap, idx) => {
+        const th0 = wrap.querySelector('th');
+        if (!th0) return;
+        const cs = getComputedStyle(th0);
+        ping(
+          'app/page.js:layoutDebug',
+          'txThComputed',
+          { idx, wordBreak: cs.wordBreak, overflowWrap: cs.overflowWrap, whiteSpace: cs.whiteSpace },
+          'H6',
+        );
+      });
       document.querySelectorAll('[data-agent-beds-grid]').forEach((el, idx) => {
         ping(
           'app/page.js:layoutDebug',
@@ -1812,8 +1834,8 @@ export function DashboardView() {
               {loadProp ? (
                 <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="70%" /></div>
               ) : (prop?.recent_sales_transactions && prop.recent_sales_transactions.length > 0) ? (
-                <div data-agent-tx-scroll="sales" style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <table style={{ minWidth: 720, width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
+                <div className="tx-scroll-wrap" data-agent-tx-scroll="sales" style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ minWidth: 720, width: 'max-content', maxWidth: 'none', borderCollapse: 'collapse', fontSize: 10 }}>
                     <thead>
                       <tr style={{ background: C.card }}>
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
@@ -1903,8 +1925,8 @@ export function DashboardView() {
               {loadProp ? (
                 <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="70%" /></div>
               ) : (prop?.recent_rental_transactions && prop.recent_rental_transactions.length > 0) ? (
-                <div data-agent-tx-scroll="rental" style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <table style={{ minWidth: 620, width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
+                <div className="tx-scroll-wrap" data-agent-tx-scroll="rental" style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ minWidth: 620, width: 'max-content', maxWidth: 'none', borderCollapse: 'collapse', fontSize: 10 }}>
                     <thead>
                       <tr style={{ background: C.card }}>
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
