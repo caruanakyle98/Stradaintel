@@ -348,33 +348,25 @@ export async function GET(request) {
     const needRental = !!(rentalUrlEnv && result.windows);
     const needListings = !!listingsUrlEnv;
 
+    /* Sequential rental → listings (not parallel) to cap peak RAM: two large CSV strings
+     * at once + parse copies can OOM the default ~2GB Node heap on Vercel. */
     if (needRental || needListings) {
       try {
-        const rentalP = needRental
-          ? loadRentalCsvText().catch((e) => ({ __err: e }))
-          : Promise.resolve(null);
-        const listingsP = needListings
-          ? loadListingsCsvText().catch((e) => ({ __err: e }))
-          : Promise.resolve(null);
-
-        const [rentalBox, listingsBox] = await Promise.all([rentalP, listingsP]);
-
         if (needRental) {
-          if (rentalBox?.__err) {
-            result.body.rental = result.body.rental || {};
-            result.body.rental.note = `Rental URL failed: ${rentalBox.__err?.message || rentalBox.__err}. Sales data still shown.`;
-          } else if (rentalBox) {
-            mergeRentalIntoPayload(result.body, rentalBox.text, rentalBox.label, result.windows, {
+          try {
+            const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
+            mergeRentalIntoPayload(result.body, rentalRaw, rentalLabel, result.windows, {
               filterArea: areaFilterActive ? areaParam : '',
             });
+          } catch (e) {
+            result.body.rental = result.body.rental || {};
+            result.body.rental.note = `Rental URL failed: ${e?.message || e}. Sales data still shown.`;
           }
         }
 
         if (needListings) {
           try {
-            if (listingsBox?.__err) throw listingsBox.__err;
-            const listingsRaw = listingsBox.text;
-            const listingsLabel = listingsBox.label;
+            const { text: listingsRaw, label: listingsLabel } = await loadListingsCsvText();
 
             const rentalTxnAvgByBeds = {
               studio: parseFloat(result.body.rental?.studio_avg_aed) || null,
@@ -414,11 +406,13 @@ export async function GET(request) {
       }
     }
 
+    const _mem = process.memoryUsage();
     console.info(
       JSON.stringify({
         tag: 'property-api-timing',
         ms: Date.now() - _t0,
-        rental_parallel: true,
+        heap_mb: Math.round(_mem.heapUsed / 1024 / 1024),
+        rss_mb: Math.round(_mem.rss / 1024 / 1024),
       }),
     );
     return Response.json(result.body, { status: 200 });

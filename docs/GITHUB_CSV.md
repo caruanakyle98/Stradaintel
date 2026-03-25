@@ -48,3 +48,15 @@ Replace files → `git commit` → `git push`. No redeploy needed; refresh dashb
 ## 5. Optional: comma-separated fallbacks
 
 `PROPERTY_SALES_CSV_URL` can list multiple URLs (comma-separated); first successful GET wins.
+
+## 6. Large CSVs and Vercel memory (HTTP 500 / “ran out of memory”)
+
+The `/api/property` route loads and parses **sales**, **rentals**, and optionally **listings** in one invocation. Very large files (especially listings) can exceed the default **~2 GB** serverless memory and cause the runtime to exit with **HTTP 500**.
+
+**Mitigations:**
+
+- Keep each CSV only as large as needed (trim columns, drop stale rows, or split time ranges).
+- If you still hit limits, open **Vercel → Project → Settings → Functions → Advanced** and raise the function memory to **Performance (4 GB / 2 vCPUs)** (Pro/Enterprise). You cannot set this in `vercel.json`; use the dashboard.
+- Temporarily unset `PROPERTY_LISTINGS_CSV_URL` to confirm listings data is the main driver.
+
+Successful responses log `property-api-timing` in Vercel function logs with `heap_mb` / `rss_mb` for diagnosis.
