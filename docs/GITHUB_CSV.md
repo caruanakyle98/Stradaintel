@@ -51,7 +51,7 @@ Replace files → `git commit` → `git push`. No redeploy needed; refresh dashb
 
 ## 6. Large CSVs and Vercel memory (HTTP 500 / “ran out of memory”)
 
-The `/api/property` route loads and parses **sales**, **rentals**, and optionally **listings** in one invocation. Very large files (especially listings) can exceed the default **~2 GB** serverless memory and cause the runtime to exit with **HTTP 500**.
+The `/api/property` route loads **sales**, **rentals**, and optionally **listings** in one invocation. Parsing uses **streaming row iteration** (no full duplicate of the CSV as a giant row array for sales/rental/listings), but **records** for sales and rental still live in memory for aggregation — extremely large extracts can still approach limits.
 
 **Mitigations:**
 
