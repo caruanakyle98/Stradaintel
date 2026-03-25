@@ -109,6 +109,14 @@ async function fetchText(url, { timeoutMs = 50000 } = {}) {
   throw new Error(`GET ${url} → HTTP ${lastStatus}`);
 }
 
+/** stderr — visible under Runtime / Logs; use filter `[strada-property]` (console.info is easy to miss). */
+function logPropertyStage(label) {
+  const m = process.memoryUsage();
+  console.error(
+    `[strada-property] ${label} heap_mb=${Math.round(m.heapUsed / 1024 / 1024)} rss_mb=${Math.round(m.rss / 1024 / 1024)}`,
+  );
+}
+
 function blobReadWriteToken() {
   return (
     process.env.BLOB_READ_WRITE_TOKEN ||
@@ -344,6 +352,8 @@ export async function GET(request) {
       return Response.json(result.body, { status: result.status });
     }
 
+    logPropertyStage('1_after_sales_build');
+
     const listingsUrlEnv = process.env.PROPERTY_LISTINGS_CSV_URL?.trim();
     const needRental = !!(rentalUrlEnv && result.windows);
     const needListings = !!listingsUrlEnv;
@@ -358,7 +368,9 @@ export async function GET(request) {
             mergeRentalIntoPayload(result.body, rentalRaw, rentalLabel, result.windows, {
               filterArea: areaFilterActive ? areaParam : '',
             });
+            logPropertyStage('2_after_rental_merge');
           } catch (e) {
+            logPropertyStage('2_rental_merge_failed');
             result.body.rental = result.body.rental || {};
             result.body.rental.note = `Rental URL failed: ${e?.message || e}. Sales data still shown.`;
           }
@@ -367,6 +379,7 @@ export async function GET(request) {
         if (needListings) {
           try {
             const { text: listingsRaw, label: listingsLabel } = await loadListingsCsvText();
+            logPropertyStage('3_after_listings_csv_fetch');
 
             const rentalTxnAvgByBeds = {
               studio: parseFloat(result.body.rental?.studio_avg_aed) || null,
@@ -380,6 +393,7 @@ export async function GET(request) {
               dataType: 'rental',
               filterArea: areaFilterActive ? areaParam : '',
             });
+            logPropertyStage('4_after_listings_aggregate');
 
             if (listingsResult.ok && listingsResult.listings) {
               const weeklyRentals = parseInt(result.body.weekly?.rent_volume?.value) || null;
@@ -406,15 +420,7 @@ export async function GET(request) {
       }
     }
 
-    const _mem = process.memoryUsage();
-    console.info(
-      JSON.stringify({
-        tag: 'property-api-timing',
-        ms: Date.now() - _t0,
-        heap_mb: Math.round(_mem.heapUsed / 1024 / 1024),
-        rss_mb: Math.round(_mem.rss / 1024 / 1024),
-      }),
-    );
+    logPropertyStage(`5_done_ms=${Date.now() - _t0}`);
     return Response.json(result.body, { status: 200 });
   } catch (e) {
     const detail = e?.message || String(e);

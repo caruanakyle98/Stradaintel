@@ -59,4 +59,4 @@ The `/api/property` route loads and parses **sales**, **rentals**, and optionall
 - If you still hit limits, open **Vercel → Project → Settings → Functions → Advanced** and raise the function memory to **Performance (4 GB / 2 vCPUs)** (Pro/Enterprise). You cannot set this in `vercel.json`; use the dashboard.
 - Temporarily unset `PROPERTY_LISTINGS_CSV_URL` to confirm listings data is the main driver.
 
-Successful responses log `property-api-timing` in Vercel function logs with `heap_mb` / `rss_mb` for diagnosis.
+In **Vercel → Functions → Logs**, filter by **`[strada-property]`** (stderr). You should see stages `1_after_sales_build` … `5_done_ms=…` with `heap_mb` / `rss_mb` on each line. If the process OOMs mid-request, the **last line before the crash** shows which stage ran (for example, OOM before `4_after_listings_aggregate` points at listings work).
