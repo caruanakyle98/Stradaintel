@@ -1,6 +1,7 @@
 // Property data: optional metrics JSON URL, sales/rental CSV URLs (HTTPS), or local path.
 
-export const maxDuration = 60;
+/** Pro/Enterprise: raise if CSV + AI still exceed default (see Vercel → Functions max duration). */
+export const maxDuration = 120;
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
@@ -75,19 +76,34 @@ Use this data:\n${JSON.stringify(stats, null, 2)}`;
   }
 }
 
-/** Fetch URL as text; retry 502/503/504 a few times (Blob/CDN blips). */
-async function fetchText(url) {
+/** Fetch URL as text; retry 502/503/504 a few times (Blob/CDN blips). Per-attempt timeout avoids hanging until platform 504. */
+async function fetchText(url, { timeoutMs = 50000 } = {}) {
   const max = 4;
   let lastStatus = 0;
   for (let attempt = 1; attempt <= max; attempt++) {
-    const r = await fetch(url, {
-      headers: { 'User-Agent': 'Stradaintel/1' },
-      cache: 'no-store',
-    });
-    lastStatus = r.status;
-    if (r.ok) return r.text();
-    if (![502, 503, 504].includes(r.status) || attempt === max) {
-      throw new Error(`GET ${url} → HTTP ${r.status}`);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const r = await fetch(url, {
+        headers: { 'User-Agent': 'Stradaintel/1' },
+        cache: 'no-store',
+        signal: controller.signal,
+      });
+      clearTimeout(timer);
+      lastStatus = r.status;
+      if (r.ok) return r.text();
+      if (![502, 503, 504].includes(r.status) || attempt === max) {
+        throw new Error(`GET ${url} → HTTP ${r.status}`);
+      }
+    } catch (e) {
+      clearTimeout(timer);
+      if (e?.name === 'AbortError') {
+        if (attempt === max) {
+          throw new Error(`GET ${url} → timed out after ${timeoutMs}ms (CSV may be very large or GitHub slow)`);
+        }
+        continue;
+      }
+      throw e;
     }
   }
   throw new Error(`GET ${url} → HTTP ${lastStatus}`);
@@ -209,7 +225,11 @@ async function buildFromSalesText(csvRaw, label, { area, skipAi } = {}) {
   const payload = { ...result.body };
   const windows = result.windows;
   if (!skipAi) {
-    const ai = await aiInterpretSales(payload._stats_for_ai, process.env.ANTHROPIC_API_KEY);
+    const AI_MS = 22000;
+    const ai = await Promise.race([
+      aiInterpretSales(payload._stats_for_ai, process.env.ANTHROPIC_API_KEY),
+      new Promise((resolve) => setTimeout(() => resolve(null), AI_MS)),
+    ]);
     if (ai?.owner_briefing) payload.owner_briefing = ai.owner_briefing;
     if (ai?.market_note) payload.market_split.note = ai.market_note;
     if (ai?.demand_signal) payload.rental.landlord_vs_tenant = ai.demand_signal;
@@ -300,6 +320,7 @@ export async function GET(request) {
   }
 
   try {
+    const _t0 = Date.now();
     let result;
 
     const buildOpts = {
@@ -323,61 +344,83 @@ export async function GET(request) {
       return Response.json(result.body, { status: result.status });
     }
 
-    if (rentalUrlEnv && result.windows) {
+    const listingsUrlEnv = process.env.PROPERTY_LISTINGS_CSV_URL?.trim();
+    const needRental = !!(rentalUrlEnv && result.windows);
+    const needListings = !!listingsUrlEnv;
+
+    if (needRental || needListings) {
       try {
-        const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
-        mergeRentalIntoPayload(result.body, rentalRaw, rentalLabel, result.windows, {
-          filterArea: areaFilterActive ? areaParam : '',
-        });
+        const rentalP = needRental
+          ? loadRentalCsvText().catch((e) => ({ __err: e }))
+          : Promise.resolve(null);
+        const listingsP = needListings
+          ? loadListingsCsvText().catch((e) => ({ __err: e }))
+          : Promise.resolve(null);
+
+        const [rentalBox, listingsBox] = await Promise.all([rentalP, listingsP]);
+
+        if (needRental) {
+          if (rentalBox?.__err) {
+            result.body.rental = result.body.rental || {};
+            result.body.rental.note = `Rental URL failed: ${rentalBox.__err?.message || rentalBox.__err}. Sales data still shown.`;
+          } else if (rentalBox) {
+            mergeRentalIntoPayload(result.body, rentalBox.text, rentalBox.label, result.windows, {
+              filterArea: areaFilterActive ? areaParam : '',
+            });
+          }
+        }
+
+        if (needListings) {
+          try {
+            if (listingsBox?.__err) throw listingsBox.__err;
+            const listingsRaw = listingsBox.text;
+            const listingsLabel = listingsBox.label;
+
+            const rentalTxnAvgByBeds = {
+              studio: parseFloat(result.body.rental?.studio_avg_aed) || null,
+              '1br':  parseFloat(result.body.rental?.apt_1br_avg_aed) || null,
+              '2br':  parseFloat(result.body.rental?.apt_2br_avg_aed) || null,
+              '3br':  parseFloat(result.body.rental?.villa_3br_avg_aed) || null,
+            };
+
+            const listingsResult = buildListingsPayload(listingsRaw, listingsLabel, {
+              rentalTxnAvgByBeds,
+              dataType: 'rental',
+              filterArea: areaFilterActive ? areaParam : '',
+            });
+
+            if (listingsResult.ok && listingsResult.listings) {
+              const weeklyRentals = parseInt(result.body.weekly?.rent_volume?.value) || null;
+              if (weeklyRentals && weeklyRentals > 0) {
+                const weeksOfSupply = listingsResult.listings.total / weeklyRentals;
+                listingsResult.listings.supply_depth = {
+                  weeks: parseFloat(weeksOfSupply.toFixed(1)),
+                  listings_total: listingsResult.listings.total,
+                  weekly_registrations: weeklyRentals,
+                  label: `${weeksOfSupply.toFixed(1)} weeks of rental listing cover`,
+                };
+              }
+              result.body.listings = listingsResult.listings;
+            } else {
+              result.body.listings = { error: listingsResult.error, source: listingsLabel };
+            }
+          } catch (e) {
+            result.body.listings = { error: `Listings URL failed: ${e?.message || e}. Other data still shown.` };
+          }
+        }
       } catch (e) {
         result.body.rental = result.body.rental || {};
         result.body.rental.note = `Rental URL failed: ${e?.message || e}. Sales data still shown.`;
       }
     }
 
-    const listingsUrlEnv = process.env.PROPERTY_LISTINGS_CSV_URL;
-    if (listingsUrlEnv) {
-      try {
-        const { text: listingsRaw, label: listingsLabel } = await loadListingsCsvText();
-
-        // Rental transaction averages (from rental CSV) — used to compare asking rent vs transacted rent
-        const rentalTxnAvgByBeds = {
-          studio: parseFloat(result.body.rental?.studio_avg_aed) || null,
-          '1br':  parseFloat(result.body.rental?.apt_1br_avg_aed) || null,
-          '2br':  parseFloat(result.body.rental?.apt_2br_avg_aed) || null,
-          '3br':  parseFloat(result.body.rental?.villa_3br_avg_aed) || null,
-        };
-
-        // #region agent log
-        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',location:'route.js:listings-filter',message:'listings filter applied',data:{areaParam,areaFilterActive,filterArea:areaFilterActive?areaParam:''},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
-        const listingsResult = buildListingsPayload(listingsRaw, listingsLabel, {
-          rentalTxnAvgByBeds,
-          dataType: 'rental',
-          filterArea: areaFilterActive ? areaParam : '',
-        });
-
-        if (listingsResult.ok && listingsResult.listings) {
-          // Supply depth: rental listings / weekly rental registrations
-          const weeklyRentals = parseInt(result.body.weekly?.rent_volume?.value) || null;
-          if (weeklyRentals && weeklyRentals > 0) {
-            const weeksOfSupply = listingsResult.listings.total / weeklyRentals;
-            listingsResult.listings.supply_depth = {
-              weeks: parseFloat(weeksOfSupply.toFixed(1)),
-              listings_total: listingsResult.listings.total,
-              weekly_registrations: weeklyRentals,
-              label: `${weeksOfSupply.toFixed(1)} weeks of rental listing cover`,
-            };
-          }
-          result.body.listings = listingsResult.listings;
-        } else {
-          result.body.listings = { error: listingsResult.error, source: listingsLabel };
-        }
-      } catch (e) {
-        result.body.listings = { error: `Listings URL failed: ${e?.message || e}. Other data still shown.` };
-      }
-    }
-
+    console.info(
+      JSON.stringify({
+        tag: 'property-api-timing',
+        ms: Date.now() - _t0,
+        rental_parallel: true,
+      }),
+    );
     return Response.json(result.body, { status: 200 });
   } catch (e) {
     const detail = e?.message || String(e);
