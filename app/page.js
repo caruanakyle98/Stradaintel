@@ -1740,6 +1740,52 @@ export function DashboardView() {
             </div>
           )}
 
+          {/* ── SALES TAB: last 25 transactions (area-filtered) ── */}
+          {propTab === 'sales' && (
+            <div className="reveal lp-card print-keep-together" style={{ marginBottom: 16, padding: 0, overflow: 'hidden' }}>
+              <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.border}` }}>
+                <div style={{ fontFamily: "var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)' }}>Recent sales transactions</div>
+                <div style={{ fontSize: 10, color: C.tm, marginTop: 4 }}>
+                  Last 25 by date{prop?.filter_area ? ` · ${prop.filter_area}` : ''}
+                </div>
+              </div>
+              {loadProp ? (
+                <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="70%" /></div>
+              ) : (prop?.recent_sales_transactions && prop.recent_sales_transactions.length > 0) ? (
+                <div style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11, minWidth: 560 }}>
+                    <thead>
+                      <tr style={{ background: C.card }}>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Area</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Location</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Type</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Segment</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Price</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>PSF</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {prop.recent_sales_transactions.map((row, i) => (
+                        <tr key={i} style={{ borderBottom: `1px solid ${C.border}` }}>
+                          <td style={{ padding: '8px 12px', color: C.t1, whiteSpace: 'nowrap' }}>{row.date}</td>
+                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.area}</td>
+                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.location}</td>
+                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.unit_type}</td>
+                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.segment}</td>
+                          <td style={{ padding: '8px 12px', color: C.metric, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.price_fmt}</td>
+                          <td style={{ padding: '8px 12px', color: C.t2, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.psf_fmt !== '—' ? `${row.psf_fmt} /sqft` : '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div style={{ padding: '14px 18px', fontSize: 12, color: C.tm }}>No recent sales rows to show{prop?.filter_area ? ` for ${prop.filter_area}` : ''}.</div>
+              )}
+            </div>
+          )}
+
           {/* ── RENTAL TAB: weekly rental counts ── */}
           {propTab === 'rental' && (
             <div className="reveal" style={{ marginBottom:16 }}>
@@ -1778,6 +1824,54 @@ export function DashboardView() {
                     )}
                   </div>
                   <div style={{ fontSize:10, color:'rgba(201,168,76,0.35)', marginTop:10 }}>Split = new + renewal + other ({Number(prop.weekly.rent_new_vs_renewal.new_count) + Number(prop.weekly.rent_new_vs_renewal.renewal_count) + Number(prop.weekly.rent_new_vs_renewal.other_count || 0)} of {prop?.weekly?.rent_volume?.value} registrations). Source: {prop.weekly.rent_new_vs_renewal.column}</div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── RENTAL TAB: last 25 transactions (area-filtered) ── */}
+          {propTab === 'rental' && (
+            <div className="reveal lp-card print-keep-together" style={{ marginBottom: 16, padding: 0, overflow: 'hidden' }}>
+              <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.border}` }}>
+                <div style={{ fontFamily: "var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)' }}>Recent rental transactions</div>
+                <div style={{ fontSize: 10, color: C.tm, marginTop: 4 }}>
+                  Last 25 by date{prop?.filter_area ? ` · ${prop.filter_area}` : ''}
+                </div>
+              </div>
+              {loadProp ? (
+                <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="70%" /></div>
+              ) : (prop?.recent_rental_transactions && prop.recent_rental_transactions.length > 0) ? (
+                <div style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11, minWidth: 420 }}>
+                    <thead>
+                      <tr style={{ background: C.card }}>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Area</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Location</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Beds</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Annual rent</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>New / renewal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {prop.recent_rental_transactions.map((row, i) => (
+                        <tr key={i} style={{ borderBottom: `1px solid ${C.border}` }}>
+                          <td style={{ padding: '8px 12px', color: C.t1, whiteSpace: 'nowrap' }}>{row.date}</td>
+                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.area}</td>
+                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.location}</td>
+                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.beds}</td>
+                          <td style={{ padding: '8px 12px', color: C.metric, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.rent_fmt}</td>
+                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.recurrence}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div style={{ padding: '14px 18px', fontSize: 12, color: C.tm }}>
+                  {prop?.rental?.note && String(prop.rental.note).includes('Rental URL failed')
+                    ? 'Rental data unavailable — recent transactions not loaded.'
+                    : `No recent rental rows to show${prop?.filter_area ? ` for ${prop.filter_area}` : ''}.`}
                 </div>
               )}
             </div>
