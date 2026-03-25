@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react';
 import { buildPayloadFromCsvText } from '../lib/salesCsvPayload.js';
 import { C } from '../lib/theme.js';
 
@@ -805,13 +805,13 @@ function AreaRow({ rank, area, vol, psf, trend, maxVol, last, volLabel = 'deals'
   const tc = trendCol(trend);
   return (
     <div style={{ padding:'12px 0', borderBottom:last?'none':'1px solid rgba(201,168,76,0.10)' }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:8, marginBottom:6 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8, minWidth:0, flex:'1 1 auto' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'minmax(0,1fr) auto', alignItems:'center', gap:8, marginBottom:6 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, minWidth:0 }}>
           <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, color:'var(--muted)', width:18, flexShrink:0 }}>{rank}</span>
-          <span style={{ fontSize:13, color:'var(--white)', fontWeight:600, overflowWrap:'break-word' }}>{area}</span>
+          <span style={{ fontSize:13, color:'var(--white)', fontWeight:600, overflow:'hidden', textOverflow:'ellipsis' }} title={area}>{area}</span>
           <span style={{ fontSize:11, flexShrink:0 }}>{trendArrow(trend)}</span>
         </div>
-        <div style={{ display:'flex', gap:14, alignItems:'center', flexWrap:'wrap' }}>
+        <div style={{ display:'flex', gap:12, alignItems:'center', flexWrap:'nowrap', whiteSpace:'nowrap', flexShrink:0 }}>
           <span style={{ fontSize:10, color:'var(--muted)' }}>{na(vol)} {volLabel}</span>
           <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:13, color:tc, fontWeight:700 }}>{psfDisplay ?? `AED ${na(psf)}/sqft`}</span>
         </div>
@@ -1326,6 +1326,66 @@ export function DashboardView() {
     return () => io.disconnect();
   }, [intel, prop, showData, propTab]);
 
+  // #region agent log
+  useLayoutEffect(() => {
+    const endpoint = 'http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844';
+    const ping = (location, message, data, hypothesisId) => {
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
+        body: JSON.stringify({
+          sessionId: '69d0ba',
+          location,
+          message,
+          data,
+          timestamp: Date.now(),
+          hypothesisId,
+        }),
+      }).catch(() => {});
+    };
+    const run = () => {
+      if (typeof window === 'undefined') return;
+      ping('app/page.js:layoutDebug', 'viewport', { innerWidth: window.innerWidth, outerWidth: window.outerWidth }, 'H1');
+      document.querySelectorAll('[data-agent-tx-scroll]').forEach((el, idx) => {
+        const t = el.querySelector('table');
+        if (!t) return;
+        ping(
+          'app/page.js:layoutDebug',
+          'txTable',
+          {
+            idx,
+            clientW: el.clientWidth,
+            scrollW: el.scrollWidth,
+            tableScrollW: t.scrollWidth,
+            needsHScroll: el.scrollWidth > el.clientWidth + 1,
+          },
+          'H5',
+        );
+      });
+      document.querySelectorAll('[data-agent-beds-grid]').forEach((el, idx) => {
+        ping(
+          'app/page.js:layoutDebug',
+          'bedsGrid',
+          {
+            idx,
+            clientW: el.clientWidth,
+            scrollW: el.scrollWidth,
+            needsHScroll: el.scrollWidth > el.clientWidth + 1,
+          },
+          'H4',
+        );
+      });
+    };
+    run();
+    const raf = requestAnimationFrame(() => run());
+    window.addEventListener('resize', run);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', run);
+    };
+  }, [intel, prop, showData, propTab, loadProp]);
+  // #endregion
+
   const mkt  = intel?.markets;
   const pl   = intel?.pillars;
   const pillarOrder  = ['security','oil','equities','macro','buyer_demand','aviation','property'];
@@ -1752,39 +1812,29 @@ export function DashboardView() {
               {loadProp ? (
                 <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="70%" /></div>
               ) : (prop?.recent_sales_transactions && prop.recent_sales_transactions.length > 0) ? (
-                <div style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, tableLayout: 'fixed' }}>
-                    <colgroup>
-                      <col style={{ width: '10%' }} />
-                      <col style={{ width: '11%' }} />
-                      <col style={{ width: '20%' }} />
-                      <col style={{ width: '7%' }} />
-                      <col style={{ width: '9%' }} />
-                      <col style={{ width: '8%' }} />
-                      <col style={{ width: '20%' }} />
-                      <col style={{ width: '15%' }} />
-                    </colgroup>
+                <div data-agent-tx-scroll="sales" style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ minWidth: 720, width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
                     <thead>
                       <tr style={{ background: C.card }}>
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Area</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Location</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Unit</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Type</th>
-                        <th title="Segment" style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Seg.</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Price</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>PSF</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Area</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Location</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Unit</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Type</th>
+                        <th title="Segment" style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Seg.</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Price</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>PSF</th>
                       </tr>
                     </thead>
                     <tbody>
                       {prop.recent_sales_transactions.map((row, i) => (
                         <tr key={i} style={{ borderBottom: `1px solid ${C.border}` }}>
                           <td style={{ padding: '4px 5px', color: C.t1, whiteSpace: 'nowrap' }}>{row.date}</td>
-                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.area}>{row.area}</td>
-                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.location}>{row.location}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 140 }} title={row.area}>{row.area}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 180 }} title={row.location}>{row.location}</td>
                           <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }}>{row.unit_no ?? '—'}</td>
-                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.unit_type}>{row.unit_type}</td>
-                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.segment}>{row.segment}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }} title={row.unit_type}>{row.unit_type}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }} title={row.segment}>{row.segment}</td>
                           <td style={{ padding: '4px 5px', color: C.metric, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.price_fmt}</td>
                           <td style={{ padding: '4px 5px', color: C.t2, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.psf_fmt !== '—' ? `${row.psf_fmt} /sqft` : '—'}</td>
                         </tr>
@@ -1853,38 +1903,29 @@ export function DashboardView() {
               {loadProp ? (
                 <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="70%" /></div>
               ) : (prop?.recent_rental_transactions && prop.recent_rental_transactions.length > 0) ? (
-                <div style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, tableLayout: 'fixed' }}>
-                    <colgroup>
-                      <col style={{ width: '11%' }} />
-                      <col style={{ width: '12%' }} />
-                      <col style={{ width: '24%' }} />
-                      <col style={{ width: '8%' }} />
-                      <col style={{ width: '7%' }} />
-                      <col style={{ width: '24%' }} />
-                      <col style={{ width: '14%' }} />
-                    </colgroup>
+                <div data-agent-tx-scroll="rental" style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ minWidth: 620, width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
                     <thead>
                       <tr style={{ background: C.card }}>
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Area</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Location</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Unit</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Beds</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Rent /yr</th>
-                        <th title="New / renewal" style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>N/R</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Area</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Location</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Unit</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Beds</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Rent /yr</th>
+                        <th title="New / renewal" style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>N/R</th>
                       </tr>
                     </thead>
                     <tbody>
                       {prop.recent_rental_transactions.map((row, i) => (
                         <tr key={i} style={{ borderBottom: `1px solid ${C.border}` }}>
                           <td style={{ padding: '4px 5px', color: C.t1, whiteSpace: 'nowrap' }}>{row.date}</td>
-                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.area}>{row.area}</td>
-                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.location}>{row.location}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 140 }} title={row.area}>{row.area}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 200 }} title={row.location}>{row.location}</td>
                           <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }}>{row.unit_no ?? '—'}</td>
-                          <td style={{ padding: '4px 5px', color: C.t2 }}>{row.beds}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }} title={row.beds}>{row.beds}</td>
                           <td style={{ padding: '4px 5px', color: C.metric, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.rent_fmt}</td>
-                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.recurrence}>{row.recurrence}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }} title={row.recurrence}>{row.recurrence}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -2195,39 +2236,41 @@ export function DashboardView() {
                       ? ['Beds','#','Avg Asking','Avg Transacted','Δ%']
                       : ['Beds','Listings','Avg Asking Rent','Range'];
                     return (
-                      <div>
-                        <div style={{ display:'grid', gridTemplateColumns:cols, gap:4, marginBottom:8 }}>
-                          {headers.map(h=>(
-                            <div key={h} style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:8, fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase', color:C.tm }}>{h}</div>
-                          ))}
-                        </div>
-                        {visibleRows.map((key) => {
-                          const d = beds[key];
-                          const cmp = cmpMap[key];
-                          const dpct = cmp?.delta_pct;
-                          const deltaColor = dpct == null ? C.tm : dpct > 5 ? C.red : dpct < -5 ? C.g : C.am;
-                          return (
-                            <div key={key} style={{ display:'grid', gridTemplateColumns:cols, gap:4, padding:'8px 0', borderTop:`1px solid ${C.border}`, alignItems:'center' }}>
-                              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontWeight:700, fontSize:13, color:C.amL }}>{key === 'Studio' ? 'Studio' : `${key} Bed`}</div>
-                              <div style={{ fontSize:12, color:C.t1 }}>{d.count.toLocaleString()}</div>
-                              <div style={{ fontSize:12, color:C.t1, fontWeight:600 }}>{d.avg_price_fmt}/yr</div>
-                              {hasCmp ? <>
-                                <div style={{ fontSize:12, color:C.tm }}>
-                                  {cmp ? `${cmp.txn_fmt}/yr` : '—'}
-                                </div>
-                                <div style={{ fontSize:12, fontWeight:700, color:deltaColor }}>
-                                  {dpct != null ? `${dpct > 0 ? '+' : ''}${dpct}%` : '—'}
-                                </div>
-                              </> : (
-                                <div style={{ fontSize:11, color:C.tm }}>{d.min_price_fmt} – {d.max_price_fmt}</div>
-                              )}
-                            </div>
-                          );
-                        })}
-                        <div style={{ fontSize:9, color:C.tm, marginTop:10 }}>
-                          {hasCmp
-                            ? 'Avg Transacted = avg recently registered rent from rental CSV. Δ% = asking vs transacted (red = asking above market, green = below).'
-                            : 'Min–max range of asking rents across active listings.'}
+                      <div data-agent-beds-grid="listings" style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                        <div style={{ minWidth: hasCmp ? 520 : 360 }}>
+                          <div style={{ display:'grid', gridTemplateColumns:cols, gap:4, marginBottom:8 }}>
+                            {headers.map(h=>(
+                              <div key={h} style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:8, fontWeight:700, letterSpacing:'1.5px', textTransform:'uppercase', color:C.tm, whiteSpace:'nowrap' }}>{h}</div>
+                            ))}
+                          </div>
+                          {visibleRows.map((key) => {
+                            const d = beds[key];
+                            const cmp = cmpMap[key];
+                            const dpct = cmp?.delta_pct;
+                            const deltaColor = dpct == null ? C.tm : dpct > 5 ? C.red : dpct < -5 ? C.g : C.am;
+                            return (
+                              <div key={key} style={{ display:'grid', gridTemplateColumns:cols, gap:4, padding:'8px 0', borderTop:`1px solid ${C.border}`, alignItems:'center' }}>
+                                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontWeight:700, fontSize:13, color:C.amL, whiteSpace:'nowrap' }}>{key === 'Studio' ? 'Studio' : `${key} Bed`}</div>
+                                <div style={{ fontSize:12, color:C.t1, whiteSpace:'nowrap' }}>{d.count.toLocaleString()}</div>
+                                <div style={{ fontSize:12, color:C.t1, fontWeight:600, whiteSpace:'nowrap' }}>{d.avg_price_fmt}/yr</div>
+                                {hasCmp ? <>
+                                  <div style={{ fontSize:12, color:C.tm, whiteSpace:'nowrap' }}>
+                                    {cmp ? `${cmp.txn_fmt}/yr` : '—'}
+                                  </div>
+                                  <div style={{ fontSize:12, fontWeight:700, color:deltaColor, whiteSpace:'nowrap' }}>
+                                    {dpct != null ? `${dpct > 0 ? '+' : ''}${dpct}%` : '—'}
+                                  </div>
+                                </> : (
+                                  <div style={{ fontSize:11, color:C.tm, whiteSpace:'nowrap' }}>{d.min_price_fmt} – {d.max_price_fmt}</div>
+                                )}
+                              </div>
+                            );
+                          })}
+                          <div style={{ fontSize:9, color:C.tm, marginTop:10 }}>
+                            {hasCmp
+                              ? 'Avg Transacted = avg recently registered rent from rental CSV. Δ% = asking vs transacted (red = asking above market, green = below).'
+                              : 'Min–max range of asking rents across active listings.'}
+                          </div>
                         </div>
                       </div>
                     );
