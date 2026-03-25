@@ -1753,28 +1753,40 @@ export function DashboardView() {
                 <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="70%" /></div>
               ) : (prop?.recent_sales_transactions && prop.recent_sales_transactions.length > 0) ? (
                 <div style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11, minWidth: 560 }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, tableLayout: 'fixed' }}>
+                    <colgroup>
+                      <col style={{ width: '10%' }} />
+                      <col style={{ width: '11%' }} />
+                      <col style={{ width: '20%' }} />
+                      <col style={{ width: '7%' }} />
+                      <col style={{ width: '9%' }} />
+                      <col style={{ width: '8%' }} />
+                      <col style={{ width: '20%' }} />
+                      <col style={{ width: '15%' }} />
+                    </colgroup>
                     <thead>
                       <tr style={{ background: C.card }}>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Area</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Location</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Type</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Segment</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Price</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>PSF</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Area</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Location</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Unit</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Type</th>
+                        <th title="Segment" style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Seg.</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Price</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>PSF</th>
                       </tr>
                     </thead>
                     <tbody>
                       {prop.recent_sales_transactions.map((row, i) => (
                         <tr key={i} style={{ borderBottom: `1px solid ${C.border}` }}>
-                          <td style={{ padding: '8px 12px', color: C.t1, whiteSpace: 'nowrap' }}>{row.date}</td>
-                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.area}</td>
-                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.location}</td>
-                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.unit_type}</td>
-                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.segment}</td>
-                          <td style={{ padding: '8px 12px', color: C.metric, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.price_fmt}</td>
-                          <td style={{ padding: '8px 12px', color: C.t2, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.psf_fmt !== '—' ? `${row.psf_fmt} /sqft` : '—'}</td>
+                          <td style={{ padding: '4px 5px', color: C.t1, whiteSpace: 'nowrap' }}>{row.date}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.area}>{row.area}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.location}>{row.location}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }}>{row.unit_no ?? '—'}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.unit_type}>{row.unit_type}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.segment}>{row.segment}</td>
+                          <td style={{ padding: '4px 5px', color: C.metric, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.price_fmt}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.psf_fmt !== '—' ? `${row.psf_fmt} /sqft` : '—'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1842,26 +1854,37 @@ export function DashboardView() {
                 <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="70%" /></div>
               ) : (prop?.recent_rental_transactions && prop.recent_rental_transactions.length > 0) ? (
                 <div style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11, minWidth: 420 }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, tableLayout: 'fixed' }}>
+                    <colgroup>
+                      <col style={{ width: '11%' }} />
+                      <col style={{ width: '12%' }} />
+                      <col style={{ width: '24%' }} />
+                      <col style={{ width: '8%' }} />
+                      <col style={{ width: '7%' }} />
+                      <col style={{ width: '24%' }} />
+                      <col style={{ width: '14%' }} />
+                    </colgroup>
                     <thead>
                       <tr style={{ background: C.card }}>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Area</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Location</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Beds</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Annual rent</th>
-                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '8px 12px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>New / renewal</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Area</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Location</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Unit</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Beds</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>Rent /yr</th>
+                        <th title="New / renewal" style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700 }}>N/R</th>
                       </tr>
                     </thead>
                     <tbody>
                       {prop.recent_rental_transactions.map((row, i) => (
                         <tr key={i} style={{ borderBottom: `1px solid ${C.border}` }}>
-                          <td style={{ padding: '8px 12px', color: C.t1, whiteSpace: 'nowrap' }}>{row.date}</td>
-                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.area}</td>
-                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.location}</td>
-                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.beds}</td>
-                          <td style={{ padding: '8px 12px', color: C.metric, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.rent_fmt}</td>
-                          <td style={{ padding: '8px 12px', color: C.t2 }}>{row.recurrence}</td>
+                          <td style={{ padding: '4px 5px', color: C.t1, whiteSpace: 'nowrap' }}>{row.date}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.area}>{row.area}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.location}>{row.location}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }}>{row.unit_no ?? '—'}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2 }}>{row.beds}</td>
+                          <td style={{ padding: '4px 5px', color: C.metric, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.rent_fmt}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.recurrence}>{row.recurrence}</td>
                         </tr>
                       ))}
                     </tbody>
