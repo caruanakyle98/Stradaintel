@@ -1835,7 +1835,7 @@ export function DashboardView() {
                 <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="70%" /></div>
               ) : (prop?.recent_sales_transactions && prop.recent_sales_transactions.length > 0) ? (
                 <div className="tx-scroll-wrap" data-agent-tx-scroll="sales" style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <table style={{ minWidth: 720, width: 'max-content', maxWidth: 'none', borderCollapse: 'collapse', fontSize: 10 }}>
+                  <table style={{ minWidth: 720, width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
                     <thead>
                       <tr style={{ background: C.card }}>
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
@@ -1926,7 +1926,7 @@ export function DashboardView() {
                 <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="70%" /></div>
               ) : (prop?.recent_rental_transactions && prop.recent_rental_transactions.length > 0) ? (
                 <div className="tx-scroll-wrap" data-agent-tx-scroll="rental" style={{ maxHeight: 280, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <table style={{ minWidth: 620, width: 'max-content', maxWidth: 'none', borderCollapse: 'collapse', fontSize: 10 }}>
+                  <table style={{ minWidth: 620, width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
                     <thead>
                       <tr style={{ background: C.card }}>
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Date</th>
