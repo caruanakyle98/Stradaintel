@@ -1182,6 +1182,7 @@ export function DashboardView() {
   const [clientPackOpen, setClientPackOpen] = useState(false);
   const [printScope, setPrintScope] = useState(false);
   const [propTab, setPropTab] = useState('sales'); // 'sales' | 'rental'
+  const [hotTypeByTab, setHotTypeByTab] = useState({ sales: 'apartment', rental: 'apartment' });
   const [refreshingSnapshot, setRefreshingSnapshot] = useState(false);
 
   useEffect(() => {
@@ -1357,6 +1358,21 @@ export function DashboardView() {
   const pmiVal   = parseFloat(intel?.uae_pmi?.headline||0);
 
   const listingsForTab = propTab === 'sales' ? prop?.sales_listings : prop?.listings;
+  const activeHotType = hotTypeByTab[propTab] || 'apartment';
+  const hotTypeOptions = [
+    ['apartment', 'Apartments'],
+    ['villa', 'Villas'],
+    ['townhouse', 'Townhouses'],
+  ];
+  const hotTypeLabel = activeHotType === 'villa'
+    ? 'Villas'
+    : activeHotType === 'townhouse'
+      ? 'Townhouses'
+      : 'Apartments';
+  const hotByType = listingsForTab?.hot_listings_by_type || null;
+  const displayedHotListings = hotByType
+    ? (hotByType[activeHotType] || [])
+    : (listingsForTab?.hot_listings || []);
 
   const openPrintPdf = useCallback(() => {
     showDataBeforePrintRef.current = showData;
@@ -2215,10 +2231,31 @@ export function DashboardView() {
                 <div className="reveal print-keep-together lp-card" style={{ marginBottom: 12, padding: 0, overflow: 'hidden' }}>
                   <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.border}` }}>
                     <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)' }}>Hot Listings</div>
+                    <div style={{ display:'flex', gap:6, marginTop:10, flexWrap:'wrap' }}>
+                      {hotTypeOptions.map(([k, label]) => (
+                        <button
+                          key={k}
+                          onClick={() => setHotTypeByTab((prev) => ({ ...prev, [propTab]: k }))}
+                          style={{
+                            padding:'5px 12px',
+                            background: activeHotType===k ? C.amL : 'transparent',
+                            color: activeHotType===k ? C.bg : C.t2,
+                            border: `1px solid ${activeHotType===k ? C.amL : C.border}`,
+                            borderRadius: 40,
+                            fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)",
+                            fontSize:9, fontWeight:700, letterSpacing:'1px',
+                            textTransform:'uppercase', cursor:'pointer',
+                          }}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
                     <div style={{ fontSize: 10, color: C.tm, marginTop: 4, lineHeight: 1.45 }}>
                       {listingsForTab?.hot_listings_rules || (propTab === 'sales'
                         ? 'Top 25 asks below average transacted sale per building + bedroom + property type in the selected area (last 30 days of listings).'
                         : 'Top 25 asks below average transacted rent per building + bedroom + property type in the selected area (last 30 days of listings).')}
+                      <span style={{ fontWeight: 600 }}>{` · showing ${hotTypeLabel}`}</span>
                       {listingsForTab?.filter_area && (
                         <span style={{ fontWeight: 600 }}>{` · ${listingsForTab.filter_area}`}</span>
                       )}
@@ -2226,7 +2263,7 @@ export function DashboardView() {
                   </div>
                   {loadProp ? (
                     <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="65%" /></div>
-                  ) : (listingsForTab?.hot_listings && listingsForTab.hot_listings.length > 0) ? (
+                  ) : (displayedHotListings && displayedHotListings.length > 0) ? (
                     <div className="tx-scroll-wrap" style={{ maxHeight: 320, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
                       <table style={{ minWidth: 680, width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
                         <thead>
@@ -2241,7 +2278,7 @@ export function DashboardView() {
                           </tr>
                         </thead>
                         <tbody>
-                          {listingsForTab.hot_listings.map((row, i) => {
+                          {displayedHotListings.map((row, i) => {
                             let safeHref = null;
                             if (row.link && typeof row.link === 'string') {
                               try {
@@ -2279,8 +2316,8 @@ export function DashboardView() {
                     <div style={{ padding: '14px 18px', fontSize: 12, color: C.tm, lineHeight: 1.5 }}>
                       {listingsForTab?.hot_listings_note
                         || (propTab === 'sales'
-                          ? 'No hot listings right now — need recent listings (last 30 days) with asking sale below the area’s transacted average for that building + bedroom + property type (sales CSV).'
-                          : 'No hot listings right now — need recent listings (last 30 days) with asking rent below the area’s transacted average for that building + bedroom + property type (rental CSV).')}
+                          ? `No ${hotTypeLabel.toLowerCase()} hot listings right now — need recent listings (last 30 days) with asking sale below the area’s transacted average for that building + bedroom + property type (sales CSV).`
+                          : `No ${hotTypeLabel.toLowerCase()} hot listings right now — need recent listings (last 30 days) with asking rent below the area’s transacted average for that building + bedroom + property type (rental CSV).`)}
                     </div>
                   )}
                 </div>

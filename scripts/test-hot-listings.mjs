@@ -60,6 +60,29 @@ const old = isoDaysAgo(40);
 }
 
 {
+  // Split output by unit type while preserving default apartment hot_listings.
+  const rows = [
+    { price: 4000000, bedKey: '3', unitTypeKey: 'villa', listedDate: new Date(recent + 'T12:00:00.000Z'), community: 'C', building: 'V1', link: null },
+    { price: 3900000, bedKey: '3', unitTypeKey: 'villa', listedDate: new Date(recent + 'T12:00:00.000Z'), community: 'C', building: 'V2', link: null },
+    { price: 800000, bedKey: '1', unitTypeKey: 'apt', listedDate: new Date(recent + 'T12:00:00.000Z'), community: 'C', building: 'A1', link: null },
+  ];
+  const txn = {
+    'v1|3|villa': { avg: 5000000, n: 3 },
+    'v2|3|villa': { avg: 5200000, n: 3 },
+    'a1|1|apt': { avg: 900000, n: 3 },
+  };
+  const { hot_listings, hot_listings_by_type } = computeHotListings(rows, thirty, true, txn, 'sales');
+  assert.strictEqual(Array.isArray(hot_listings_by_type.apartment), true);
+  assert.strictEqual(Array.isArray(hot_listings_by_type.villa), true);
+  assert.strictEqual(Array.isArray(hot_listings_by_type.townhouse), true);
+  assert.strictEqual(hot_listings_by_type.villa.length, 2);
+  assert.strictEqual(hot_listings_by_type.apartment.length, 1);
+  // Backward-compatible default stays apartment-focused for selector default.
+  assert.strictEqual(hot_listings.length, 1);
+  assert.strictEqual(hot_listings[0].building, 'A1');
+}
+
+{
   // Building bucket missing (n < min); community benchmark applies
   const rows = [
     {
@@ -108,6 +131,7 @@ const r = buildListingsPayload(csv, 't.csv', {
 });
 assert.strictEqual(r.ok, true);
 assert.ok(Array.isArray(r.listings.hot_listings));
+assert.ok(r.listings.hot_listings_by_type && typeof r.listings.hot_listings_by_type === 'object');
 const hot = r.listings.hot_listings;
 const oneBed = hot.filter((h) => h.building === 'Tower B');
 assert.strictEqual(oneBed.length, 1);
@@ -140,6 +164,7 @@ const rs = buildListingsPayload(csvSales, 'sales-listings.csv', {
 assert.strictEqual(rs.ok, true);
 assert.strictEqual(rs.listings.data_type, 'sales');
 assert.ok(Array.isArray(rs.listings.hot_listings));
+assert.ok(rs.listings.hot_listings_by_type && typeof rs.listings.hot_listings_by_type === 'object');
 const hotS = rs.listings.hot_listings;
 const oneBedS = hotS.filter((h) => h.building === 'Tower B');
 assert.strictEqual(oneBedS.length, 1);
