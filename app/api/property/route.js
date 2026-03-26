@@ -468,6 +468,7 @@ export async function GET(request) {
       }
     }
 
+    delete result.body._yield_sales_rows;
     return Response.json(result.body, { status: 200 });
   } catch (e) {
     const detail = e?.message || String(e);

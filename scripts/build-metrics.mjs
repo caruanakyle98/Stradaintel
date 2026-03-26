@@ -29,6 +29,7 @@ if (!built.ok) {
 
 const body = { ...built.body };
 delete body._stats_for_ai;
+delete body._yield_sales_rows;
 
 if (rentalUrl && built.windows) {
   try {
@@ -42,4 +43,5 @@ if (rentalUrl && built.windows) {
 
 body.ok = true;
 body.data_freshness = (body.data_freshness || '') + ' · snapshot build';
+delete body._yield_sales_rows;
 process.stdout.write(JSON.stringify(body, null, 2));

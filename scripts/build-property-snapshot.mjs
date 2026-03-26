@@ -66,6 +66,7 @@ if (!built.ok) {
 
 const out = { ...built.body };
 delete out._stats_for_ai;
+delete out._yield_sales_rows;
 out.ok = true;
 
 if (rentalUrl && built.windows) {
@@ -127,4 +128,5 @@ if (salesListingsUrl) {
 }
 
 out.data_freshness = `${out.data_freshness || ''}${out.data_freshness ? ' · ' : ''}snapshot build`;
+delete out._yield_sales_rows;
 process.stdout.write(`${JSON.stringify(out, null, 2)}\n`);
