@@ -7,6 +7,7 @@
     "env:pull": "npx vercel env pull .env.local --yes",
     "build": "next build",
     "start": "next start",
+    "build:property-snapshot": "node scripts/build-property-snapshot.mjs",
     "upload:sales-blob": "node scripts/upload-sales-to-blob.mjs",
     "upload:blob-all": "node scripts/upload-blob-all.mjs",
     "verify:blob-read": "node scripts/verify-blob-read.mjs",

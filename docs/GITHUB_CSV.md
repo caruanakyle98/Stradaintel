@@ -26,6 +26,7 @@ Open each in a browser — you must see CSV text (HTTP 200).
 | `PROPERTY_RENTAL_CSV_URL` | raw URL for rentals |
 | `PROPERTY_LISTINGS_CSV_URL` | raw URL for **rental** active listings (optional — rental tab supply pipeline) |
 | `PROPERTY_SALES_LISTINGS_CSV_URL` | raw URL for **sales** active listings (optional — sales tab supply pipeline; same column schema as rental listings) |
+| `PROPERTY_ENABLE_AI` | Optional. Set to `1` to enable Anthropic interpretation. Default is off (no AI credits). |
 | `COMMUNITY_ALIAS_JSON` | Optional — see [Community names across CSVs](#7-community-names-across-csvs) |
 
 **Redeploy** after saving (only needed when adding a new env var for the first time).
@@ -67,13 +68,30 @@ Optional **link** column supplies the outbound URL.
 
 ### Metrics snapshot (`PROPERTY_METRICS_JSON_URL`)
 
-If the app returns **cached JSON** from `PROPERTY_METRICS_JSON_URL` (no area filter, no `noSnapshot`), that payload is **not** rebuilt by `buildListingsPayload` on the server. **`listings` / `sales_listings` / `hot_listings` are only merged when the server builds from live CSV URLs** — e.g. use an **area filter**, append **`?noSnapshot=1`**, or **regenerate** your snapshot file after deploy so it includes those fields if you rely on the default snapshot path.
+If the app returns **cached JSON** from `PROPERTY_METRICS_JSON_URL` (no area filter, no `noSnapshot`), it serves that payload as-is. To include up-to-date **`listings`** (rental hot listings) and **`sales_listings`** (sales hot listings), generate the snapshot with:
+
+```bash
+npm run build:property-snapshot > property_metrics.json
+```
+
+The snapshot builder keeps rental/sales listings separate and does not call Anthropic.
 
 You may **remove** Blob vars (`BLOB_READ_WRITE_TOKEN`, `BLOB_SALES_PATHNAME`, …) if you no longer use Blob.
 
 ## 4. Updates
 
 Replace files → `git commit` → `git push`. No redeploy needed; refresh dashboard (GitHub may cache ~minutes).
+
+## 4b. No-credit daily snapshot mode
+
+Use `.github/workflows/property-metrics.yml` to build `property_metrics.json` daily from:
+
+- `PROPERTY_SALES_CSV_URL` (sales transactions)
+- `PROPERTY_RENTAL_CSV_URL` (rental transactions, optional)
+- `PROPERTY_LISTINGS_CSV_URL` (rental listings, optional)
+- `PROPERTY_SALES_LISTINGS_CSV_URL` (sales listings, optional)
+
+This mode is deterministic and uses no LLM credits unless you explicitly set `PROPERTY_ENABLE_AI=1` for live API interpretation.
 
 ## 5. Optional: comma-separated fallbacks
 

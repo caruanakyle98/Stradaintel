@@ -151,6 +151,17 @@ assert.strictEqual(hotS.filter((h) => h.building === 'No Bench').length, 0);
 assert.strictEqual(hotS[0].building, 'Tower B');
 assert.ok(String(rs.listings.hot_listings_rules).includes('sale'));
 
+// Keep rental and sales listing payload branches separate
+{
+  const composed = {
+    listings: r.listings,
+    sales_listings: rs.listings,
+  };
+  assert.strictEqual(composed.listings.data_type, 'rental');
+  assert.strictEqual(composed.sales_listings.data_type, 'sales');
+  assert.notStrictEqual(composed.listings.source, composed.sales_listings.source);
+}
+
 {
   const csvAed = `community,building,bedrooms,Price AED,listed_date,url
 Dubai Islands,Tower A,1,"AED 90,000",${today},https://ex.test/1`;

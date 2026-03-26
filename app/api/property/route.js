@@ -243,7 +243,8 @@ async function buildFromSalesText(csvRaw, label, { area, skipAi } = {}) {
   if (!result.ok) return result;
   const payload = { ...result.body };
   const windows = result.windows;
-  if (!skipAi) {
+  const aiEnabled = String(process.env.PROPERTY_ENABLE_AI || '').trim() === '1';
+  if (!skipAi && aiEnabled) {
     const AI_MS = 22000;
     const ai = await Promise.race([
       aiInterpretSales(payload._stats_for_ai, process.env.ANTHROPIC_API_KEY),

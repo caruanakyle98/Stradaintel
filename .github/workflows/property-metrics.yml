@@ -1,10 +1,12 @@
-# Nightly (or manual): build metrics.json from HTTPS CSV URLs, upload artifact.
+# Nightly (or manual): build property_metrics.json from HTTPS CSV URLs, upload artifact.
 # After first run: download artifact → upload file to Vercel Blob / R2 → set PROPERTY_METRICS_JSON_URL.
 #
 # Required repo secrets:
-#   SALES_CSV_URL      — HTTPS URL to sales.csv
+#   PROPERTY_SALES_CSV_URL      — HTTPS URL to sales transactions CSV
 # Optional:
-#   RENTAL_CSV_URL     — HTTPS URL to rental.csv
+#   PROPERTY_RENTAL_CSV_URL     — HTTPS URL to rental transactions CSV
+#   PROPERTY_LISTINGS_CSV_URL   — HTTPS URL to rental listings CSV
+#   PROPERTY_SALES_LISTINGS_CSV_URL — HTTPS URL to sales listings CSV
 
 name: Property metrics snapshot
 
@@ -26,15 +28,17 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Build metrics.json
+      - name: Build property_metrics.json
         env:
-          SALES_CSV_URL: ${{ secrets.SALES_CSV_URL }}
-          RENTAL_CSV_URL: ${{ secrets.RENTAL_CSV_URL }}
+          PROPERTY_SALES_CSV_URL: ${{ secrets.PROPERTY_SALES_CSV_URL }}
+          PROPERTY_RENTAL_CSV_URL: ${{ secrets.PROPERTY_RENTAL_CSV_URL }}
+          PROPERTY_LISTINGS_CSV_URL: ${{ secrets.PROPERTY_LISTINGS_CSV_URL }}
+          PROPERTY_SALES_LISTINGS_CSV_URL: ${{ secrets.PROPERTY_SALES_LISTINGS_CSV_URL }}
         run: |
-          node scripts/build-metrics.mjs > metrics.json
-          test -s metrics.json
+          node scripts/build-property-snapshot.mjs > property_metrics.json
+          test -s property_metrics.json
 
       - uses: actions/upload-artifact@v4
         with:
           name: property-metrics
-          path: metrics.json
+          path: property_metrics.json
