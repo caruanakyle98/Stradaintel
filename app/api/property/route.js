@@ -271,6 +271,9 @@ export async function GET(request) {
       const json = JSON.parse(text);
       if (json && typeof json === 'object' && json.ok !== false) {
         const body = json.ok === undefined ? { ok: true, ...json } : json;
+        // #region agent log
+        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H1',location:'app/api/property/route.js:snapshot-return',message:'Using metrics snapshot response path',data:{areaFilterActive,noSnapshot:Boolean(reqUrl.searchParams.get('noSnapshot')),weeklySaleVolume:body?.weekly?.sale_volume?.value||null,dataFreshness:body?.data_freshness||null,ownerBriefing:String(body?.owner_briefing||'').slice(0,120)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         if (rentalUrlEnv && body && typeof body === 'object') {
           try {
             const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
@@ -342,6 +345,9 @@ export async function GET(request) {
     if (!result.ok) {
       return Response.json(result.body, { status: result.status });
     }
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'app/api/property/route.js:live-sales-result',message:'Using live sales payload response path',data:{areaFilterActive,weeklySaleVolume:result?.body?.weekly?.sale_volume?.value||null,dataFreshness:result?.body?.data_freshness||null,period:result?.body?.weekly?.period_label||null},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
 
     const listingsUrlEnv = process.env.PROPERTY_LISTINGS_CSV_URL?.trim();
     const needRental = !!(rentalUrlEnv && result.windows);
