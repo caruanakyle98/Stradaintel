@@ -151,4 +151,12 @@ assert.strictEqual(hotS.filter((h) => h.building === 'No Bench').length, 0);
 assert.strictEqual(hotS[0].building, 'Tower B');
 assert.ok(String(rs.listings.hot_listings_rules).includes('sale'));
 
+{
+  const csvAed = `community,building,bedrooms,Price AED,listed_date,url
+Dubai Islands,Tower A,1,"AED 90,000",${today},https://ex.test/1`;
+  const ra = buildListingsPayload(csvAed, 'aed.csv', { dataType: 'rental' });
+  assert.strictEqual(ra.ok, true);
+  assert.strictEqual(ra.listings.total, 1);
+}
+
 console.log('test-hot-listings: ok');
