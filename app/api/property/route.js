@@ -373,9 +373,11 @@ export async function GET(request) {
               '2br':  parseFloat(result.body.rental?.apt_2br_avg_aed) || null,
               '3br':  parseFloat(result.body.rental?.villa_3br_avg_aed) || null,
             };
+            const rentalTxnByBuildingBed = result.body.rental?.txn_by_building_bed || {};
 
             const listingsResult = buildListingsPayload(listingsRaw, listingsLabel, {
               rentalTxnAvgByBeds,
+              rentalTxnByBuildingBed,
               dataType: 'rental',
               filterArea: areaFilterActive ? areaParam : '',
             });

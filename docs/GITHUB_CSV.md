@@ -43,7 +43,15 @@ Open each in a browser — you must see CSV text (HTTP 200).
 
 ### Hot Listings (dashboard)
 
-When listings load successfully, the API adds `listings.hot_listings`: up to **25** rows with the largest **% below the transacted rental average** for that bedroom count (same averages as the rental CSV merge: studio / 1br / 2br / 3br; **4+** only if a `4br` benchmark exists). **Not** compared to average asking on other listings. Only listings with a **listed date in the last 30 days** qualify; the **area filter** uses the same community matching as the rest of the pipeline. Requires **`PROPERTY_RENTAL_CSV_URL`** so transacted averages exist. Optional **link** column supplies the outbound URL.
+When listings load successfully, the API adds `listings.hot_listings`: up to **25** rows with the largest **% below the transacted rental average for the same building + bedroom bucket**. **Not** compared to average asking on other listings. Only listings with a **listed date in the last 30 days** qualify, and the **area filter** applies to both rental transactions and listings before scoring.
+
+Building benchmark details:
+- Rental benchmark key is `normalizeCommunityKey(sub-community/tower) + bedroom bucket`.
+- Rental rows are included from a rolling lookback (default **365 days**, env `RENTAL_HOT_LISTINGS_LOOKBACK_DAYS`).
+- Minimum sample size is enforced per building+bed bucket (default **3**, env `HOT_LISTINGS_MIN_TXN_PER_BUILDING_BED`).
+- If a listing has no qualifying building+bed benchmark (name mismatch, sparse data, or missing building), it is excluded from Hot Listings in v1.
+
+For best match rate, keep building/tower naming consistent between listings and rental exports. Optional **link** column supplies the outbound URL.
 
 ### Metrics snapshot (`PROPERTY_METRICS_JSON_URL`)
 

@@ -21,11 +21,16 @@ const old = isoDaysAgo(40);
     { price: 90000, bedKey: '1', listedDate: new Date(recent + 'T12:00:00.000Z'), community: 'C', building: 'T1', link: null },
     { price: 10000, bedKey: '1', listedDate: new Date(recent + 'T12:00:00.000Z'), community: 'C', building: 'T2', link: 'https://ex.test/b' },
   ];
-  const txn = { '1br': 90000 };
+  const txn = {
+    't1|1': { avg: 90000, n: 3 },
+    't2|1': { avg: 90000, n: 4 },
+  };
   const { hot_listings } = computeHotListings(rows, thirty, true, txn);
   assert.strictEqual(hot_listings.length, 1);
   assert.strictEqual(hot_listings[0].building, 'T2');
   assert.strictEqual(hot_listings[0].beds, '1 Bed');
+  assert.strictEqual(hot_listings[0].benchmark_n, 4);
+  assert.strictEqual(hot_listings[0].benchmark_source, 'building_txn');
   assert.strictEqual(hot_listings[0].price_fmt.includes('10'), true);
   assert.ok(hot_listings[0].pct_drop > 85 && hot_listings[0].pct_drop < 90);
 }
@@ -35,7 +40,7 @@ const old = isoDaysAgo(40);
     { price: 90000, bedKey: '1', listedDate: new Date(recent + 'T12:00:00.000Z'), community: 'C', building: 'T1', link: null },
     { price: 10000, bedKey: '1', listedDate: new Date(old + 'T12:00:00.000Z'), community: 'C', building: 'T2', link: null },
   ];
-  const { hot_listings } = computeHotListings(rows, thirty, true, { '1br': 90000 });
+  const { hot_listings } = computeHotListings(rows, thirty, true, { 't1|1': { avg: 90000, n: 3 } });
   assert.strictEqual(hot_listings.length, 0);
 }
 
@@ -44,7 +49,7 @@ const old = isoDaysAgo(40);
     { price: 80, bedKey: 'Other', listedDate: new Date(recent + 'T12:00:00.000Z'), community: 'C', building: 'X', link: null },
     { price: 90, bedKey: 'Other', listedDate: new Date(recent + 'T12:00:00.000Z'), community: 'C', building: 'Y', link: null },
   ];
-  const { hot_listings } = computeHotListings(rows, thirty, true, { '1br': 100 });
+  const { hot_listings } = computeHotListings(rows, thirty, true, { 'x|1': { avg: 100, n: 3 } });
   assert.strictEqual(hot_listings.length, 0);
 }
 
@@ -60,11 +65,18 @@ const csv = `community,building,bedrooms,price_aed,listed_date,url
 Dubai Islands,Tower A,1,90000,${today},https://ex.test/1
 Dubai Islands,Tower B,1,10000,${today},https://ex.test/2
 Palm,Ph1,2,200000,${today},
-Palm,Ph2,2,180000,${today},`;
+Palm,Ph2,2,180000,${today},
+Palm,No Bench,1,10000,${today},`;
 
 const r = buildListingsPayload(csv, 't.csv', {
   dataType: 'rental',
   rentalTxnAvgByBeds: { '1br': 90000, '2br': 200000 },
+  rentalTxnByBuildingBed: {
+    'tower a|1': { avg: 90000, n: 3 },
+    'tower b|1': { avg: 90000, n: 3 },
+    'ph1|2': { avg: 200000, n: 3 },
+    'ph2|2': { avg: 200000, n: 3 },
+  },
 });
 assert.strictEqual(r.ok, true);
 assert.ok(Array.isArray(r.listings.hot_listings));
@@ -75,6 +87,8 @@ assert.ok(oneBed[0].pct_drop > 80);
 const twoBed = hot.filter((h) => h.building === 'Ph2');
 assert.strictEqual(twoBed.length, 1);
 assert.ok(twoBed[0].pct_drop > 9 && twoBed[0].pct_drop < 11);
+const noBench = hot.filter((h) => h.building === 'No Bench');
+assert.strictEqual(noBench.length, 0);
 assert.strictEqual(hot[0].building, 'Tower B');
 
 console.log('test-hot-listings: ok');
