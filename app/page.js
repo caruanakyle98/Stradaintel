@@ -1337,77 +1337,6 @@ export function DashboardView() {
     return () => io.disconnect();
   }, [intel, prop, showData, propTab]);
 
-  // #region agent log
-  useLayoutEffect(() => {
-    const endpoint = 'http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844';
-    const ping = (location, message, data, hypothesisId) => {
-      fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
-        body: JSON.stringify({
-          sessionId: '69d0ba',
-          location,
-          message,
-          data,
-          timestamp: Date.now(),
-          hypothesisId,
-        }),
-      }).catch(() => {});
-    };
-    const run = () => {
-      if (typeof window === 'undefined') return;
-      ping('app/page.js:layoutDebug', 'viewport', { innerWidth: window.innerWidth, outerWidth: window.outerWidth }, 'H1');
-      document.querySelectorAll('[data-agent-tx-scroll]').forEach((el, idx) => {
-        const t = el.querySelector('table');
-        if (!t) return;
-        ping(
-          'app/page.js:layoutDebug',
-          'txTable',
-          {
-            idx,
-            clientW: el.clientWidth,
-            scrollW: el.scrollWidth,
-            tableScrollW: t.scrollWidth,
-            needsHScroll: el.scrollWidth > el.clientWidth + 1,
-          },
-          'H5',
-        );
-      });
-      document.querySelectorAll('.tx-scroll-wrap').forEach((wrap, idx) => {
-        const th0 = wrap.querySelector('th');
-        if (!th0) return;
-        const cs = getComputedStyle(th0);
-        ping(
-          'app/page.js:layoutDebug',
-          'txThComputed',
-          { idx, wordBreak: cs.wordBreak, overflowWrap: cs.overflowWrap, whiteSpace: cs.whiteSpace },
-          'H6',
-        );
-      });
-      document.querySelectorAll('[data-agent-beds-grid]').forEach((el, idx) => {
-        ping(
-          'app/page.js:layoutDebug',
-          'bedsGrid',
-          {
-            idx,
-            clientW: el.clientWidth,
-            scrollW: el.scrollWidth,
-            needsHScroll: el.scrollWidth > el.clientWidth + 1,
-          },
-          'H4',
-        );
-      });
-    };
-    run();
-    const raf = requestAnimationFrame(() => run());
-    window.addEventListener('resize', run);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', run);
-    };
-  }, [intel, prop, showData, propTab, loadProp]);
-  // #endregion
-
   const mkt  = intel?.markets;
   const pl   = intel?.pillars;
   const pillarOrder  = ['security','oil','equities','macro','buyer_demand','aviation','property'];
@@ -1426,6 +1355,8 @@ export function DashboardView() {
     || (oilGoldCoMove && vixRaw >= 22 ? 'supply_shock' : oilGoldCoMove ? 'possible_disruption' : 'demand_driven');
   const eiborRate= parseFloat(intel?.eibor?.rate_pct||0);
   const pmiVal   = parseFloat(intel?.uae_pmi?.headline||0);
+
+  const listingsForTab = propTab === 'sales' ? prop?.sales_listings : prop?.listings;
 
   const openPrintPdf = useCallback(() => {
     showDataBeforePrintRef.current = showData;
@@ -1963,9 +1894,10 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* ── Prices card — sales tab: PSF from sales CSV / rental tab: asking rent by bedroom ── */}
-          <div className={`reveal ${propTab === 'sales' ? 'mob-stack-2' : ''}`} style={{ display:'grid', gridTemplateColumns: propTab === 'sales' ? '1fr 1fr' : '1fr', gap:12, marginBottom:12 }}>
+          {/* ── Prices card — sales tab: PSF + optional asking sale by bed / rental tab: asking rent by bedroom ── */}
+          <div className={`reveal ${propTab === 'sales' ? 'mob-stack-2' : ''}`} style={{ display:'grid', gridTemplateColumns: propTab === 'sales' ? (prop?.sales_listings?.by_beds || loadProp ? 'repeat(3, minmax(0, 1fr))' : '1fr 1fr') : '1fr', gap:12, marginBottom:12 }}>
             {propTab === 'sales' ? (
+              <>
               <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
                 <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>Average Asking Price Per Square Foot · {sanitizeRawGithubLinks(na(prop?.prices?.price_source))}</div>
                 <div className="mob-stack-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
@@ -1982,6 +1914,41 @@ export function DashboardView() {
                   ))}
                 </div>
               </div>
+              {(prop?.sales_listings?.by_beds || loadProp) && (
+                <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>
+                    Average Asking Sale Price by Bedroom · {sanitizeRawGithubLinks(na(prop?.sales_listings?.source))}
+                  </div>
+                  {loadProp ? <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>{[1,2,3,4].map(i=><Skel key={i} h={72} style={{ flex:1, minWidth:100 }}/>)}</div> : (()=>{
+                    const beds = prop?.sales_listings?.by_beds || {};
+                    const cmpMap = prop?.sales_listings?.asking_vs_txn_by_beds || {};
+                    const bedOrder = ['Studio','1','2','3','4+'];
+                    const rows = bedOrder.filter(k => beds[k]);
+                    return (
+                      <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                        {rows.map(key => {
+                          const d = beds[key];
+                          const dpct = cmpMap[key]?.delta_pct;
+                          const dpctColor = dpct == null ? C.tm : dpct > 5 ? C.red : dpct < -5 ? C.g : C.am;
+                          return (
+                            <div key={key} style={{ flex:'1 1 min(100px,100%)', padding:'12px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10, minWidth:'min(100px,100%)' }}>
+                              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--muted)', marginBottom:8 }}>{key === 'Studio' ? 'Studio' : `${key} Bed`}</div>
+                              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:20, fontWeight:800, color:C.metric, textShadow:C.glowMetric }}>{d.avg_price_fmt}</div>
+                              <div style={{ fontSize:10, color:'var(--muted)', marginTop:3 }}>{d.count.toLocaleString()} listings</div>
+                              {dpct != null && (
+                                <div style={{ fontSize:10, fontWeight:600, color:dpctColor, marginTop:3 }}>
+                                  {dpct > 0 ? '+' : ''}{dpct}% vs transacted
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+              </>
             ) : (
               /* Rental tab: average asking rent per bedroom from listings CSV */
               (prop?.listings?.by_beds || loadProp) && (
@@ -2189,31 +2156,35 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* ── Rental Listings — both tabs ── */}
-          {(prop?.listings||loadProp) && (
+          {/* ── Listings pipeline — rental tab: rental listings CSV / sales tab: sales listings CSV ── */}
+          {(listingsForTab || loadProp) && (
             <div className="reveal" style={{ marginBottom:12 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>
-                Rental Listings — Active Supply Pipeline
-                {prop?.listings?.filter_area && (
-                  <span style={{ color:C.tm, fontWeight:400, marginLeft:6 }}>· {prop.listings.filter_area}</span>
+                {propTab === 'sales' ? 'Sales Listings — Active Supply Pipeline' : 'Rental Listings — Active Supply Pipeline'}
+                {listingsForTab?.filter_area && (
+                  <span style={{ color:C.tm, fontWeight:400, marginLeft:6 }}>· {listingsForTab.filter_area}</span>
                 )}
               </div>
+
+              {!loadProp && listingsForTab?.error && (
+                <div className="lp-card" style={{ padding:'12px 16px', marginBottom:12, fontSize:12, color:C.am, lineHeight:1.5 }}>{listingsForTab.error}</div>
+              )}
 
               {/* Summary stat row */}
               <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:12 }}>
                 {/* Total listings */}
                 <div className="print-keep-together lp-card" style={{ flex:1, minWidth:'min(140px,100%)', padding:'16px 20px', textAlign:'center' }}>
-                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:8 }}>Active Rental Listings</div>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:8 }}>{propTab === 'sales' ? 'Active Sales Listings' : 'Active Rental Listings'}</div>
                   {loadProp?<Skel h={32} mb={4}/>:<>
                     <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:26, fontWeight:800, color:C.amL, textShadow:C.glowMetric }}>
-                      {prop?.listings?.total != null ? prop.listings.total.toLocaleString() : '—'}
+                      {listingsForTab?.total != null ? listingsForTab.total.toLocaleString() : '—'}
                     </div>
-                    {prop?.listings?.new_this_week != null && (
+                    {listingsForTab?.new_this_week != null && (
                       <div style={{ fontSize:10, marginTop:4 }}>
-                        <span style={{ color:C.g }}>+{prop.listings.new_this_week} last 7 days</span>
-                        {prop?.listings?.wow_new_pct != null && (
-                          <span style={{ color: prop.listings.wow_new_pct >= 0 ? C.g : C.am, marginLeft:6 }}>
-                            ({prop.listings.wow_new_pct >= 0 ? '+' : ''}{prop.listings.wow_new_pct}% WoW)
+                        <span style={{ color:C.g }}>+{listingsForTab.new_this_week} last 7 days</span>
+                        {listingsForTab?.wow_new_pct != null && (
+                          <span style={{ color: listingsForTab.wow_new_pct >= 0 ? C.g : C.am, marginLeft:6 }}>
+                            ({listingsForTab.wow_new_pct >= 0 ? '+' : ''}{listingsForTab.wow_new_pct}% WoW)
                           </span>
                         )}
                       </div>
@@ -2225,13 +2196,13 @@ export function DashboardView() {
                 <div className="print-keep-together lp-card" style={{ flex:1, minWidth:'min(140px,100%)', padding:'16px 20px', textAlign:'center' }}>
                   <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:8 }}>Listing Cover (Weeks)</div>
                   {loadProp?<Skel h={32} mb={4}/>:<>
-                    {prop?.listings?.supply_depth ? (
+                    {listingsForTab?.supply_depth ? (
                       <>
-                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:26, fontWeight:800, color:prop.listings.supply_depth.weeks<=4?C.g:prop.listings.supply_depth.weeks<=8?C.am:C.red, textShadow:C.glowMetric }}>
-                          {prop.listings.supply_depth.weeks}
+                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:26, fontWeight:800, color:listingsForTab.supply_depth.weeks<=4?C.g:listingsForTab.supply_depth.weeks<=8?C.am:C.red, textShadow:C.glowMetric }}>
+                          {listingsForTab.supply_depth.weeks}
                         </div>
                         <div style={{ fontSize:9, color:C.tm, marginTop:4 }}>
-                          {prop.listings.supply_depth.listings_total} listings / {prop.listings.supply_depth.weekly_registrations} registrations/wk
+                          {listingsForTab.supply_depth.listings_total} listings / {listingsForTab.supply_depth.weekly_registrations}{propTab === 'sales' ? ' deals/wk' : ' registrations/wk'}
                         </div>
                       </>
                     ) : <div style={{ fontSize:18, fontWeight:700, color:C.t2 }}>—</div>}
@@ -2239,21 +2210,23 @@ export function DashboardView() {
                 </div>
               </div>
 
-              {/* Hot Listings — vs transacted rental avg by beds, ≤30d, area-filtered */}
-              {!prop?.listings?.error && (
+              {/* Hot Listings — vs transacted benchmark, ≤30d, area-filtered */}
+              {!listingsForTab?.error && (
                 <div className="reveal print-keep-together lp-card" style={{ marginBottom: 12, padding: 0, overflow: 'hidden' }}>
                   <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.border}` }}>
                     <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)' }}>Hot Listings</div>
                     <div style={{ fontSize: 10, color: C.tm, marginTop: 4, lineHeight: 1.45 }}>
-                      {prop?.listings?.hot_listings_rules || 'Top 25 listing asks below transacted rental average for that bedroom count (rental CSV), listed in the last 30 days.'}
-                      {prop?.listings?.filter_area && (
-                        <span style={{ fontWeight: 600 }}>{` · ${prop.listings.filter_area}`}</span>
+                      {listingsForTab?.hot_listings_rules || (propTab === 'sales'
+                        ? 'Top 25 listing asks below transacted sale average for the same building + bedroom count (sales transactions CSV), listed in the last 30 days.'
+                        : 'Top 25 listing asks below transacted rental average for that bedroom count (rental CSV), listed in the last 30 days.')}
+                      {listingsForTab?.filter_area && (
+                        <span style={{ fontWeight: 600 }}>{` · ${listingsForTab.filter_area}`}</span>
                       )}
                     </div>
                   </div>
                   {loadProp ? (
                     <div style={{ padding: '14px 18px' }}><Skel h={12} mb={8} /><Skel h={12} mb={8} /><Skel h={12} w="65%" /></div>
-                  ) : (prop?.listings?.hot_listings && prop.listings.hot_listings.length > 0) ? (
+                  ) : (listingsForTab?.hot_listings && listingsForTab.hot_listings.length > 0) ? (
                     <div className="tx-scroll-wrap" style={{ maxHeight: 320, overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
                       <table style={{ minWidth: 620, width: '100%', borderCollapse: 'collapse', fontSize: 10 }}>
                         <thead>
@@ -2262,12 +2235,12 @@ export function DashboardView() {
                             <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Beds</th>
                             <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Building</th>
                             <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Price</th>
-                            <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }} title="% below average transacted annual rent for this bedroom count (from rental CSV)">% below txn</th>
+                            <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }} title={propTab === 'sales' ? '% below average transacted sale price for this building + bedroom (sales transactions CSV)' : '% below average transacted annual rent for this bedroom count (from rental CSV)'}>% below txn</th>
                             <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 6px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Link</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {prop.listings.hot_listings.map((row, i) => {
+                          {listingsForTab.hot_listings.map((row, i) => {
                             let safeHref = null;
                             if (row.link && typeof row.link === 'string') {
                               try {
@@ -2275,7 +2248,9 @@ export function DashboardView() {
                                 if (u.protocol === 'http:' || u.protocol === 'https:') safeHref = u.href;
                               } catch { /* ignore */ }
                             }
-                            const tip = `Transacted avg for ${row.bed_label || row.beds || 'this type'}: ${row.market_avg_fmt || '—'}`;
+                            const tip = propTab === 'sales'
+                              ? `Transacted sale avg for ${row.bed_label || row.beds || 'this type'}: ${row.market_avg_fmt || '—'}`
+                              : `Transacted rent avg for ${row.bed_label || row.beds || 'this type'}: ${row.market_avg_fmt || '—'}`;
                             return (
                               <tr key={i} style={{ borderBottom: `1px solid ${C.border}` }}>
                                 <td style={{ padding: '4px 6px', color: C.t2, maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis' }} title={row.community}>{row.community}</td>
@@ -2300,22 +2275,24 @@ export function DashboardView() {
                     </div>
                   ) : (
                     <div style={{ padding: '14px 18px', fontSize: 12, color: C.tm, lineHeight: 1.5 }}>
-                      {prop?.listings?.hot_listings_note
-                        || 'No hot listings right now — need recent listings (last 30 days, parseable date) with asking rent below the transacted rental average for that bedroom count (rental CSV).'}
+                      {listingsForTab?.hot_listings_note
+                        || (propTab === 'sales'
+                          ? 'No hot listings right now — need recent listings (last 30 days, parseable date) with asking sale price below the transacted sale average for that building + bedroom (sales CSV).'
+                          : 'No hot listings right now — need recent listings (last 30 days, parseable date) with asking rent below the transacted rental average for that bedroom count (rental CSV).')}
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Asking rent by bedrooms — rental context */}
-              {(loadProp || prop?.listings?.by_beds) && (
+              {/* Asking by bedroom — rent (rental tab) or sale (sales tab) */}
+              {(loadProp || listingsForTab?.by_beds) && (
                 <div className="print-keep-together lp-card" style={{ padding:'20px 22px', marginBottom:8 }}>
                   <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:14 }}>
-                    Asking Rent by Bedroom Type
+                    {propTab === 'sales' ? 'Asking Sale Price by Bedroom Type' : 'Asking Rent by Bedroom Type'}
                   </div>
                   {loadProp?[1,2,3,4].map(i=><Skel key={i} h={28} mb={8}/>):(()=>{
-                    const beds = prop?.listings?.by_beds || {};
-                    const cmpMap = prop?.listings?.asking_vs_txn_by_beds || {};
+                    const beds = listingsForTab?.by_beds || {};
+                    const cmpMap = listingsForTab?.asking_vs_txn_by_beds || {};
                     const bedOrder = ['Studio','1','2','3','4+'];
                     const visibleRows = bedOrder.filter(k => beds[k]);
                     if (!visibleRows.length) return <div style={{ fontSize:11, color:C.tm }}>No bedroom data available.</div>;
@@ -2324,7 +2301,7 @@ export function DashboardView() {
                     const cols = hasCmp ? '70px 60px 1fr 1fr 60px' : '80px 1fr 1fr 1fr';
                     const headers = hasCmp
                       ? ['Beds','#','Avg Asking','Avg Transacted','Δ%']
-                      : ['Beds','Listings','Avg Asking Rent','Range'];
+                      : (propTab === 'sales' ? ['Beds','Listings','Avg Asking Sale','Range'] : ['Beds','Listings','Avg Asking Rent','Range']);
                     return (
                       <div data-agent-beds-grid="listings" style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                         <div style={{ minWidth: hasCmp ? 520 : 360 }}>
@@ -2342,10 +2319,10 @@ export function DashboardView() {
                               <div key={key} style={{ display:'grid', gridTemplateColumns:cols, gap:4, padding:'8px 0', borderTop:`1px solid ${C.border}`, alignItems:'center' }}>
                                 <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontWeight:700, fontSize:13, color:C.amL, whiteSpace:'nowrap' }}>{key === 'Studio' ? 'Studio' : `${key} Bed`}</div>
                                 <div style={{ fontSize:12, color:C.t1, whiteSpace:'nowrap' }}>{d.count.toLocaleString()}</div>
-                                <div style={{ fontSize:12, color:C.t1, fontWeight:600, whiteSpace:'nowrap' }}>{d.avg_price_fmt}/yr</div>
+                                <div style={{ fontSize:12, color:C.t1, fontWeight:600, whiteSpace:'nowrap' }}>{d.avg_price_fmt}{propTab === 'sales' ? '' : '/yr'}</div>
                                 {hasCmp ? <>
                                   <div style={{ fontSize:12, color:C.tm, whiteSpace:'nowrap' }}>
-                                    {cmp ? `${cmp.txn_fmt}/yr` : '—'}
+                                    {cmp ? `${cmp.txn_fmt}${propTab === 'sales' ? '' : '/yr'}` : '—'}
                                   </div>
                                   <div style={{ fontSize:12, fontWeight:700, color:deltaColor, whiteSpace:'nowrap' }}>
                                     {dpct != null ? `${dpct > 0 ? '+' : ''}${dpct}%` : '—'}
@@ -2358,8 +2335,12 @@ export function DashboardView() {
                           })}
                           <div style={{ fontSize:9, color:C.tm, marginTop:10 }}>
                             {hasCmp
-                              ? 'Avg Transacted = avg recently registered rent from rental CSV. Δ% = asking vs transacted (red = asking above market, green = below).'
-                              : 'Min–max range of asking rents across active listings.'}
+                              ? (propTab === 'sales'
+                                ? 'Avg Transacted = avg sale price from rolling week in sales transactions (by bedroom). Δ% = asking vs transacted (red = asking above market, green = below).'
+                                : 'Avg Transacted = avg recently registered rent from rental CSV. Δ% = asking vs transacted (red = asking above market, green = below).')
+                              : (propTab === 'sales'
+                                ? 'Min–max range of asking sale prices across active listings.'
+                                : 'Min–max range of asking rents across active listings.')}
                           </div>
                         </div>
                       </div>
@@ -2368,23 +2349,23 @@ export function DashboardView() {
                 </div>
               )}
 
-              {/* Top communities by rental listing supply */}
-              {(loadProp || prop?.listings?.top_communities?.length > 0 || prop?.listings?.top_buildings?.length > 0) && (
+              {/* Top communities / buildings by listing supply */}
+              {(loadProp || listingsForTab?.top_communities?.length > 0 || listingsForTab?.top_buildings?.length > 0) && (
                 <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
                   <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.tm, marginBottom:6 }}>
-                    {prop?.listings?.listings_top_mode === 'building'
-                      ? 'Top Buildings by Rental Listing Volume'
-                      : 'Top Communities by Rental Listing Volume'}
+                    {listingsForTab?.listings_top_mode === 'building'
+                      ? (propTab === 'sales' ? 'Top Buildings by Sales Listing Volume' : 'Top Buildings by Rental Listing Volume')
+                      : (propTab === 'sales' ? 'Top Communities by Sales Listing Volume' : 'Top Communities by Rental Listing Volume')}
                   </div>
                   <div style={{ fontSize:11, color:C.tm, marginBottom:14 }}>
-                    {prop?.listings?.listings_top_mode === 'building'
-                      ? `Inside ${prop.listings.filter_area} · ranked by active listings`
-                      : 'Where rental supply is concentrated · last 15 days'}
+                    {listingsForTab?.listings_top_mode === 'building'
+                      ? `Inside ${listingsForTab.filter_area} · ranked by active listings`
+                      : (propTab === 'sales' ? 'Where sales listing supply is concentrated' : 'Where rental supply is concentrated · last 15 days')}
                   </div>
                   {loadProp?[1,2,3,4,5].map(i=><Skel key={i} h={32} mb={8}/>):(()=>{
-                    const items = prop?.listings?.listings_top_mode === 'building'
-                      ? (prop?.listings?.top_buildings || [])
-                      : (prop?.listings?.top_communities || []);
+                    const items = listingsForTab?.listings_top_mode === 'building'
+                      ? (listingsForTab?.top_buildings || [])
+                      : (listingsForTab?.top_communities || []);
                     if (!items.length) return null;
                     const maxCount = items[0]?.count || 1;
                     return items.slice(0,10).map((c, i) => {

@@ -24,16 +24,17 @@ Open each in a browser — you must see CSV text (HTTP 200).
 |----------|--------|
 | `PROPERTY_SALES_CSV_URL` | raw URL for sales |
 | `PROPERTY_RENTAL_CSV_URL` | raw URL for rentals |
-| `PROPERTY_LISTINGS_CSV_URL` | raw URL for active listings (optional — enables supply pipeline section) |
+| `PROPERTY_LISTINGS_CSV_URL` | raw URL for **rental** active listings (optional — rental tab supply pipeline) |
+| `PROPERTY_SALES_LISTINGS_CSV_URL` | raw URL for **sales** active listings (optional — sales tab supply pipeline; same column schema as rental listings) |
 | `COMMUNITY_ALIAS_JSON` | Optional — see [Community names across CSVs](#7-community-names-across-csvs) |
 
 **Redeploy** after saving (only needed when adding a new env var for the first time).
 
-### Listings CSV expected columns
+### Rental listings CSV (`PROPERTY_LISTINGS_CSV_URL`) — expected columns
 
 | Column | Required | Notes |
 |--------|----------|-------|
-| `price_aed` | Yes | Asking price in AED |
+| `price_aed` | Yes | Asking **annual rent** in AED |
 | `community` | Recommended | Area / master community |
 | `bedrooms` | Recommended | Numeric (0=Studio) or "Studio" |
 | `listed_date` | Recommended | Enables "new this week" count and **Hot Listings** (must be parseable; last 30 days) |
@@ -41,21 +42,29 @@ Open each in a browser — you must see CSV text (HTTP 200).
 | `bathrooms` | Optional | Numeric |
 | `url` / `link` | Optional | Full **https://** listing URL for the Hot Listings table |
 
+### Sales listings CSV (`PROPERTY_SALES_LISTINGS_CSV_URL`)
+
+Use the **same column schema** as rental listings, but `price_aed` is the **asking sale price** (total AED). The API merges this into `sales_listings` on the property payload and benchmarks against **sales transactions** from `PROPERTY_SALES_CSV_URL` (rolling week averages by bedroom + building-level sale averages). Comma-separated fallback URLs behave like other property CSV env vars.
+
+**Sales transactions CSV:** add an optional **bedrooms** column (`bedrooms`, `Beds`, etc.) so the app can compute `sale_txn_avg_by_beds` and `sale_txn_by_building_bed`. Without it, aggregate asking-vs-transacted and Hot Listings for sales may be sparse.
+
 ### Hot Listings (dashboard)
 
-When listings load successfully, the API adds `listings.hot_listings`: up to **25** rows with the largest **% below the transacted rental average for the same building + bedroom bucket**. **Not** compared to average asking on other listings. Only listings with a **listed date in the last 30 days** qualify, and the **area filter** applies to both rental transactions and listings before scoring.
+**Rental tab (`listings`):** When rental listings load successfully, the API adds `listings.hot_listings`: up to **25** rows with the largest **% below the transacted rental average for the same building + bedroom bucket**. Only listings with a **listed date in the last 30 days** qualify, and the **area filter** applies to both rental transactions and listings before scoring.
 
-Building benchmark details:
-- Rental benchmark key is `normalizeCommunityKey(sub-community/tower) + bedroom bucket`.
-- Rental rows are included from a rolling lookback (default **365 days**, env `RENTAL_HOT_LISTINGS_LOOKBACK_DAYS`).
-- Minimum sample size is enforced per building+bed bucket (default **3**, env `HOT_LISTINGS_MIN_TXN_PER_BUILDING_BED`).
-- If a listing has no qualifying building+bed benchmark (name mismatch, sparse data, or missing building), it is excluded from Hot Listings in v1.
+**Sales tab (`sales_listings`):** Same idea using **transacted sale** averages from the sales CSV (`sale_txn_by_building_bed`) and sales listing asks.
 
-For best match rate, keep building/tower naming consistent between listings and rental exports. Optional **link** column supplies the outbound URL.
+Building benchmark details (both modes):
+- Benchmark key is `normalizeCommunityKey(sub-community/tower) + bedroom bucket`.
+- Transaction rows use a rolling lookback (default **365 days**, env `RENTAL_HOT_LISTINGS_LOOKBACK_DAYS` — shared with rental hot-listing benchmarks).
+- Minimum sample size per building+bed bucket (default **3**, env `HOT_LISTINGS_MIN_TXN_PER_BUILDING_BED`).
+- If a listing has no qualifying building+bed benchmark (name mismatch, sparse data, or missing building), it is excluded from Hot Listings.
+
+For best match rate, keep building/tower naming consistent between listings and transaction exports. Optional **link** column supplies the outbound URL.
 
 ### Metrics snapshot (`PROPERTY_METRICS_JSON_URL`)
 
-If the app returns **cached JSON** from `PROPERTY_METRICS_JSON_URL` (no area filter, no `noSnapshot`), that payload is **not** rebuilt by `buildListingsPayload` on the server. **`hot_listings` appears only when listings are merged from `PROPERTY_LISTINGS_CSV_URL` in that request** — e.g. use an **area filter**, append **`?noSnapshot=1`**, or **regenerate** your snapshot file after deploy so it includes `hot_listings` if you rely on the default snapshot path.
+If the app returns **cached JSON** from `PROPERTY_METRICS_JSON_URL` (no area filter, no `noSnapshot`), that payload is **not** rebuilt by `buildListingsPayload` on the server. **`listings` / `sales_listings` / `hot_listings` are only merged when the server builds from live CSV URLs** — e.g. use an **area filter**, append **`?noSnapshot=1`**, or **regenerate** your snapshot file after deploy so it includes those fields if you rely on the default snapshot path.
 
 You may **remove** Blob vars (`BLOB_READ_WRITE_TOKEN`, `BLOB_SALES_PATHNAME`, …) if you no longer use Blob.
 
@@ -69,7 +78,7 @@ Replace files → `git commit` → `git push`. No redeploy needed; refresh dashb
 
 ## 6. Large CSVs and Vercel memory (HTTP 500 / “ran out of memory”)
 
-The `/api/property` route loads **sales**, **rentals**, and optionally **listings** in one invocation. Parsing uses **streaming row iteration** (no full duplicate of the CSV as a giant row array for sales/rental/listings), but **records** for sales and rental still live in memory for aggregation — extremely large extracts can still approach limits.
+The `/api/property` route loads **sales**, **rentals**, and optionally **rental listings** and **sales listings** in one invocation. Parsing uses **streaming row iteration** (no full duplicate of the CSV as a giant row array for sales/rental/listings), but **records** for sales and rental still live in memory for aggregation — extremely large extracts can still approach limits.
 
 **Mitigations:**
 

@@ -91,4 +91,36 @@ const noBench = hot.filter((h) => h.building === 'No Bench');
 assert.strictEqual(noBench.length, 0);
 assert.strictEqual(hot[0].building, 'Tower B');
 
+// --- buildListingsPayload sales mode ---
+const csvSales = `community,building,bedrooms,price_aed,listed_date,url
+Dubai Islands,Tower A,1,900000,${today},https://ex.test/s1
+Dubai Islands,Tower B,1,100000,${today},https://ex.test/s2
+Palm,Ph1,2,2000000,${today},
+Palm,Ph2,2,1800000,${today},
+Palm,No Bench,1,100000,${today},`;
+
+const rs = buildListingsPayload(csvSales, 'sales-listings.csv', {
+  dataType: 'sales',
+  salesTxnAvgByBeds: { '1br': 900000, '2br': 2000000 },
+  salesTxnByBuildingBed: {
+    'tower a|1': { avg: 900000, n: 3 },
+    'tower b|1': { avg: 900000, n: 3 },
+    'ph1|2': { avg: 2000000, n: 3 },
+    'ph2|2': { avg: 2000000, n: 3 },
+  },
+});
+assert.strictEqual(rs.ok, true);
+assert.strictEqual(rs.listings.data_type, 'sales');
+assert.ok(Array.isArray(rs.listings.hot_listings));
+const hotS = rs.listings.hot_listings;
+const oneBedS = hotS.filter((h) => h.building === 'Tower B');
+assert.strictEqual(oneBedS.length, 1);
+assert.ok(oneBedS[0].pct_drop > 80);
+const twoBedS = hotS.filter((h) => h.building === 'Ph2');
+assert.strictEqual(twoBedS.length, 1);
+assert.ok(twoBedS[0].pct_drop > 9 && twoBedS[0].pct_drop < 11);
+assert.strictEqual(hotS.filter((h) => h.building === 'No Bench').length, 0);
+assert.strictEqual(hotS[0].building, 'Tower B');
+assert.ok(String(rs.listings.hot_listings_rules).includes('sale'));
+
 console.log('test-hot-listings: ok');

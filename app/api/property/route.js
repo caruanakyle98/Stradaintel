@@ -219,6 +219,25 @@ async function loadListingsCsvText() {
   );
 }
 
+async function loadSalesListingsCsvText() {
+  const urls = (process.env.PROPERTY_SALES_LISTINGS_CSV_URL || '')
+    .split(/[,\n\r]+/)
+    .map((s) => s.trim())
+    .filter((u) => u.startsWith('http'));
+
+  let urlErr = null;
+  for (const url of urls) {
+    try {
+      return { text: await fetchText(url), label: url };
+    } catch (e) {
+      urlErr = e?.message || String(e);
+    }
+  }
+  throw new Error(
+    `Sales listings CSV failed. Set PROPERTY_SALES_LISTINGS_CSV_URL (GitHub raw). ${urlErr || ''} docs/GITHUB_CSV.md`,
+  );
+}
+
 async function buildFromSalesText(csvRaw, label, { area, skipAi } = {}) {
   const result = buildPayloadFromCsvText(csvRaw, label, { area: area || undefined });
   if (!result.ok) return result;
@@ -271,9 +290,6 @@ export async function GET(request) {
       const json = JSON.parse(text);
       if (json && typeof json === 'object' && json.ok !== false) {
         const body = json.ok === undefined ? { ok: true, ...json } : json;
-        // #region agent log
-        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H1',location:'app/api/property/route.js:snapshot-return',message:'Using metrics snapshot response path',data:{areaFilterActive,noSnapshot:Boolean(reqUrl.searchParams.get('noSnapshot')),weeklySaleVolume:body?.weekly?.sale_volume?.value||null,dataFreshness:body?.data_freshness||null,ownerBriefing:String(body?.owner_briefing||'').slice(0,120)},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
         if (rentalUrlEnv && body && typeof body === 'object') {
           try {
             const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
@@ -345,17 +361,15 @@ export async function GET(request) {
     if (!result.ok) {
       return Response.json(result.body, { status: result.status });
     }
-    // #region agent log
-    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'app/api/property/route.js:live-sales-result',message:'Using live sales payload response path',data:{areaFilterActive,weeklySaleVolume:result?.body?.weekly?.sale_volume?.value||null,dataFreshness:result?.body?.data_freshness||null,period:result?.body?.weekly?.period_label||null},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
 
     const listingsUrlEnv = process.env.PROPERTY_LISTINGS_CSV_URL?.trim();
+    const salesListingsUrlEnv = process.env.PROPERTY_SALES_LISTINGS_CSV_URL?.trim();
     const needRental = !!(rentalUrlEnv && result.windows);
     const needListings = !!listingsUrlEnv;
+    const needSalesListings = !!salesListingsUrlEnv;
 
-    /* Sequential rental → listings (not parallel) to cap peak RAM: two large CSV strings
-     * at once + parse copies can OOM the default ~2GB Node heap on Vercel. */
-    if (needRental || needListings) {
+    /* Sequential rental → rental listings → sales listings (not parallel) to cap peak RAM */
+    if (needRental || needListings || needSalesListings) {
       try {
         if (needRental) {
           try {
@@ -405,6 +419,42 @@ export async function GET(request) {
             }
           } catch (e) {
             result.body.listings = { error: `Listings URL failed: ${e?.message || e}. Other data still shown.` };
+          }
+        }
+
+        if (needSalesListings) {
+          try {
+            const { text: salesListingsRaw, label: salesListingsLabel } = await loadSalesListingsCsvText();
+
+            const salesTxnAvgByBeds = result.body.sale_txn_avg_by_beds || {};
+            const salesTxnByBuildingBed = result.body.sale_txn_by_building_bed || {};
+
+            const salesListingsResult = buildListingsPayload(salesListingsRaw, salesListingsLabel, {
+              salesTxnAvgByBeds,
+              salesTxnByBuildingBed,
+              dataType: 'sales',
+              filterArea: areaFilterActive ? areaParam : '',
+            });
+
+            if (salesListingsResult.ok && salesListingsResult.listings) {
+              const weeklySales = parseInt(result.body.weekly?.sale_volume?.value, 10) || null;
+              if (weeklySales && weeklySales > 0) {
+                const weeksOfSupply = salesListingsResult.listings.total / weeklySales;
+                salesListingsResult.listings.supply_depth = {
+                  weeks: parseFloat(weeksOfSupply.toFixed(1)),
+                  listings_total: salesListingsResult.listings.total,
+                  weekly_registrations: weeklySales,
+                  label: `${weeksOfSupply.toFixed(1)} weeks of sales listing cover`,
+                };
+              }
+              result.body.sales_listings = salesListingsResult.listings;
+            } else {
+              result.body.sales_listings = { error: salesListingsResult.error, source: salesListingsLabel };
+            }
+          } catch (e) {
+            result.body.sales_listings = {
+              error: `Sales listings URL failed: ${e?.message || e}. Other data still shown.`,
+            };
           }
         }
       } catch (e) {
