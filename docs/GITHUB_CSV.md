@@ -39,6 +39,7 @@ Open each in a browser — you must see CSV text (HTTP 200).
 | `bedrooms` | Recommended | Numeric (0=Studio) or "Studio" |
 | `listed_date` | Recommended | Enables "new this week" count and **Hot Listings** (must be parseable; last 30 days) |
 | `building` | Optional | Tower / building name |
+| `Unit Type` / `Property Type` | Optional | Apartment, Villa, Townhouse — used for **Hot Listings** vs transactions (defaults to **Apartment** if omitted) |
 | `bathrooms` | Optional | Numeric |
 | `url` / `link` | Optional | Full **https://** listing URL for the Hot Listings table |
 
@@ -46,21 +47,23 @@ Open each in a browser — you must see CSV text (HTTP 200).
 
 Use the **same column schema** as rental listings, but `price_aed` is the **asking sale price** (total AED). The API merges this into `sales_listings` on the property payload and benchmarks against **sales transactions** from `PROPERTY_SALES_CSV_URL` (rolling week averages by bedroom + building-level sale averages). Comma-separated fallback URLs behave like other property CSV env vars.
 
-**Sales transactions CSV:** add an optional **bedrooms** column (`bedrooms`, `Beds`, etc.) so the app can compute `sale_txn_avg_by_beds` and `sale_txn_by_building_bed`. Without it, aggregate asking-vs-transacted and Hot Listings for sales may be sparse.
+**Sales transactions CSV:** keep **Unit Type** (Apartment / Villa / Townhouse) and optional **bedrooms** so Hot Listings can bucket by building + bedroom + property type. Same for **rental (Ejari) CSV**: map **Unit Type** / **Property Type** when present; rows without it are treated as **Apartment** for benchmarking.
 
 ### Hot Listings (dashboard)
 
-**Rental tab (`listings`):** When rental listings load successfully, the API adds `listings.hot_listings`: up to **25** rows with the largest **% below the transacted rental average for the same building + bedroom bucket**. Only listings with a **listed date in the last 30 days** qualify, and the **area filter** applies to both rental transactions and listings before scoring.
+When an **area filter** is set (e.g. Dubai Harbour), Hot Listings compare each recent listing’s ask to the **average transacted price in that same area** for the same **building + bedroom count + property type** (apartment vs villa vs townhouse). **% below txn** is how far below that average the listing ask is.
 
-**Sales tab (`sales_listings`):** Same idea using **transacted sale** averages from the sales CSV (`sale_txn_by_building_bed`) and sales listing asks.
+- **Rental tab (`listings`):** Benchmarks from **rental transactions** in the filtered area (`txn_by_building_bed` on the payload). Listings CSV rows are filtered by listing **community** to that area.
+- **Sales tab (`sales_listings`):** Benchmarks from **sales transactions** in the filtered area (`sale_txn_by_building_bed`).
 
-Building benchmark details (both modes):
-- Benchmark key is `normalizeCommunityKey(sub-community/tower) + bedroom bucket`.
-- Transaction rows use a rolling lookback (default **365 days**, env `RENTAL_HOT_LISTINGS_LOOKBACK_DAYS` — shared with rental hot-listing benchmarks).
-- Minimum sample size per building+bed bucket (default **3**, env `HOT_LISTINGS_MIN_TXN_PER_BUILDING_BED`).
-- If a listing has no qualifying building+bed benchmark (name mismatch, sparse data, or missing building), it is excluded from Hot Listings.
+Benchmark key (both): `normalizeCommunityKey(Sub Community / Building or Community/Building) | bedroom bucket | apt|villa|townhouse`.
 
-For best match rate, keep building/tower naming consistent between listings and transaction exports. Optional **link** column supplies the outbound URL.
+Details:
+- Only **rental/sales rows that pass the same area filter** as the dashboard feed the Hot Listings averages (master **Area** / community column must match the filter; use **`COMMUNITY_ALIAS_JSON`** if labels differ between CSVs).
+- Rolling lookback default **365 days** (`RENTAL_HOT_LISTINGS_LOOKBACK_DAYS`); minimum **3** transactions per bucket (`HOT_LISTINGS_MIN_TXN_PER_BUILDING_BED`).
+- Listings without **Property Type** default to **Apartment** for matching; set **Unit Type** on listings when you have villas/townhouses.
+
+Optional **link** column supplies the outbound URL.
 
 ### Metrics snapshot (`PROPERTY_METRICS_JSON_URL`)
 
