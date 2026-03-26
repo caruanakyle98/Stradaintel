@@ -53,14 +53,14 @@ Use the **same column schema** as rental listings, but `price_aed` is the **aski
 
 When an **area filter** is set (e.g. Dubai Harbour), Hot Listings compare each recent listing’s ask to the **average transacted price in that same area** for the same **building + bedroom count + property type** (apartment vs villa vs townhouse). **% below txn** is how far below that average the listing ask is.
 
-- **Rental tab (`listings`):** Benchmarks from **rental transactions** in the filtered area (`txn_by_building_bed` on the payload). Listings CSV rows are filtered by listing **community** to that area.
-- **Sales tab (`sales_listings`):** Benchmarks from **sales transactions** in the filtered area (`sale_txn_by_building_bed`).
+- **Rental tab (`listings`):** Primary benchmarks from **rental transactions** in the filtered area (`txn_by_building_bed`). If a **building + bed + type** bucket has fewer than the minimum transaction count, the listing is compared to the **community + bed + type** average instead (`txn_by_community_bed`). Listings CSV rows are filtered by listing **community** to that area.
+- **Sales tab (`sales_listings`):** Same pattern: `sale_txn_by_building_bed` first, then **`sale_txn_by_community_bed`** when the building sample is too thin.
 
-Benchmark key (both): `normalizeCommunityKey(Sub Community / Building or Community/Building) | bedroom bucket | apt|villa|townhouse`.
+Benchmark keys (both): **Building:** `normalizeCommunityKey(Sub Community / Building or Community/Building) | bedroom bucket | apt|villa|townhouse`. **Community fallback:** `normalizeCommunityKey(area / listing community) | bedroom bucket | apt|villa|townhouse`.
 
 Details:
 - Only **rental/sales rows that pass the same area filter** as the dashboard feed the Hot Listings averages (master **Area** / community column must match the filter; use **`COMMUNITY_ALIAS_JSON`** if labels differ between CSVs).
-- Rolling lookback default **365 days** (`RENTAL_HOT_LISTINGS_LOOKBACK_DAYS`); minimum **3** transactions per bucket (`HOT_LISTINGS_MIN_TXN_PER_BUILDING_BED`).
+- Rolling lookback default **365 days** (`RENTAL_HOT_LISTINGS_LOOKBACK_DAYS`); minimum **3** transactions per bucket (`HOT_LISTINGS_MIN_TXN_PER_BUILDING_BED`) applies separately to **building** and **community** aggregates.
 - Listings without **Property Type** default to **Apartment** for matching; set **Unit Type** on listings when you have villas/townhouses.
 
 Optional **link** column supplies the outbound URL.

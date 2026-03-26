@@ -394,10 +394,12 @@ export async function GET(request) {
               '3br':  parseFloat(result.body.rental?.villa_3br_avg_aed) || null,
             };
             const rentalTxnByBuildingBed = result.body.rental?.txn_by_building_bed || {};
+            const rentalTxnByCommunityBed = result.body.rental?.txn_by_community_bed || {};
 
             const listingsResult = buildListingsPayload(listingsRaw, listingsLabel, {
               rentalTxnAvgByBeds,
               rentalTxnByBuildingBed,
+              rentalTxnByCommunityBed,
               dataType: 'rental',
               filterArea: areaFilterActive ? areaParam : '',
             });
@@ -428,10 +430,12 @@ export async function GET(request) {
 
             const salesTxnAvgByBeds = result.body.sale_txn_avg_by_beds || {};
             const salesTxnByBuildingBed = result.body.sale_txn_by_building_bed || {};
+            const salesTxnByCommunityBed = result.body.sale_txn_by_community_bed || {};
 
             const salesListingsResult = buildListingsPayload(salesListingsRaw, salesListingsLabel, {
               salesTxnAvgByBeds,
               salesTxnByBuildingBed,
+              salesTxnByCommunityBed,
               dataType: 'sales',
               filterArea: areaFilterActive ? areaParam : '',
             });

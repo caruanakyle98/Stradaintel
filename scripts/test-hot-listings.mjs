@@ -59,6 +59,34 @@ const old = isoDaysAgo(40);
   assert.ok(String(hot_listings_note).includes('Listed Date'));
 }
 
+{
+  // Building bucket missing (n < min); community benchmark applies
+  const rows = [
+    {
+      price: 80000,
+      bedKey: '1',
+      unitTypeKey: 'apt',
+      listedDate: new Date(recent + 'T12:00:00.000Z'),
+      community: 'Dubai Harbour',
+      building: 'Sunrise Bay Tower 1',
+      link: null,
+    },
+  ];
+  const communityTxn = { 'dubai harbour|1|apt': { avg: 100000, n: 5 } };
+  const { hot_listings } = computeHotListings(
+    rows,
+    thirty,
+    true,
+    {},
+    'rental',
+    communityTxn,
+    'Dubai Harbour',
+  );
+  assert.strictEqual(hot_listings.length, 1);
+  assert.strictEqual(hot_listings[0].benchmark_source, 'community_txn');
+  assert.ok(hot_listings[0].pct_drop > 19 && hot_listings[0].pct_drop < 21);
+}
+
 // --- buildListingsPayload (integration) ---
 const today = isoDaysAgo(0);
 const csv = `community,building,bedrooms,price_aed,listed_date,url
