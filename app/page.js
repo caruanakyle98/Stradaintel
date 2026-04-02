@@ -1281,8 +1281,10 @@ export function DashboardView() {
       if (a) q.set('area', a);
       const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
       const tFetch0 = Date.now();
-      // Align with app/api/property maxDuration (120s): sales CSV fetch+parse can exceed 60s on large GitHub raw files.
-      const timeoutMs = 120000;
+      // Short budget for the *full* response (snapshot + rental + listings). When that path is slow (common on
+      // large CSVs), waiting 120s only delays first paint; fast sales-only + deferred enrich still load the rest.
+      // Fast metrics/snapshot builds usually finish well under this; heavy builds rarely beat 120s anyway (logs).
+      const timeoutMs = 55000;
       let r;
       try {
         r = await Promise.race([
@@ -1341,7 +1343,7 @@ export function DashboardView() {
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H11',location:'page.js:refreshProp',message:'fast retry payload shape',data:{dfOk:df?.ok,hasWeekly:!!df?.weekly,hasCharts30d:!!df?.charts_30d,hasSalesListings:!!df?.sales_listings,hasRentalListings:!!df?.listings,debugSkips:df?._debug_skips,tabs:propTab},timestamp:Date.now()})}).catch(()=>{});
           // #endregion
           setPropError(
-            `Full refresh timed out after ${timeoutMs}ms; loading rental & listings in the background (large CSVs can take several minutes on first load).`,
+            `Showing core sales now; still loading rental & listings in the background (large CSVs can take a few minutes).`,
           );
           // #region agent log
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'fast retry success',data:{ms:Date.now()-tFast0,hasDebugSkips:!!df?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
