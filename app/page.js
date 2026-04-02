@@ -1377,6 +1377,64 @@ export function DashboardView() {
             }
           }
 
+          // Variant C: rentals listings only (skip sales listings)
+          const qRentListingsOnly = new URLSearchParams(qFast);
+          qRentListingsOnly.set('skipRental', '1');
+          qRentListingsOnly.set('skipListings', '0');
+          qRentListingsOnly.set('skipSalesListings', '1');
+          qRentListingsOnly.set('listingsTimeoutMs', '5000');
+          qRentListingsOnly.set('listingsMaxAttempts', '1');
+          const propUrlRentListingsOnly = `/api/property?${qRentListingsOnly.toString()}`;
+          const rentListingsOnlyTimeoutMs = 25000;
+          try {
+            const tC0 = Date.now();
+            const rfC = await Promise.race([
+              fetch(propUrlRentListingsOnly),
+              new Promise((_, reject) => {
+                setTimeout(() => reject(new Error(`prop rent-listings-only timeout after ${rentListingsOnlyTimeoutMs}ms`)), rentListingsOnlyTimeoutMs);
+              }),
+            ]);
+            const dfC = await rfC.json().catch(() => ({}));
+            if (rfC.ok && dfC?.ok) {
+              setProp(dfC);
+              setPropError(`Full refresh timed out; partial loaded (rental-listings-only variant).`);
+              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H9',location:'page.js:refreshProp',message:'rent-listings-only variant success',data:{ms:Date.now()-tC0,skips:dfC?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
+              return;
+            }
+            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H9',location:'page.js:refreshProp',message:'rent-listings-only variant non-ok',data:{status:rfC?.status,detail:dfC?.detail,skips:dfC?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
+          } catch (eC) {
+            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H9',location:'page.js:refreshProp',message:'rent-listings-only variant timed out',data:{error:String(eC?.message||eC).slice(0,160)},timestamp:Date.now()})}).catch(()=>{});
+          }
+
+          // Variant D: sales listings only (skip rental listings)
+          const qSalesListingsOnly = new URLSearchParams(qFast);
+          qSalesListingsOnly.set('skipRental', '1');
+          qSalesListingsOnly.set('skipListings', '1');
+          qSalesListingsOnly.set('skipSalesListings', '0');
+          qSalesListingsOnly.set('salesListingsTimeoutMs', '5000');
+          qSalesListingsOnly.set('salesListingsMaxAttempts', '1');
+          const propUrlSalesListingsOnly = `/api/property?${qSalesListingsOnly.toString()}`;
+          const salesListingsOnlyTimeoutMs = 25000;
+          try {
+            const tD0 = Date.now();
+            const rfD = await Promise.race([
+              fetch(propUrlSalesListingsOnly),
+              new Promise((_, reject) => {
+                setTimeout(() => reject(new Error(`prop sales-listings-only timeout after ${salesListingsOnlyTimeoutMs}ms`)), salesListingsOnlyTimeoutMs);
+              }),
+            ]);
+            const dfD = await rfD.json().catch(() => ({}));
+            if (rfD.ok && dfD?.ok) {
+              setProp(dfD);
+              setPropError(`Full refresh timed out; partial loaded (sales-listings-only variant).`);
+              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H10',location:'page.js:refreshProp',message:'sales-listings-only variant success',data:{ms:Date.now()-tD0,skips:dfD?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
+              return;
+            }
+            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H10',location:'page.js:refreshProp',message:'sales-listings-only variant non-ok',data:{status:rfD?.status,detail:dfD?.detail,skips:dfD?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
+          } catch (eD) {
+            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H10',location:'page.js:refreshProp',message:'sales-listings-only variant timed out',data:{error:String(eD?.message||eD).slice(0,160)},timestamp:Date.now()})}).catch(()=>{});
+          }
+
           return;
         } catch (fastErr) {
           // #region agent log
