@@ -1366,8 +1366,10 @@ export function DashboardView() {
             const sameEpoch = () => propEnrichEpochRef.current === enrichEpoch;
             let rentalEnriched = false;
             let rentalNA = false;
-            let listingsEnriched = false;
-            let listingsNA = false;
+            let rentalListingsNA = false;
+            let rentalListingsOk = false;
+            let salesListingsNA = false;
+            let salesListingsOk = false;
             const qFull = new URLSearchParams(q);
             qFull.set('noSnapshot', '1');
             qFull.set('skipAi', '1');
@@ -1428,62 +1430,115 @@ export function DashboardView() {
 
             if (!sameEpoch()) return;
 
+            // Two parallel requests: each skips the other's listing CSV so work fits under maxDuration
+            // (logs showed one combined listings slice timing out at ~118s after sales+parse+both CSVs).
+            const qRentalListings = new URLSearchParams(q);
+            qRentalListings.set('noSnapshot', '1');
+            qRentalListings.set('skipAi', '1');
+            qRentalListings.set('skipRental', '1');
+            qRentalListings.delete('skipListings');
+            qRentalListings.set('skipSalesListings', '1');
+            qRentalListings.set('skipHotListings', '1');
+
+            const qSalesListingsOnly = new URLSearchParams(q);
+            qSalesListingsOnly.set('noSnapshot', '1');
+            qSalesListingsOnly.set('skipAi', '1');
+            qSalesListingsOnly.set('skipRental', '1');
+            qSalesListingsOnly.set('skipListings', '1');
+            qSalesListingsOnly.delete('skipSalesListings');
+            qSalesListingsOnly.set('skipHotListings', '1');
+
+            ingestEnrich('deferred enrich listings parallel start', {}, 'H14');
+
+            const pullRentalListings = async () => {
+              try {
+                const r = await Promise.race([
+                  fetch(`/api/property?${qRentalListings.toString()}`),
+                  new Promise((_, rej) => {
+                    setTimeout(() => rej(new Error('deferred rental-listings timeout')), ENRICH_MS);
+                  }),
+                ]);
+                const d = await r.json().catch(() => ({}));
+                return { r, d, err: null };
+              } catch (err) {
+                return { r: null, d: null, err };
+              }
+            };
+
+            const pullSalesListings = async () => {
+              try {
+                const r = await Promise.race([
+                  fetch(`/api/property?${qSalesListingsOnly.toString()}`),
+                  new Promise((_, rej) => {
+                    setTimeout(() => rej(new Error('deferred sales-listings timeout')), ENRICH_MS);
+                  }),
+                ]);
+                const d = await r.json().catch(() => ({}));
+                return { r, d, err: null };
+              } catch (err) {
+                return { r: null, d: null, err };
+              }
+            };
+
             try {
-              const qList = new URLSearchParams(q);
-              qList.set('noSnapshot', '1');
-              qList.set('skipAi', '1');
-              qList.set('skipRental', '1');
-              qList.delete('skipListings');
-              qList.delete('skipSalesListings');
-              qList.set('skipHotListings', '1');
-              ingestEnrich('deferred enrich listings slice start', {}, 'H14');
-              const r3 = await Promise.race([
-                fetch(`/api/property?${qList.toString()}`),
-                new Promise((_, rej) => {
-                  setTimeout(() => rej(new Error('deferred listings timeout')), ENRICH_MS);
-                }),
-              ]);
-              const d3 = await r3.json().catch(() => ({}));
-              if (sameEpoch() && r3.ok && d3?.ok) {
+              const [outRL, outSL] = await Promise.all([pullRentalListings(), pullSalesListings()]);
+
+              if (!sameEpoch()) return;
+
+              if (outRL.err) {
+                ingestEnrich('deferred enrich rental-listings err', { err: String(outRL.err?.message || outRL.err).slice(0, 160) }, 'H14');
+              } else if (outRL.r?.ok && outRL.d?.ok) {
+                const d = outRL.d;
                 setProp((prev) =>
-                  prev
-                    ? {
-                        ...prev,
-                        ...(d3.listings != null ? { listings: d3.listings } : {}),
-                        ...(d3.sales_listings != null ? { sales_listings: d3.sales_listings } : {}),
-                      }
+                  prev && d.listings != null
+                    ? { ...prev, listings: d.listings }
                     : prev,
                 );
-                const L = d3.listings;
-                const SL = d3.sales_listings;
-                if (L == null && SL == null) listingsNA = true;
-                else
-                  listingsEnriched = Boolean(
-                    (L && !L.error) || (SL && !SL.error),
-                  );
-                ingestEnrich('deferred enrich listings slice ok', { listingsEnriched, listingsNA, hasListings: !!d3.listings }, 'H14');
+                if (d.listings == null) rentalListingsNA = true;
+                else rentalListingsOk = !d.listings.error;
+                ingestEnrich('deferred enrich rental-listings ok', { rentalListingsOk, rentalListingsNA }, 'H14');
               } else {
-                ingestEnrich('deferred enrich listings slice miss', { httpOk: r3?.ok, bodyOk: d3?.ok }, 'H14');
+                ingestEnrich('deferred enrich rental-listings miss', { httpOk: outRL.r?.ok, bodyOk: outRL.d?.ok }, 'H14');
+              }
+
+              if (outSL.err) {
+                ingestEnrich('deferred enrich sales-listings err', { err: String(outSL.err?.message || outSL.err).slice(0, 160) }, 'H15');
+              } else if (outSL.r?.ok && outSL.d?.ok) {
+                const d = outSL.d;
+                setProp((prev) =>
+                  prev && d.sales_listings != null
+                    ? { ...prev, sales_listings: d.sales_listings }
+                    : prev,
+                );
+                if (d.sales_listings == null) salesListingsNA = true;
+                else salesListingsOk = !d.sales_listings.error;
+                ingestEnrich('deferred enrich sales-listings ok', { salesListingsOk, salesListingsNA }, 'H15');
+              } else {
+                ingestEnrich('deferred enrich sales-listings miss', { httpOk: outSL.r?.ok, bodyOk: outSL.d?.ok }, 'H15');
               }
             } catch (e3) {
-              ingestEnrich('deferred enrich listings slice err', { err: String(e3?.message || e3).slice(0, 160) }, 'H14');
+              ingestEnrich('deferred enrich listings parallel err', { err: String(e3?.message || e3).slice(0, 160) }, 'H14');
             }
 
             if (sameEpoch()) {
               const rentalOk = rentalNA || rentalEnriched;
-              const listingsOk = listingsNA || listingsEnriched;
+              const listingsOk =
+                (rentalListingsNA || rentalListingsOk) && (salesListingsNA || salesListingsOk);
               if (rentalOk && listingsOk) {
                 setPropError(null);
               } else if (!rentalOk && !listingsOk) {
                 setPropError((prevErr) =>
-                  prevErr && String(prevErr).includes('background')
+                  prevErr &&
+                  (String(prevErr).includes('background') || String(prevErr).includes('Sales loaded first'))
                     ? 'Sales loaded first; rental and listings could not be loaded in time — try refresh.'
                     : prevErr,
                 );
               } else {
+                const miss = !rentalOk ? 'rental' : 'listings';
                 setPropError((prevErr) =>
-                  prevErr && String(prevErr).includes('background')
-                    ? `Sales loaded first; ${!rentalOk ? 'rental' : 'listings'} still missing or failed — try refresh.`
+                  prevErr &&
+                  (String(prevErr).includes('background') || String(prevErr).includes('Sales loaded first'))
+                    ? `Sales loaded first; ${miss} still missing or failed — try refresh.`
                     : prevErr,
                 );
               }
