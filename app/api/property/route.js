@@ -95,8 +95,8 @@ Use this data:\n${JSON.stringify(stats, null, 2)}`;
 }
 
 /** Fetch URL as text; retry 502/503/504 a few times (Blob/CDN blips). Per-attempt timeout avoids hanging until platform 504. */
-async function fetchText(url, { timeoutMs = 50000 } = {}) {
-  const max = 4;
+async function fetchText(url, { timeoutMs = 50000, maxAttempts = 4 } = {}) {
+  const max = maxAttempts;
   let lastStatus = 0;
   for (let attempt = 1; attempt <= max; attempt++) {
     const controller = new AbortController();
@@ -233,7 +233,7 @@ async function loadRentalCsvText() {
   );
 }
 
-async function loadListingsCsvText() {
+async function loadListingsCsvText({ timeoutMs = 50000, maxAttempts = 4 } = {}) {
   const listingsUrls = (process.env.PROPERTY_LISTINGS_CSV_URL || '')
     .split(/[,\n\r]+/)
     .map((s) => s.trim())
@@ -258,7 +258,7 @@ async function loadListingsCsvText() {
   let urlErr = null;
   for (const url of listingsUrls) {
     try {
-      return { text: await fetchText(url), label: url };
+      return { text: await fetchText(url, { timeoutMs, maxAttempts }), label: url };
     } catch (e) {
       urlErr = e?.message || String(e);
     }
@@ -268,7 +268,7 @@ async function loadListingsCsvText() {
   );
 }
 
-async function loadSalesListingsCsvText() {
+async function loadSalesListingsCsvText({ timeoutMs = 50000, maxAttempts = 4 } = {}) {
   const urls = (process.env.PROPERTY_SALES_LISTINGS_CSV_URL || '')
     .split(/[,\n\r]+/)
     .map((s) => s.trim())
@@ -293,7 +293,7 @@ async function loadSalesListingsCsvText() {
   let urlErr = null;
   for (const url of urls) {
     try {
-      return { text: await fetchText(url), label: url };
+      return { text: await fetchText(url, { timeoutMs, maxAttempts }), label: url };
     } catch (e) {
       urlErr = e?.message || String(e);
     }
@@ -377,6 +377,14 @@ export async function GET(request) {
   const skipRental = reqUrl.searchParams.get('skipRental') === '1';
   const skipListings = reqUrl.searchParams.get('skipListings') === '1';
   const skipSalesListings = reqUrl.searchParams.get('skipSalesListings') === '1';
+  const listingsTimeoutMsParam = parseInt(reqUrl.searchParams.get('listingsTimeoutMs') || '', 10);
+  const listingsMaxAttemptsParam = parseInt(reqUrl.searchParams.get('listingsMaxAttempts') || '', 10);
+  const salesListingsTimeoutMsParam = parseInt(reqUrl.searchParams.get('salesListingsTimeoutMs') || '', 10);
+  const salesListingsMaxAttemptsParam = parseInt(reqUrl.searchParams.get('salesListingsMaxAttempts') || '', 10);
+  const listingsTimeoutMs = Number.isFinite(listingsTimeoutMsParam) ? Math.max(1000, listingsTimeoutMsParam) : 50000;
+  const listingsMaxAttempts = Number.isFinite(listingsMaxAttemptsParam) ? Math.max(1, listingsMaxAttemptsParam) : 4;
+  const salesListingsTimeoutMs = Number.isFinite(salesListingsTimeoutMsParam) ? Math.max(1000, salesListingsTimeoutMsParam) : 50000;
+  const salesListingsMaxAttempts = Number.isFinite(salesListingsMaxAttemptsParam) ? Math.max(1, salesListingsMaxAttemptsParam) : 4;
   debugLogFile({
     hypothesisId: 'H2',
     location: 'property/route.js:GET',
@@ -388,6 +396,10 @@ export async function GET(request) {
       skipRental,
       skipListings,
       skipSalesListings,
+      listingsTimeoutMs,
+      listingsMaxAttempts,
+      salesListingsTimeoutMs,
+      salesListingsMaxAttempts,
       hasListingsEnv: !!process.env.PROPERTY_LISTINGS_CSV_URL?.trim(),
       hasSalesListingsEnv: !!process.env.PROPERTY_SALES_LISTINGS_CSV_URL?.trim(),
     },
@@ -514,7 +526,10 @@ export async function GET(request) {
               message: 'before',
               data: { listingsUrlEnv: !!listingsUrlEnv },
             });
-            const { text: listingsRaw, label: listingsLabel } = await loadListingsCsvText();
+            const { text: listingsRaw, label: listingsLabel } = await loadListingsCsvText({
+              timeoutMs: listingsTimeoutMs,
+              maxAttempts: listingsMaxAttempts,
+            });
             debugLogFile({
               hypothesisId: 'H2',
               location: 'property/route.js:loadListingsCsvText',
@@ -610,7 +625,10 @@ export async function GET(request) {
               message: 'before',
               data: { salesListingsUrlEnv: !!salesListingsUrlEnv },
             });
-            const { text: salesListingsRaw, label: salesListingsLabel } = await loadSalesListingsCsvText();
+            const { text: salesListingsRaw, label: salesListingsLabel } = await loadSalesListingsCsvText({
+              timeoutMs: salesListingsTimeoutMs,
+              maxAttempts: salesListingsMaxAttempts,
+            });
             debugLogFile({
               hypothesisId: 'H2',
               location: 'property/route.js:loadSalesListingsCsvText',

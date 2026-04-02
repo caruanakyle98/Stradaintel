@@ -1321,6 +1321,11 @@ export function DashboardView() {
           qListingsOnly.set('skipRental', '1');
           qListingsOnly.set('skipListings', '0');
           qListingsOnly.set('skipSalesListings', '0');
+          // Force a short listings CSV fetch to determine if the stall is network/retries vs CPU parsing.
+          qListingsOnly.set('listingsTimeoutMs', '5000');
+          qListingsOnly.set('listingsMaxAttempts', '1');
+          qListingsOnly.set('salesListingsTimeoutMs', '5000');
+          qListingsOnly.set('salesListingsMaxAttempts', '1');
           const propUrlListingsOnly = `/api/property?${qListingsOnly.toString()}`;
 
           const listingsOnlyTimeoutMs = 25000;
