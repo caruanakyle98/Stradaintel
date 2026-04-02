@@ -1312,6 +1312,66 @@ export function DashboardView() {
           // #region agent log
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'fast retry success',data:{ms:Date.now()-tFast0,hasDebugSkips:!!df?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
           // #endregion
+          // #region agent log
+          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H7',location:'page.js:refreshProp',message:'try listings-only variant',data:{fastTimeoutMs},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+
+          // Variant A: keep listings + sales listings (still skip rental + AI)
+          const qListingsOnly = new URLSearchParams(qFast);
+          qListingsOnly.set('skipRental', '1');
+          qListingsOnly.set('skipListings', '0');
+          qListingsOnly.set('skipSalesListings', '0');
+          const propUrlListingsOnly = `/api/property?${qListingsOnly.toString()}`;
+
+          const listingsOnlyTimeoutMs = 25000;
+          try {
+            const tA0 = Date.now();
+            const rfA = await Promise.race([
+              fetch(propUrlListingsOnly),
+              new Promise((_, reject) => {
+                setTimeout(() => reject(new Error(`prop listings-only retry timeout after ${listingsOnlyTimeoutMs}ms`)), listingsOnlyTimeoutMs);
+              }),
+            ]);
+            const dfA = await rfA.json().catch(() => ({}));
+            if (rfA.ok && dfA?.ok) {
+              setProp(dfA);
+              setPropError(`Full refresh timed out; partial loaded (listings-only variant).`);
+              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H7',location:'page.js:refreshProp',message:'listings-only variant success',data:{ms:Date.now()-tA0,skips:dfA?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
+            } else {
+              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H7',location:'page.js:refreshProp',message:'listings-only variant non-ok',data:{status:rfA?.status,detail:dfA?.detail,skips:dfA?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
+            }
+          } catch (eA) {
+            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H7',location:'page.js:refreshProp',message:'listings-only variant timed out',data:{ms:timeoutMs},timestamp:Date.now()})}).catch(()=>{});
+
+            // Variant B: keep rental (still skip listings + sales listings + AI)
+            const qRentalOnly = new URLSearchParams(qFast);
+            qRentalOnly.set('skipRental', '0');
+            qRentalOnly.set('skipListings', '1');
+            qRentalOnly.set('skipSalesListings', '1');
+            const propUrlRentalOnly = `/api/property?${qRentalOnly.toString()}`;
+
+            const rentalOnlyTimeoutMs = 25000;
+            try {
+              const tB0 = Date.now();
+              const rfB = await Promise.race([
+                fetch(propUrlRentalOnly),
+                new Promise((_, reject) => {
+                  setTimeout(() => reject(new Error(`prop rental-only retry timeout after ${rentalOnlyTimeoutMs}ms`)), rentalOnlyTimeoutMs);
+                }),
+              ]);
+              const dfB = await rfB.json().catch(() => ({}));
+              if (rfB.ok && dfB?.ok) {
+                setProp(dfB);
+                setPropError(`Full refresh timed out; partial loaded (rental-only variant).`);
+                fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H8',location:'page.js:refreshProp',message:'rental-only variant success',data:{ms:Date.now()-tB0,skips:dfB?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
+              } else {
+                fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H8',location:'page.js:refreshProp',message:'rental-only variant non-ok',data:{status:rfB?.status,detail:dfB?.detail,skips:dfB?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
+              }
+            } catch (eB) {
+              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H8',location:'page.js:refreshProp',message:'rental-only variant timed out',data:{error:String(eB?.message||eB).slice(0,120)},timestamp:Date.now()})}).catch(()=>{});
+            }
+          }
+
           return;
         } catch (fastErr) {
           // #region agent log
