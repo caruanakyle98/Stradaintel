@@ -1317,7 +1317,9 @@ export function DashboardView() {
           // #region agent log
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H11',location:'page.js:refreshProp',message:'fast retry payload shape',data:{dfOk:df?.ok,hasWeekly:!!df?.weekly,hasCharts30d:!!df?.charts_30d,hasSalesListings:!!df?.sales_listings,hasRentalListings:!!df?.listings,debugSkips:df?._debug_skips,tabs:propTab},timestamp:Date.now()})}).catch(()=>{});
           // #endregion
-          setPropError(`Full refresh timed out after ${timeoutMs}ms; showing partial data (skipped AI + rental/listings).`);
+          setPropError(
+            `Full refresh timed out after ${timeoutMs}ms; showing partial data (skipped AI + Hot Listings).`,
+          );
           // #region agent log
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'fast retry success',data:{ms:Date.now()-tFast0,hasDebugSkips:!!df?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
           // #endregion
