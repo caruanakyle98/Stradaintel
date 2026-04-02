@@ -1261,7 +1261,8 @@ export function DashboardView() {
       if (a) q.set('area', a);
       const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
       const tFetch0 = Date.now();
-      const timeoutMs = 60000;
+      // Align with app/api/property maxDuration (120s): sales CSV fetch+parse can exceed 60s on large GitHub raw files.
+      const timeoutMs = 120000;
       let r;
       try {
         r = await Promise.race([
@@ -1297,7 +1298,8 @@ export function DashboardView() {
         qFast.set('salesListingsMaxAttempts', '1');
         const propUrlFast = `/api/property?${qFast.toString()}`;
 
-        const fastTimeoutMs = 25000;
+        // Same heavy path as full refresh (minus snapshot/rental/listings); needs time for sales CSV + parse.
+        const fastTimeoutMs = 110000;
         let rf;
         try {
           const tFast0 = Date.now();
@@ -1455,7 +1457,7 @@ export function DashboardView() {
           // #region agent log
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'fast retry failed',data:{error:String(fastErr?.message||fastErr).slice(0,160)},timestamp:Date.now()})}).catch(()=>{});
           // #endregion
-          throw e;
+          throw fastErr;
         }
       }
       // #region agent log
