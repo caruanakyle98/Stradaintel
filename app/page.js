@@ -1282,13 +1282,18 @@ export function DashboardView() {
         fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'timeout → retry fast skip options',data:{timeoutMs,area:a},timestamp:Date.now()})}).catch(()=>{});
         // #endregion
 
-        // Fast retry: skip listings + AI to isolate the slow stage server-side.
-        // If the user is on the rental tab, keep rental base metrics so the page still has content.
+        // Fast retry: keep rental + listings datasets, but skip Hot Listings + AI.
+        // This preserves the listing metrics (including listings_added_by_day), while avoiding the expensive hot-listing ranking.
         const qFast = new URLSearchParams(q);
         qFast.set('skipAi', '1');
-        qFast.set('skipRental', propTab === 'sales' ? '1' : '0');
-        qFast.set('skipListings', '1');
-        qFast.set('skipSalesListings', '1');
+        qFast.set('skipRental', '0');
+        qFast.set('skipListings', '0');
+        qFast.set('skipSalesListings', '0');
+        qFast.set('skipHotListings', '1');
+        qFast.set('listingsTimeoutMs', '20000');
+        qFast.set('listingsMaxAttempts', '1');
+        qFast.set('salesListingsTimeoutMs', '20000');
+        qFast.set('salesListingsMaxAttempts', '1');
         const propUrlFast = `/api/property?${qFast.toString()}`;
 
         const fastTimeoutMs = 25000;

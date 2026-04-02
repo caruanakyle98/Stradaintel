@@ -377,6 +377,7 @@ export async function GET(request) {
   const skipRental = reqUrl.searchParams.get('skipRental') === '1';
   const skipListings = reqUrl.searchParams.get('skipListings') === '1';
   const skipSalesListings = reqUrl.searchParams.get('skipSalesListings') === '1';
+  const skipHotListings = reqUrl.searchParams.get('skipHotListings') === '1';
   const listingsTimeoutMsParam = parseInt(reqUrl.searchParams.get('listingsTimeoutMs') || '', 10);
   const listingsMaxAttemptsParam = parseInt(reqUrl.searchParams.get('listingsMaxAttempts') || '', 10);
   const salesListingsTimeoutMsParam = parseInt(reqUrl.searchParams.get('salesListingsTimeoutMs') || '', 10);
@@ -396,6 +397,7 @@ export async function GET(request) {
       skipRental,
       skipListings,
       skipSalesListings,
+      skipHotListings,
       listingsTimeoutMs,
       listingsMaxAttempts,
       salesListingsTimeoutMs,
@@ -574,6 +576,7 @@ export async function GET(request) {
               rentalTxnByCommunityBed,
               dataType: 'rental',
               filterArea: areaFilterActive ? areaParam : '',
+              skipHotListings,
             });
             debugLogFile({
               hypothesisId: 'H2',
@@ -668,6 +671,7 @@ export async function GET(request) {
               salesTxnByCommunityBed,
               dataType: 'sales',
               filterArea: areaFilterActive ? areaParam : '',
+              skipHotListings,
             });
             debugLogFile({
               hypothesisId: 'H2',
@@ -725,6 +729,7 @@ export async function GET(request) {
       skipRental,
       skipListings,
       skipSalesListings,
+      skipHotListings,
       areaFilterActive,
     };
     // #endregion
