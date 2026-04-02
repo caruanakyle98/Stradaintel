@@ -1346,7 +1346,8 @@ export function DashboardView() {
           // #endregion
           // Deferred enrichment: same full /api/property work, but without blocking the
           // main spinner (loadProp clears in finally). Epoch guard drops stale runs.
-          const ENRICH_MS = 118000;
+          // Match route maxDuration (120s); 118s was cutting off slower sales-listings builds (see debug H15 timeouts).
+          const ENRICH_MS = 119000;
           const ingestEnrich = (message, data, hypothesisId = 'H13') => {
             fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
               method: 'POST',
@@ -1430,8 +1431,8 @@ export function DashboardView() {
 
             if (!sameEpoch()) return;
 
-            // Two parallel requests: each skips the other's listing CSV so work fits under maxDuration
-            // (logs showed one combined listings slice timing out at ~118s after sales+parse+both CSVs).
+            // Sequential requests (each skips the other's listing CSV). Parallel runs shared one wall‑clock
+            // window; logs showed rental-listings finishing ~118s while sales-listings timed out (H15).
             const qRentalListings = new URLSearchParams(q);
             qRentalListings.set('noSnapshot', '1');
             qRentalListings.set('skipAi', '1');
@@ -1448,7 +1449,7 @@ export function DashboardView() {
             qSalesListingsOnly.delete('skipSalesListings');
             qSalesListingsOnly.set('skipHotListings', '1');
 
-            ingestEnrich('deferred enrich listings parallel start', {}, 'H14');
+            ingestEnrich('deferred enrich listings sequential start', {}, 'H14');
 
             const pullRentalListings = async () => {
               try {
@@ -1481,7 +1482,7 @@ export function DashboardView() {
             };
 
             try {
-              const [outRL, outSL] = await Promise.all([pullRentalListings(), pullSalesListings()]);
+              const outRL = await pullRentalListings();
 
               if (!sameEpoch()) return;
 
@@ -1501,6 +1502,20 @@ export function DashboardView() {
                 ingestEnrich('deferred enrich rental-listings miss', { httpOk: outRL.r?.ok, bodyOk: outRL.d?.ok }, 'H14');
               }
 
+              if (!sameEpoch()) return;
+
+              let outSL = await pullSalesListings();
+              if (
+                sameEpoch() &&
+                outSL.err &&
+                String(outSL.err?.message || outSL.err).includes('sales-listings timeout')
+              ) {
+                ingestEnrich('deferred enrich sales-listings retry after timeout', {}, 'H15');
+                outSL = await pullSalesListings();
+              }
+
+              if (!sameEpoch()) return;
+
               if (outSL.err) {
                 ingestEnrich('deferred enrich sales-listings err', { err: String(outSL.err?.message || outSL.err).slice(0, 160) }, 'H15');
               } else if (outSL.r?.ok && outSL.d?.ok) {
@@ -1517,7 +1532,7 @@ export function DashboardView() {
                 ingestEnrich('deferred enrich sales-listings miss', { httpOk: outSL.r?.ok, bodyOk: outSL.d?.ok }, 'H15');
               }
             } catch (e3) {
-              ingestEnrich('deferred enrich listings parallel err', { err: String(e3?.message || e3).slice(0, 160) }, 'H14');
+              ingestEnrich('deferred enrich listings sequential err', { err: String(e3?.message || e3).slice(0, 160) }, 'H14');
             }
 
             if (sameEpoch()) {
@@ -1534,7 +1549,10 @@ export function DashboardView() {
                     : prevErr,
                 );
               } else {
-                const miss = !rentalOk ? 'rental' : 'listings';
+                let miss = 'listings';
+                if (!rentalOk) miss = 'rental';
+                else if (rentalListingsOk && !salesListingsOk && !salesListingsNA) miss = 'sales listings';
+                else if (salesListingsOk && !rentalListingsOk && !rentalListingsNA) miss = 'rental listings';
                 setPropError((prevErr) =>
                   prevErr &&
                   (String(prevErr).includes('background') || String(prevErr).includes('Sales loaded first'))
