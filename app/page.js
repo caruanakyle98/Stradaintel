@@ -1282,17 +1282,18 @@ export function DashboardView() {
         fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'timeout → retry fast skip options',data:{timeoutMs,area:a},timestamp:Date.now()})}).catch(()=>{});
         // #endregion
 
-        // Fast retry: keep rental + listings datasets, but skip Hot Listings + AI.
-        // This preserves the listing metrics (including listings_added_by_day), while avoiding the expensive hot-listing ranking.
+        // Fast retry: force the lightest server path so core sales metrics still load when
+        // full refresh stalls. This intentionally skips rental/listings.
         const qFast = new URLSearchParams(q);
+        qFast.set('noSnapshot', '1');
         qFast.set('skipAi', '1');
-        qFast.set('skipRental', '0');
-        qFast.set('skipListings', '0');
-        qFast.set('skipSalesListings', '0');
+        qFast.set('skipRental', '1');
+        qFast.set('skipListings', '1');
+        qFast.set('skipSalesListings', '1');
         qFast.set('skipHotListings', '1');
-        qFast.set('listingsTimeoutMs', '20000');
+        qFast.set('listingsTimeoutMs', '5000');
         qFast.set('listingsMaxAttempts', '1');
-        qFast.set('salesListingsTimeoutMs', '20000');
+        qFast.set('salesListingsTimeoutMs', '5000');
         qFast.set('salesListingsMaxAttempts', '1');
         const propUrlFast = `/api/property?${qFast.toString()}`;
 
@@ -1317,9 +1318,7 @@ export function DashboardView() {
           // #region agent log
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H11',location:'page.js:refreshProp',message:'fast retry payload shape',data:{dfOk:df?.ok,hasWeekly:!!df?.weekly,hasCharts30d:!!df?.charts_30d,hasSalesListings:!!df?.sales_listings,hasRentalListings:!!df?.listings,debugSkips:df?._debug_skips,tabs:propTab},timestamp:Date.now()})}).catch(()=>{});
           // #endregion
-          setPropError(
-            `Full refresh timed out after ${timeoutMs}ms; showing partial data (skipped AI + Hot Listings).`,
-          );
+          setPropError(`Full refresh timed out after ${timeoutMs}ms; showing partial data (skipped AI + rental/listings).`);
           // #region agent log
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'fast retry success',data:{ms:Date.now()-tFast0,hasDebugSkips:!!df?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
           // #endregion

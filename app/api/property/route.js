@@ -424,7 +424,7 @@ export async function GET(request) {
       const json = JSON.parse(text);
         if (json && typeof json === 'object' && json.ok !== false) {
         const body = json.ok === undefined ? { ok: true, ...json } : json;
-        if (rentalUrlEnv && body && typeof body === 'object') {
+        if (!skipRental && rentalUrlEnv && body && typeof body === 'object') {
           try {
             const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
             const windows = deriveAnalysisWindows([]);
