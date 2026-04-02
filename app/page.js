@@ -1346,8 +1346,9 @@ export function DashboardView() {
           // #endregion
           // Deferred enrichment: same full /api/property work, but without blocking the
           // main spinner (loadProp clears in finally). Epoch guard drops stale runs.
-          // Match route maxDuration (120s); 118s was cutting off slower sales-listings builds (see debug H15 timeouts).
+          // Route maxDuration 120s — sales-listings path is slowest; allow small network slack past CPU bound.
           const ENRICH_MS = 119000;
+          const ENRICH_MS_SALES_LISTINGS = 122000;
           const ingestEnrich = (message, data, hypothesisId = 'H13') => {
             fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
               method: 'POST',
@@ -1439,7 +1440,7 @@ export function DashboardView() {
             qRentalListings.set('skipRental', '1');
             qRentalListings.delete('skipListings');
             qRentalListings.set('skipSalesListings', '1');
-            qRentalListings.set('skipHotListings', '1');
+            // Hot listings need computeHotListings (skipHotListings=0); was forced on for speed but left tabs empty.
 
             const qSalesListingsOnly = new URLSearchParams(q);
             qSalesListingsOnly.set('noSnapshot', '1');
@@ -1447,7 +1448,6 @@ export function DashboardView() {
             qSalesListingsOnly.set('skipRental', '1');
             qSalesListingsOnly.set('skipListings', '1');
             qSalesListingsOnly.delete('skipSalesListings');
-            qSalesListingsOnly.set('skipHotListings', '1');
 
             ingestEnrich('deferred enrich listings sequential start', {}, 'H14');
 
@@ -1471,7 +1471,7 @@ export function DashboardView() {
                 const r = await Promise.race([
                   fetch(`/api/property?${qSalesListingsOnly.toString()}`),
                   new Promise((_, rej) => {
-                    setTimeout(() => rej(new Error('deferred sales-listings timeout')), ENRICH_MS);
+                    setTimeout(() => rej(new Error('deferred sales-listings timeout')), ENRICH_MS_SALES_LISTINGS);
                   }),
                 ]);
                 const d = await r.json().catch(() => ({}));

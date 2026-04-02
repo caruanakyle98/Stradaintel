@@ -477,6 +477,32 @@ export async function GET(request) {
 
   try {
     let result;
+    const listingsUrlEnv = process.env.PROPERTY_LISTINGS_CSV_URL?.trim();
+    const salesListingsUrlEnv = process.env.PROPERTY_SALES_LISTINGS_CSV_URL?.trim();
+
+    /** Start while sales CSV is in RAM and buildFromSalesText runs (CPU) — cuts wall time vs sequential fetch. */
+    let listingsTextPromise = null;
+    let salesListingsTextPromise = null;
+    const kickListingCsvPrefetches = () => {
+      if (!skipListings && listingsUrlEnv) {
+        listingsTextPromise = loadListingsCsvText({
+          timeoutMs: listingsTimeoutMs,
+          maxAttempts: listingsMaxAttempts,
+        }).then(
+          (v) => ({ ok: true, text: v.text, label: v.label }),
+          (error) => ({ ok: false, error }),
+        );
+      }
+      if (!skipSalesListings && salesListingsUrlEnv) {
+        salesListingsTextPromise = loadSalesListingsCsvText({
+          timeoutMs: salesListingsTimeoutMs,
+          maxAttempts: salesListingsMaxAttempts,
+        }).then(
+          (v) => ({ ok: true, text: v.text, label: v.label }),
+          (error) => ({ ok: false, error }),
+        );
+      }
+    };
 
     const buildOpts = {
       area: areaParam || undefined,
@@ -485,6 +511,7 @@ export async function GET(request) {
 
     if ((salesUrlEnv?.trim() || blobReadWriteToken()) && !csvPathFromQuery) {
       const { text: csvRaw, label: salesLabel } = await loadSalesCsvText();
+      kickListingCsvPrefetches();
       result = await buildFromSalesText(csvRaw, salesLabel, buildOpts);
     } else {
       const csvPath = csvPathFromQuery
@@ -492,15 +519,16 @@ export async function GET(request) {
         : process.env.PROPERTY_SALES_CSV_PATH
           ? process.env.PROPERTY_SALES_CSV_PATH
           : pathMod.resolve(process.cwd(), 'data/property/sales.csv');
-      result = await buildPayloadFromCsvPath(csvPath, buildOpts);
+      const { access, readFile } = await import('node:fs/promises');
+      await access(csvPath);
+      const csvRaw = await readFile(csvPath, 'utf8');
+      kickListingCsvPrefetches();
+      result = await buildFromSalesText(csvRaw, csvPath, buildOpts);
     }
 
     if (!result.ok) {
       return Response.json(result.body, { status: result.status });
     }
-
-    const listingsUrlEnv = process.env.PROPERTY_LISTINGS_CSV_URL?.trim();
-    const salesListingsUrlEnv = process.env.PROPERTY_SALES_LISTINGS_CSV_URL?.trim();
     const needRental = !skipRental && !!(rentalUrlEnv && result.windows);
     const needListings = !skipListings && !!listingsUrlEnv;
     const needSalesListings = !skipSalesListings && !!salesListingsUrlEnv;
@@ -528,10 +556,21 @@ export async function GET(request) {
               message: 'before',
               data: { listingsUrlEnv: !!listingsUrlEnv },
             });
-            const { text: listingsRaw, label: listingsLabel } = await loadListingsCsvText({
-              timeoutMs: listingsTimeoutMs,
-              maxAttempts: listingsMaxAttempts,
-            });
+            let listingsRaw;
+            let listingsLabel;
+            if (listingsTextPromise) {
+              const settled = await listingsTextPromise;
+              if (!settled.ok) throw settled.error;
+              listingsRaw = settled.text;
+              listingsLabel = settled.label;
+            } else {
+              const got = await loadListingsCsvText({
+                timeoutMs: listingsTimeoutMs,
+                maxAttempts: listingsMaxAttempts,
+              });
+              listingsRaw = got.text;
+              listingsLabel = got.label;
+            }
             debugLogFile({
               hypothesisId: 'H2',
               location: 'property/route.js:loadListingsCsvText',
@@ -628,10 +667,21 @@ export async function GET(request) {
               message: 'before',
               data: { salesListingsUrlEnv: !!salesListingsUrlEnv },
             });
-            const { text: salesListingsRaw, label: salesListingsLabel } = await loadSalesListingsCsvText({
-              timeoutMs: salesListingsTimeoutMs,
-              maxAttempts: salesListingsMaxAttempts,
-            });
+            let salesListingsRaw;
+            let salesListingsLabel;
+            if (salesListingsTextPromise) {
+              const settled = await salesListingsTextPromise;
+              if (!settled.ok) throw settled.error;
+              salesListingsRaw = settled.text;
+              salesListingsLabel = settled.label;
+            } else {
+              const got = await loadSalesListingsCsvText({
+                timeoutMs: salesListingsTimeoutMs,
+                maxAttempts: salesListingsMaxAttempts,
+              });
+              salesListingsRaw = got.text;
+              salesListingsLabel = got.label;
+            }
             debugLogFile({
               hypothesisId: 'H2',
               location: 'property/route.js:loadSalesListingsCsvText',
