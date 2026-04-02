@@ -130,6 +130,10 @@ const r = buildListingsPayload(csv, 't.csv', {
   },
 });
 assert.strictEqual(r.ok, true);
+assert.strictEqual(r.listings.listings_added_by_day.length, 7);
+assert.ok(String(r.listings.listings_added_period || '').includes('Dubai'));
+const sumAddedByDay = r.listings.listings_added_by_day.reduce((s, d) => s + d.count, 0);
+assert.strictEqual(sumAddedByDay, r.listings.new_this_week);
 assert.ok(Array.isArray(r.listings.hot_listings));
 assert.ok(r.listings.hot_listings_by_type && typeof r.listings.hot_listings_by_type === 'object');
 const hot = r.listings.hot_listings;
@@ -162,6 +166,9 @@ const rs = buildListingsPayload(csvSales, 'sales-listings.csv', {
   },
 });
 assert.strictEqual(rs.ok, true);
+assert.strictEqual(rs.listings.listings_added_by_day.length, 7);
+const sumSalesByDay = rs.listings.listings_added_by_day.reduce((s, d) => s + d.count, 0);
+assert.strictEqual(sumSalesByDay, rs.listings.new_this_week);
 assert.strictEqual(rs.listings.data_type, 'sales');
 assert.ok(Array.isArray(rs.listings.hot_listings));
 assert.ok(rs.listings.hot_listings_by_type && typeof rs.listings.hot_listings_by_type === 'object');

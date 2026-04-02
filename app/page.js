@@ -2226,6 +2226,55 @@ export function DashboardView() {
                 </div>
               </div>
 
+              {/* New listings per day — same Dubai 7-day window as “last 7 days” counts */}
+              {!listingsForTab?.error && (
+                loadProp ? (
+                  <div className="lp-card print-keep-together" style={{ padding: '14px 18px', marginBottom: 12 }}>
+                    <Skel h={12} w="55%" mb={10} />
+                    <Skel h={72} />
+                  </div>
+                ) : (listingsForTab?.listings_added_by_day?.length > 0) ? (
+                  (() => {
+                    const added = listingsForTab.listings_added_by_day;
+                    const maxC = Math.max(1, ...added.map((d) => d.count));
+                    return (
+                      <div className="reveal print-keep-together lp-card" style={{ padding: '14px 18px', marginBottom: 12 }}>
+                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 4 }}>
+                          {propTab === 'sales' ? 'Sales listings added per day' : 'Rental listings added per day'}
+                        </div>
+                        {listingsForTab.listings_added_period && (
+                          <div style={{ fontSize: 10, color: C.tm, marginBottom: 12 }}>{listingsForTab.listings_added_period}</div>
+                        )}
+                        <div
+                          role="img"
+                          aria-label={`Listings added per day in the Dubai week: ${added.map((d) => `${d.label} ${d.count}`).join(', ')}.`}
+                          style={{ display: 'flex', gap: 4, alignItems: 'flex-end', minHeight: 88 }}
+                        >
+                          {added.map((d) => (
+                            <div key={d.date} style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', height: 88, justifyContent: 'flex-end' }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: d.count > 0 ? C.amL : C.tm, marginBottom: 4, fontVariantNumeric: 'tabular-nums' }}>{d.count}</div>
+                              <div style={{ width: '100%', maxWidth: 40, height: 56, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', borderRadius: 4, background: `linear-gradient(to top, ${C.border} 0%, transparent 8%)` }}>
+                                <div
+                                  style={{
+                                    width: 'min(100%, 36px)',
+                                    height: `${(d.count / maxC) * 100}%`,
+                                    minHeight: d.count > 0 ? 3 : 0,
+                                    borderRadius: 4,
+                                    background: d.count > 0 ? `linear-gradient(180deg, ${C.amL}, rgba(201,168,76,0.45))` : 'transparent',
+                                    boxShadow: d.count > 0 ? C.glowMetric : 'none',
+                                  }}
+                                />
+                              </div>
+                              <div style={{ fontSize: 8, color: C.tm, marginTop: 6, textAlign: 'center', lineHeight: 1.2 }}>{d.label}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()
+                ) : null
+              )}
+
               {/* Hot Listings — vs transacted benchmark, ≤30d, area-filtered */}
               {!listingsForTab?.error && (
                 <div className="reveal print-keep-together lp-card" style={{ marginBottom: 12, padding: 0, overflow: 'hidden' }}>
