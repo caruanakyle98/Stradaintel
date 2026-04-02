@@ -174,6 +174,21 @@ async function loadRentalCsvText() {
     .split(/[,\n\r]+/)
     .map((s) => s.trim())
     .filter((u) => u.startsWith('http'));
+  // #region agent log
+  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
+    body: JSON.stringify({
+      sessionId: '69d0ba',
+      runId: 'debug',
+      hypothesisId: 'H2',
+      location: 'property/route.js:loadRentalCsvText',
+      message: 'start',
+      data: { rentalUrlsCount: rentalUrls.length, tokenPresent: !!token },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
   let urlErr = null;
 
   for (const rentalUrl of rentalUrls) {
@@ -206,6 +221,22 @@ async function loadListingsCsvText() {
     .map((s) => s.trim())
     .filter((u) => u.startsWith('http'));
 
+  // #region agent log
+  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
+    body: JSON.stringify({
+      sessionId: '69d0ba',
+      runId: 'debug',
+      hypothesisId: 'H2',
+      location: 'property/route.js:loadListingsCsvText',
+      message: 'start',
+      data: { listingsUrlsCount: listingsUrls.length },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
+
   let urlErr = null;
   for (const url of listingsUrls) {
     try {
@@ -224,6 +255,22 @@ async function loadSalesListingsCsvText() {
     .split(/[,\n\r]+/)
     .map((s) => s.trim())
     .filter((u) => u.startsWith('http'));
+
+  // #region agent log
+  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
+    body: JSON.stringify({
+      sessionId: '69d0ba',
+      runId: 'debug',
+      hypothesisId: 'H2',
+      location: 'property/route.js:loadSalesListingsCsvText',
+      message: 'start',
+      data: { salesListingsUrlsCount: urls.length },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
 
   let urlErr = null;
   for (const url of urls) {
@@ -245,11 +292,42 @@ async function buildFromSalesText(csvRaw, label, { area, skipAi } = {}) {
   const windows = result.windows;
   const aiEnabled = String(process.env.PROPERTY_ENABLE_AI || '').trim() === '1';
   if (!skipAi && aiEnabled) {
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
+      body: JSON.stringify({
+        sessionId: '69d0ba',
+        runId: 'debug',
+        hypothesisId: 'H2',
+        location: 'property/route.js:buildFromSalesText',
+        message: 'ai interpret start',
+        data: { AI_MS: 22000 },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
     const AI_MS = 22000;
+    const tAi0 = Date.now();
     const ai = await Promise.race([
       aiInterpretSales(payload._stats_for_ai, process.env.ANTHROPIC_API_KEY),
       new Promise((resolve) => setTimeout(() => resolve(null), AI_MS)),
     ]);
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
+      body: JSON.stringify({
+        sessionId: '69d0ba',
+        runId: 'debug',
+        hypothesisId: 'H2',
+        location: 'property/route.js:buildFromSalesText',
+        message: 'ai interpret race done',
+        data: { ms: Date.now() - tAi0, aiResolved: !!ai },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
     if (ai?.owner_briefing) payload.owner_briefing = ai.owner_briefing;
     if (ai?.market_note) payload.market_split.note = ai.market_note;
     if (ai?.demand_signal) payload.rental.landlord_vs_tenant = ai.demand_signal;
@@ -276,6 +354,10 @@ function localPathHint(path) {
 export async function GET(request) {
   const pathMod = await import('node:path');
   const reqUrl = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
+  const propT0 = Date.now();
+  // #region agent log
+  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'property/route.js:GET',message:'property GET enter',data:{hasMetrics:!!process.env.PROPERTY_METRICS_JSON_URL?.trim()},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 
   const areaParam = (reqUrl.searchParams.get('area') || '').trim();
   const areaFilterActive = !!(areaParam && areaParam !== '__all__');
@@ -289,7 +371,7 @@ export async function GET(request) {
     try {
       const text = await fetchText(metricsUrl);
       const json = JSON.parse(text);
-      if (json && typeof json === 'object' && json.ok !== false) {
+        if (json && typeof json === 'object' && json.ok !== false) {
         const body = json.ok === undefined ? { ok: true, ...json } : json;
         if (rentalUrlEnv && body && typeof body === 'object') {
           try {
@@ -301,6 +383,9 @@ export async function GET(request) {
             body.rental.note = `Rental URL failed: ${e?.message || e}.`;
           }
         }
+        // #region agent log
+        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H5',location:'property/route.js:GET',message:'return metrics_json path',data:{ms:Date.now()-propT0},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         return Response.json(body);
       }
     } catch {
@@ -397,6 +482,22 @@ export async function GET(request) {
             const rentalTxnByBuildingBed = result.body.rental?.txn_by_building_bed || {};
             const rentalTxnByCommunityBed = result.body.rental?.txn_by_community_bed || {};
 
+            // #region agent log
+            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
+              body: JSON.stringify({
+                sessionId: '69d0ba',
+                runId: 'debug',
+                hypothesisId: 'H2',
+                location: 'property/route.js:buildListingsPayload(rental)',
+                message: 'start',
+                data: {},
+                timestamp: Date.now(),
+              }),
+            }).catch(() => {});
+            // #endregion
+
             const listingsResult = buildListingsPayload(listingsRaw, listingsLabel, {
               rentalTxnAvgByBeds,
               rentalTxnByBuildingBed,
@@ -404,6 +505,21 @@ export async function GET(request) {
               dataType: 'rental',
               filterArea: areaFilterActive ? areaParam : '',
             });
+            // #region agent log
+            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
+              body: JSON.stringify({
+                sessionId: '69d0ba',
+                runId: 'debug',
+                hypothesisId: 'H2',
+                location: 'property/route.js:buildListingsPayload(rental)',
+                message: 'done',
+                data: { ok: !!listingsResult?.ok },
+                timestamp: Date.now(),
+              }),
+            }).catch(() => {});
+            // #endregion
 
             if (listingsResult.ok && listingsResult.listings) {
               const weeklyRentals = parseInt(result.body.weekly?.rent_volume?.value) || null;
@@ -433,6 +549,22 @@ export async function GET(request) {
             const salesTxnByBuildingBed = result.body.sale_txn_by_building_bed || {};
             const salesTxnByCommunityBed = result.body.sale_txn_by_community_bed || {};
 
+            // #region agent log
+            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
+              body: JSON.stringify({
+                sessionId: '69d0ba',
+                runId: 'debug',
+                hypothesisId: 'H2',
+                location: 'property/route.js:buildListingsPayload(sales)',
+                message: 'start',
+                data: {},
+                timestamp: Date.now(),
+              }),
+            }).catch(() => {});
+            // #endregion
+
             const salesListingsResult = buildListingsPayload(salesListingsRaw, salesListingsLabel, {
               salesTxnAvgByBeds,
               salesTxnByBuildingBed,
@@ -440,6 +572,21 @@ export async function GET(request) {
               dataType: 'sales',
               filterArea: areaFilterActive ? areaParam : '',
             });
+            // #region agent log
+            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '69d0ba' },
+              body: JSON.stringify({
+                sessionId: '69d0ba',
+                runId: 'debug',
+                hypothesisId: 'H2',
+                location: 'property/route.js:buildListingsPayload(sales)',
+                message: 'done',
+                data: { ok: !!salesListingsResult?.ok },
+                timestamp: Date.now(),
+              }),
+            }).catch(() => {});
+            // #endregion
 
             if (salesListingsResult.ok && salesListingsResult.listings) {
               const weeklySales = parseInt(result.body.weekly?.sale_volume?.value, 10) || null;
@@ -469,6 +616,9 @@ export async function GET(request) {
     }
 
     delete result.body._yield_sales_rows;
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'property/route.js:GET',message:'return csv build path',data:{ms:Date.now()-propT0,hasListings:!!result.body?.listings,hasSalesListings:!!result.body?.sales_listings},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     return Response.json(result.body, { status: 200 });
   } catch (e) {
     const detail = e?.message || String(e);
@@ -476,6 +626,9 @@ export async function GET(request) {
       detail.includes('503') || detail.includes('502') || detail.includes('504')
         ? 'Use GitHub raw for PROPERTY_SALES_CSV_URL if Blob 503. docs/GITHUB_CSV.md'
         : null;
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'property/route.js:GET',message:'property GET error',data:{ms:Date.now()-propT0,detail:String(detail).slice(0,200)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     return Response.json({
       ok: false,
       error: 'Failed to load property data',

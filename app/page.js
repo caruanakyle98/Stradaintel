@@ -1199,15 +1199,26 @@ export function DashboardView() {
 
   const refreshIntel = useCallback(async () => {
     setLoadIntel(true); setError(null);
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H3',location:'page.js:refreshIntel',message:'refreshIntel start',data:{isClientView},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     try {
       const intelUrl = isClientView ? '/api/intelligence-read' : '/api/intelligence';
       const r = await fetch(intelUrl, { cache: 'no-store' });
+      // #region agent log
+      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H4',location:'page.js:refreshIntel',message:'fetch intelligence response',data:{ok:r.ok,status:r.status,intelUrl},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const d = await r.json();
       if (!d.ok) throw new Error(d.error);
       setIntel(d); setTs(d.ts);
     } catch(e) { setError(e.message); }
-    finally { setLoadIntel(false); }
+    finally {
+      // #region agent log
+      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H4',location:'page.js:refreshIntel',message:'refreshIntel finally',data:{},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      setLoadIntel(false);
+    }
   }, [isClientView]);
 
   const refreshIntelSnapshot = useCallback(async () => {
@@ -1239,6 +1250,9 @@ export function DashboardView() {
 
   const refreshProp = useCallback(async (forcedPath, overrideArea) => {
     setLoadProp(true); setPropError(null);
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H3',location:'page.js:refreshProp',message:'refreshProp start',data:{},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     try {
       const customPath = (forcedPath || salesCsvPath).trim();
       const a = (overrideArea !== undefined ? overrideArea : area).trim();
@@ -1247,6 +1261,9 @@ export function DashboardView() {
       if (a) q.set('area', a);
       const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
       const r = await fetch(propUrl);
+      // #region agent log
+      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'page.js:refreshProp',message:'fetch property response',data:{ok:r.ok,status:r.status},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.ok) {
         const msg = d?.detail ? `${d.error || `HTTP ${r.status}`} (${d.detail})` : (d?.error || `HTTP ${r.status}`);
@@ -1254,7 +1271,12 @@ export function DashboardView() {
       }
       setProp(d);
     } catch(e) { setPropError(e.message); }
-    finally { setLoadProp(false); }
+    finally {
+      // #region agent log
+      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H3',location:'page.js:refreshProp',message:'refreshProp finally',data:{},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      setLoadProp(false);
+    }
   }, [salesCsvPath, area]);
 
   const applyAreaClient = useCallback((nextArea) => {
@@ -1320,7 +1342,14 @@ export function DashboardView() {
   }, []);
 
   const refreshAll = useCallback(async () => {
+    const t0 = Date.now();
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H3',location:'page.js:refreshAll',message:'refreshAll start',data:{},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     await Promise.all([refreshIntel(), refreshProp()]);
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H3',location:'page.js:refreshAll',message:'refreshAll done',data:{ms:Date.now()-t0},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
   }, [refreshIntel, refreshProp]);
 
   // Wire up scroll-reveal IntersectionObserver (re-runs when data changes so new elements are observed)

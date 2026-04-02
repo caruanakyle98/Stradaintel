@@ -907,6 +907,13 @@ export async function buildIntelligencePayload() {
 
 // ── Main handler ──────────────────────────────────────────
 export async function GET() {
+  const t0 = Date.now();
+  // #region agent log
+  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H1',location:'intelligence/route.js:GET',message:'buildIntelligencePayload start',data:{},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const payload = await buildIntelligencePayload();
+  // #region agent log
+  fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H1',location:'intelligence/route.js:GET',message:'buildIntelligencePayload done',data:{ms:Date.now()-t0,hasOk:payload?.ok!==false},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   return Response.json(payload);
 }
