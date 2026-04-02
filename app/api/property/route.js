@@ -5,11 +5,29 @@ export const maxDuration = 120;
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+import { appendFile } from 'node:fs/promises';
+
 import { buildPayloadFromCsvText, deriveAnalysisWindows } from '../../../lib/salesCsvPayload.js';
 import { mergeRentalIntoPayload } from '../../../lib/rentalCsvPayload.js';
 import { buildListingsPayload } from '../../../lib/listingsCsvPayload.js';
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
+
+const DEBUG_LOG_PATH = '/Users/kylecaruana/Documents/GitHub/Stradaintel/.cursor/debug-69d0ba.log';
+const debugLogFile = ({ runId = 'server', hypothesisId, location, message, data }) => {
+  appendFile(
+    DEBUG_LOG_PATH,
+    JSON.stringify({
+      sessionId: '69d0ba',
+      runId,
+      hypothesisId,
+      location,
+      message,
+      data,
+      timestamp: Date.now(),
+    }) + '\n',
+  ).catch(() => {});
+};
 
 function safeJsonFromText(text) {
   const candidates = [];
@@ -355,6 +373,17 @@ export async function GET(request) {
   const pathMod = await import('node:path');
   const reqUrl = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
   const propT0 = Date.now();
+  debugLogFile({
+    hypothesisId: 'H2',
+    location: 'property/route.js:GET',
+    message: 'enter',
+    data: {
+      areaParam: reqUrl.searchParams.get('area') || '',
+      mode: reqUrl.searchParams.get('mode') || '',
+      hasListingsEnv: !!process.env.PROPERTY_LISTINGS_CSV_URL?.trim(),
+      hasSalesListingsEnv: !!process.env.PROPERTY_SALES_LISTINGS_CSV_URL?.trim(),
+    },
+  });
   // #region agent log
   fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'property/route.js:GET',message:'property GET enter',data:{hasMetrics:!!process.env.PROPERTY_METRICS_JSON_URL?.trim()},timestamp:Date.now()})}).catch(()=>{});
   // #endregion
@@ -471,7 +500,19 @@ export async function GET(request) {
 
         if (needListings) {
           try {
+            debugLogFile({
+              hypothesisId: 'H2',
+              location: 'property/route.js:loadListingsCsvText',
+              message: 'before',
+              data: { listingsUrlEnv: !!listingsUrlEnv },
+            });
             const { text: listingsRaw, label: listingsLabel } = await loadListingsCsvText();
+            debugLogFile({
+              hypothesisId: 'H2',
+              location: 'property/route.js:loadListingsCsvText',
+              message: 'after',
+              data: { textLen: listingsRaw?.length || 0, labelLen: String(listingsLabel || '').length },
+            });
 
             const rentalTxnAvgByBeds = {
               studio: parseFloat(result.body.rental?.studio_avg_aed) || null,
@@ -498,12 +539,24 @@ export async function GET(request) {
             }).catch(() => {});
             // #endregion
 
+            debugLogFile({
+              hypothesisId: 'H2',
+              location: 'property/route.js:buildListingsPayload(rental)',
+              message: 'start',
+              data: { textRowsApprox: listingsRaw ? listingsRaw.split('\n').length : null },
+            });
             const listingsResult = buildListingsPayload(listingsRaw, listingsLabel, {
               rentalTxnAvgByBeds,
               rentalTxnByBuildingBed,
               rentalTxnByCommunityBed,
               dataType: 'rental',
               filterArea: areaFilterActive ? areaParam : '',
+            });
+            debugLogFile({
+              hypothesisId: 'H2',
+              location: 'property/route.js:buildListingsPayload(rental)',
+              message: 'done',
+              data: { ok: !!listingsResult?.ok, total: listingsResult?.listings?.total ?? null },
             });
             // #region agent log
             fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
@@ -543,7 +596,19 @@ export async function GET(request) {
 
         if (needSalesListings) {
           try {
+            debugLogFile({
+              hypothesisId: 'H2',
+              location: 'property/route.js:loadSalesListingsCsvText',
+              message: 'before',
+              data: { salesListingsUrlEnv: !!salesListingsUrlEnv },
+            });
             const { text: salesListingsRaw, label: salesListingsLabel } = await loadSalesListingsCsvText();
+            debugLogFile({
+              hypothesisId: 'H2',
+              location: 'property/route.js:loadSalesListingsCsvText',
+              message: 'after',
+              data: { textLen: salesListingsRaw?.length || 0, labelLen: String(salesListingsLabel || '').length },
+            });
 
             const salesTxnAvgByBeds = result.body.sale_txn_avg_by_beds || {};
             const salesTxnByBuildingBed = result.body.sale_txn_by_building_bed || {};
@@ -565,12 +630,24 @@ export async function GET(request) {
             }).catch(() => {});
             // #endregion
 
+            debugLogFile({
+              hypothesisId: 'H2',
+              location: 'property/route.js:buildListingsPayload(sales)',
+              message: 'start',
+              data: { textRowsApprox: salesListingsRaw ? salesListingsRaw.split('\n').length : null },
+            });
             const salesListingsResult = buildListingsPayload(salesListingsRaw, salesListingsLabel, {
               salesTxnAvgByBeds,
               salesTxnByBuildingBed,
               salesTxnByCommunityBed,
               dataType: 'sales',
               filterArea: areaFilterActive ? areaParam : '',
+            });
+            debugLogFile({
+              hypothesisId: 'H2',
+              location: 'property/route.js:buildListingsPayload(sales)',
+              message: 'done',
+              data: { ok: !!salesListingsResult?.ok, total: salesListingsResult?.listings?.total ?? null },
             });
             // #region agent log
             fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
