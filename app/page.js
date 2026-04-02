@@ -1260,7 +1260,22 @@ export function DashboardView() {
       if (customPath) q.set('salesCsv', customPath);
       if (a) q.set('area', a);
       const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
-      const r = await fetch(propUrl);
+      const tFetch0 = Date.now();
+      const timeoutMs = 60000;
+      let r;
+      try {
+        r = await Promise.race([
+          fetch(propUrl),
+          new Promise((_, reject) => {
+            setTimeout(() => reject(new Error(`prop fetch timeout after ${timeoutMs}ms`)), timeoutMs);
+          }),
+        ]);
+      } catch (e) {
+        // #region agent log
+        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'page.js:refreshProp',message:'prop fetch timed out / stalled',data:{ms:Date.now()-tFetch0,timeoutMs},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        throw e;
+      }
       // #region agent log
       fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'page.js:refreshProp',message:'fetch property response',data:{ok:r.ok,status:r.status},timestamp:Date.now()})}).catch(()=>{});
       // #endregion
