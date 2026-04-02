@@ -1340,15 +1340,16 @@ export function DashboardView() {
           // #region agent log
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H11',location:'page.js:refreshProp',message:'fast retry payload shape',data:{dfOk:df?.ok,hasWeekly:!!df?.weekly,hasCharts30d:!!df?.charts_30d,hasSalesListings:!!df?.sales_listings,hasRentalListings:!!df?.listings,debugSkips:df?._debug_skips,tabs:propTab},timestamp:Date.now()})}).catch(()=>{});
           // #endregion
-          setPropError(`Full refresh timed out after ${timeoutMs}ms; loading rental & listings in the background…`);
+          setPropError(
+            `Full refresh timed out after ${timeoutMs}ms; loading rental & listings in the background (large CSVs can take several minutes on first load).`,
+          );
           // #region agent log
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'fast retry success',data:{ms:Date.now()-tFast0,hasDebugSkips:!!df?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
           // #endregion
           // Deferred enrichment: same full /api/property work, but without blocking the
           // main spinner (loadProp clears in finally). Epoch guard drops stale runs.
-          // Route maxDuration 120s — sales-listings path is slowest; allow small network slack past CPU bound.
-          const ENRICH_MS = 119000;
-          const ENRICH_MS_SALES_LISTINGS = 122000;
+          // Property route maxDuration 300s on Vercel (vercel.json); client must wait long enough for sales+listings CSV.
+          const ENRICH_MS_DEFERRED = 285000;
           const ingestEnrich = (message, data, hypothesisId = 'H13') => {
             fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
               method: 'POST',
@@ -1372,35 +1373,7 @@ export function DashboardView() {
             let rentalListingsOk = false;
             let salesListingsNA = false;
             let salesListingsOk = false;
-            const qFull = new URLSearchParams(q);
-            qFull.set('noSnapshot', '1');
-            qFull.set('skipAi', '1');
-            qFull.delete('skipRental');
-            qFull.delete('skipListings');
-            qFull.delete('skipSalesListings');
-            qFull.set('skipHotListings', '1');
-
-            try {
-              ingestEnrich('deferred enrich full start', {});
-              const r1 = await Promise.race([
-                fetch(`/api/property?${qFull.toString()}`),
-                new Promise((_, rej) => {
-                  setTimeout(() => rej(new Error('deferred full timeout')), ENRICH_MS);
-                }),
-              ]);
-              const d1 = await r1.json().catch(() => ({}));
-              if (sameEpoch() && r1.ok && d1?.ok) {
-                setProp(d1);
-                setPropError(null);
-                ingestEnrich('deferred enrich full ok', { hasListings: !!d1.listings, hasRentalCharts: !!d1.rental_charts_30d });
-                return;
-              }
-              ingestEnrich('deferred enrich full miss', { httpOk: r1?.ok, bodyOk: d1?.ok });
-            } catch (e1) {
-              ingestEnrich('deferred enrich full err', { err: String(e1?.message || e1).slice(0, 160) });
-            }
-
-            if (!sameEpoch()) return;
+            // Skip "full" deferred attempt: logs show it always hit ~119s timeout (noSnapshot CSV path) before rental-only.
 
             try {
               const qRent = new URLSearchParams(q);
@@ -1413,7 +1386,7 @@ export function DashboardView() {
               const r2 = await Promise.race([
                 fetch(`/api/property?${qRent.toString()}`),
                 new Promise((_, rej) => {
-                  setTimeout(() => rej(new Error('deferred rental timeout')), ENRICH_MS);
+                  setTimeout(() => rej(new Error('deferred rental timeout')), ENRICH_MS_DEFERRED);
                 }),
               ]);
               const d2 = await r2.json().catch(() => ({}));
@@ -1432,8 +1405,7 @@ export function DashboardView() {
 
             if (!sameEpoch()) return;
 
-            // Sequential requests (each skips the other's listing CSV). Parallel runs shared one wall‑clock
-            // window; logs showed rental-listings finishing ~118s while sales-listings timed out (H15).
+            // Parallel listing fetches; server maxDuration 300s + overlapping CSV downloads.
             const qRentalListings = new URLSearchParams(q);
             qRentalListings.set('noSnapshot', '1');
             qRentalListings.set('skipAi', '1');
@@ -1449,14 +1421,14 @@ export function DashboardView() {
             qSalesListingsOnly.set('skipListings', '1');
             qSalesListingsOnly.delete('skipSalesListings');
 
-            ingestEnrich('deferred enrich listings sequential start', {}, 'H14');
+            ingestEnrich('deferred enrich listings parallel start', {}, 'H14');
 
             const pullRentalListings = async () => {
               try {
                 const r = await Promise.race([
                   fetch(`/api/property?${qRentalListings.toString()}`),
                   new Promise((_, rej) => {
-                    setTimeout(() => rej(new Error('deferred rental-listings timeout')), ENRICH_MS);
+                    setTimeout(() => rej(new Error('deferred rental-listings timeout')), ENRICH_MS_DEFERRED);
                   }),
                 ]);
                 const d = await r.json().catch(() => ({}));
@@ -1471,7 +1443,7 @@ export function DashboardView() {
                 const r = await Promise.race([
                   fetch(`/api/property?${qSalesListingsOnly.toString()}`),
                   new Promise((_, rej) => {
-                    setTimeout(() => rej(new Error('deferred sales-listings timeout')), ENRICH_MS_SALES_LISTINGS);
+                    setTimeout(() => rej(new Error('deferred sales-listings timeout')), ENRICH_MS_DEFERRED);
                   }),
                 ]);
                 const d = await r.json().catch(() => ({}));
@@ -1482,7 +1454,7 @@ export function DashboardView() {
             };
 
             try {
-              const outRL = await pullRentalListings();
+              let [outRL, outSL] = await Promise.all([pullRentalListings(), pullSalesListings()]);
 
               if (!sameEpoch()) return;
 
@@ -1502,9 +1474,6 @@ export function DashboardView() {
                 ingestEnrich('deferred enrich rental-listings miss', { httpOk: outRL.r?.ok, bodyOk: outRL.d?.ok }, 'H14');
               }
 
-              if (!sameEpoch()) return;
-
-              let outSL = await pullSalesListings();
               if (
                 sameEpoch() &&
                 outSL.err &&
@@ -1532,7 +1501,7 @@ export function DashboardView() {
                 ingestEnrich('deferred enrich sales-listings miss', { httpOk: outSL.r?.ok, bodyOk: outSL.d?.ok }, 'H15');
               }
             } catch (e3) {
-              ingestEnrich('deferred enrich listings sequential err', { err: String(e3?.message || e3).slice(0, 160) }, 'H14');
+              ingestEnrich('deferred enrich listings parallel err', { err: String(e3?.message || e3).slice(0, 160) }, 'H14');
             }
 
             if (sameEpoch()) {

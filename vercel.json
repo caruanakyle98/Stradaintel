@@ -3,6 +3,9 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "functions": {
+    "app/api/property/route.js": {
+      "maxDuration": 300
+    },
     "app/api/**": {
       "maxDuration": 120
     }

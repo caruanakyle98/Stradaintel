@@ -1,7 +1,7 @@
 // Property data: optional metrics JSON URL, sales/rental CSV URLs (HTTPS), or local path.
 
-/** Pro/Enterprise: raise if CSV + AI still exceed default (see Vercel → Functions max duration). */
-export const maxDuration = 120;
+/** Match vercel.json `app/api/property/route.js` — sales + large listing CSVs can exceed 120s. */
+export const maxDuration = 300;
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
@@ -480,10 +480,10 @@ export async function GET(request) {
     const listingsUrlEnv = process.env.PROPERTY_LISTINGS_CSV_URL?.trim();
     const salesListingsUrlEnv = process.env.PROPERTY_SALES_LISTINGS_CSV_URL?.trim();
 
-    /** Start while sales CSV is in RAM and buildFromSalesText runs (CPU) — cuts wall time vs sequential fetch. */
+    /** Overlap listing CSV downloads with sales CSV download + parse (not only with parse). */
     let listingsTextPromise = null;
     let salesListingsTextPromise = null;
-    const kickListingCsvPrefetches = () => {
+    const startListingCsvPrefetches = () => {
       if (!skipListings && listingsUrlEnv) {
         listingsTextPromise = loadListingsCsvText({
           timeoutMs: listingsTimeoutMs,
@@ -510,8 +510,8 @@ export async function GET(request) {
     };
 
     if ((salesUrlEnv?.trim() || blobReadWriteToken()) && !csvPathFromQuery) {
+      startListingCsvPrefetches();
       const { text: csvRaw, label: salesLabel } = await loadSalesCsvText();
-      kickListingCsvPrefetches();
       result = await buildFromSalesText(csvRaw, salesLabel, buildOpts);
     } else {
       const csvPath = csvPathFromQuery
@@ -519,10 +519,10 @@ export async function GET(request) {
         : process.env.PROPERTY_SALES_CSV_PATH
           ? process.env.PROPERTY_SALES_CSV_PATH
           : pathMod.resolve(process.cwd(), 'data/property/sales.csv');
+      startListingCsvPrefetches();
       const { access, readFile } = await import('node:fs/promises');
       await access(csvPath);
       const csvRaw = await readFile(csvPath, 'utf8');
-      kickListingCsvPrefetches();
       result = await buildFromSalesText(csvRaw, csvPath, buildOpts);
     }
 
