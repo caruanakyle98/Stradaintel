@@ -1350,8 +1350,11 @@ export function DashboardView() {
           // #endregion
           // Deferred enrichment: same full /api/property work, but without blocking the
           // main spinner (loadProp clears in finally). Epoch guard drops stale runs.
-          // Property route maxDuration 300s on Vercel (vercel.json); client must wait long enough for sales+listings CSV.
-          const ENRICH_MS_DEFERRED = 285000;
+          // Property route maxDuration 300s (vercel.json). Logs: parallel rental+sales both at 285s — rental barely won,
+          // sales-listings timed twice; also "Failed to fetch" when both hit the origin at once. Sequential sales pull
+          // + longer client race + skipHot on sales-only reduces CPU so the handler can finish.
+          const ENRICH_MS_DEFERRED = 310000;
+          const ENRICH_MS_SALES_LISTINGS = 330000;
           const ingestEnrich = (message, data, hypothesisId = 'H13') => {
             fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
               method: 'POST',
@@ -1407,7 +1410,7 @@ export function DashboardView() {
 
             if (!sameEpoch()) return;
 
-            // Parallel listing fetches; server maxDuration 300s + overlapping CSV downloads.
+            // Sequential: sales-listings alone gets a full client window after rental-listings (avoids parallel overload).
             const qRentalListings = new URLSearchParams(q);
             qRentalListings.set('noSnapshot', '1');
             qRentalListings.set('skipAi', '1');
@@ -1422,8 +1425,9 @@ export function DashboardView() {
             qSalesListingsOnly.set('skipRental', '1');
             qSalesListingsOnly.set('skipListings', '1');
             qSalesListingsOnly.delete('skipSalesListings');
+            qSalesListingsOnly.set('skipHotListings', '1');
 
-            ingestEnrich('deferred enrich listings parallel start', {}, 'H14');
+            ingestEnrich('deferred enrich listings sequential start', {}, 'H14');
 
             const pullRentalListings = async () => {
               try {
@@ -1445,7 +1449,7 @@ export function DashboardView() {
                 const r = await Promise.race([
                   fetch(`/api/property?${qSalesListingsOnly.toString()}`),
                   new Promise((_, rej) => {
-                    setTimeout(() => rej(new Error('deferred sales-listings timeout')), ENRICH_MS_DEFERRED);
+                    setTimeout(() => rej(new Error('deferred sales-listings timeout')), ENRICH_MS_SALES_LISTINGS);
                   }),
                 ]);
                 const d = await r.json().catch(() => ({}));
@@ -1456,7 +1460,7 @@ export function DashboardView() {
             };
 
             try {
-              let [outRL, outSL] = await Promise.all([pullRentalListings(), pullSalesListings()]);
+              const outRL = await pullRentalListings();
 
               if (!sameEpoch()) return;
 
@@ -1476,13 +1480,20 @@ export function DashboardView() {
                 ingestEnrich('deferred enrich rental-listings miss', { httpOk: outRL.r?.ok, bodyOk: outRL.d?.ok }, 'H14');
               }
 
-              if (
-                sameEpoch() &&
-                outSL.err &&
-                String(outSL.err?.message || outSL.err).includes('sales-listings timeout')
-              ) {
-                ingestEnrich('deferred enrich sales-listings retry after timeout', {}, 'H15');
+              if (!sameEpoch()) return;
+
+              let outSL = { r: null, d: null, err: null };
+              for (let attempt = 0; attempt < 3 && sameEpoch(); attempt++) {
+                if (attempt > 0) {
+                  ingestEnrich('deferred enrich sales-listings retry loop', { attempt }, 'H15');
+                  await new Promise((res) => {
+                    setTimeout(res, 2000 * attempt);
+                  });
+                }
                 outSL = await pullSalesListings();
+                if (!outSL.err && outSL.r?.ok && outSL.d?.ok) break;
+                const emsg = String(outSL.err?.message || '');
+                if (!emsg.includes('timeout') && !emsg.includes('Failed to fetch')) break;
               }
 
               if (!sameEpoch()) return;
@@ -1503,7 +1514,7 @@ export function DashboardView() {
                 ingestEnrich('deferred enrich sales-listings miss', { httpOk: outSL.r?.ok, bodyOk: outSL.d?.ok }, 'H15');
               }
             } catch (e3) {
-              ingestEnrich('deferred enrich listings parallel err', { err: String(e3?.message || e3).slice(0, 160) }, 'H14');
+              ingestEnrich('deferred enrich listings sequential err', { err: String(e3?.message || e3).slice(0, 160) }, 'H14');
             }
 
             if (sameEpoch()) {
@@ -1515,7 +1526,9 @@ export function DashboardView() {
               } else if (!rentalOk && !listingsOk) {
                 setPropError((prevErr) =>
                   prevErr &&
-                  (String(prevErr).includes('background') || String(prevErr).includes('Sales loaded first'))
+                  (String(prevErr).includes('background') ||
+                    String(prevErr).includes('Sales loaded first') ||
+                    String(prevErr).includes('Showing core sales'))
                     ? 'Sales loaded first; rental and listings could not be loaded in time — try refresh.'
                     : prevErr,
                 );
@@ -1526,7 +1539,9 @@ export function DashboardView() {
                 else if (salesListingsOk && !rentalListingsOk && !rentalListingsNA) miss = 'rental listings';
                 setPropError((prevErr) =>
                   prevErr &&
-                  (String(prevErr).includes('background') || String(prevErr).includes('Sales loaded first'))
+                  (String(prevErr).includes('background') ||
+                    String(prevErr).includes('Sales loaded first') ||
+                    String(prevErr).includes('Showing core sales'))
                     ? `Sales loaded first; ${miss} still missing or failed — try refresh.`
                     : prevErr,
                 );
