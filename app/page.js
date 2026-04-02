@@ -1464,11 +1464,19 @@ export function DashboardView() {
       // #endregion
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.ok) {
+        // #region agent log
+        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H12',location:'page.js:refreshProp',message:'property non-ok payload',data:{status:r.status,error:d?.error,detail:String(d?.detail||'').slice(0,180)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         const msg = d?.detail ? `${d.error || `HTTP ${r.status}`} (${d.detail})` : (d?.error || `HTTP ${r.status}`);
         throw new Error(msg);
       }
       setProp(d);
-    } catch(e) { setPropError(e.message); }
+    } catch(e) {
+      // #region agent log
+      fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H12',location:'page.js:refreshProp',message:'refreshProp catch',data:{error:String(e?.message||e).slice(0,180)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      setPropError(e.message);
+    }
     finally {
       // #region agent log
       fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H3',location:'page.js:refreshProp',message:'refreshProp finally',data:{},timestamp:Date.now()})}).catch(()=>{});
