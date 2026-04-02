@@ -1282,10 +1282,11 @@ export function DashboardView() {
         fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'timeout → retry fast skip options',data:{timeoutMs,area:a},timestamp:Date.now()})}).catch(()=>{});
         // #endregion
 
-        // Fast retry: skip rental/listings + AI to isolate the slow stage server-side.
+        // Fast retry: skip listings + AI to isolate the slow stage server-side.
+        // If the user is on the rental tab, keep rental base metrics so the page still has content.
         const qFast = new URLSearchParams(q);
         qFast.set('skipAi', '1');
-        qFast.set('skipRental', '1');
+        qFast.set('skipRental', propTab === 'sales' ? '1' : '0');
         qFast.set('skipListings', '1');
         qFast.set('skipSalesListings', '1');
         const propUrlFast = `/api/property?${qFast.toString()}`;
@@ -1467,7 +1468,7 @@ export function DashboardView() {
       // #endregion
       setLoadProp(false);
     }
-  }, [salesCsvPath, area]);
+  }, [salesCsvPath, area, propTab]);
 
   const applyAreaClient = useCallback((nextArea) => {
     const text = uploadedCsvTextRef.current;
@@ -2392,7 +2393,7 @@ export function DashboardView() {
           )}
 
           {/* ── Listings pipeline — rental tab: rental listings CSV / sales tab: sales listings CSV ── */}
-          {(listingsForTab || loadProp) && (
+          {(listingsForTab || loadProp || prop?._debug_skips) && (
             <div className="reveal" style={{ marginBottom:12 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>
                 {propTab === 'sales' ? 'Sales Listings — Active Supply Pipeline' : 'Rental Listings — Active Supply Pipeline'}
@@ -2403,6 +2404,12 @@ export function DashboardView() {
 
               {!loadProp && listingsForTab?.error && (
                 <div className="lp-card" style={{ padding:'12px 16px', marginBottom:12, fontSize:12, color:C.am, lineHeight:1.5 }}>{listingsForTab.error}</div>
+              )}
+
+              {!loadProp && !listingsForTab && prop?._debug_skips && (
+                <div className="lp-card" style={{ padding:'12px 16px', marginBottom:12, fontSize:12, color:C.amL, lineHeight:1.5, background:'rgba(201,168,76,0.08)', border:`1px solid ${C.border}` }}>
+                  Listings were skipped due to a refresh timeout. Transaction metrics are shown; retry “Get Latest Intelligence” when you want the full supply pipeline.
+                </div>
               )}
 
               {/* Summary stat row */}
