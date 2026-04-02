@@ -1274,7 +1274,51 @@ export function DashboardView() {
         // #region agent log
         fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'page.js:refreshProp',message:'prop fetch timed out / stalled',data:{ms:Date.now()-tFetch0,timeoutMs},timestamp:Date.now()})}).catch(()=>{});
         // #endregion
-        throw e;
+        const msg = String(e?.message || '');
+        const isTimeout = msg.includes(`timeout after ${timeoutMs}ms`);
+        if (!isTimeout) throw e;
+
+        // #region agent log
+        fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'timeout → retry fast skip options',data:{timeoutMs,area:a},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+
+        // Fast retry: skip rental/listings + AI to isolate the slow stage server-side.
+        const qFast = new URLSearchParams(q);
+        qFast.set('skipAi', '1');
+        qFast.set('skipRental', '1');
+        qFast.set('skipListings', '1');
+        qFast.set('skipSalesListings', '1');
+        const propUrlFast = `/api/property?${qFast.toString()}`;
+
+        const fastTimeoutMs = 25000;
+        let rf;
+        try {
+          const tFast0 = Date.now();
+          rf = await Promise.race([
+            fetch(propUrlFast),
+            new Promise((_, reject) => {
+              setTimeout(() => reject(new Error(`prop fast retry timeout after ${fastTimeoutMs}ms`)), fastTimeoutMs);
+            }),
+          ]);
+
+          const df = await rf.json().catch(() => ({}));
+          if (!rf.ok || !df.ok) {
+            const msg2 = df?.detail ? `${df.error || `HTTP ${rf.status}`} (${df.detail})` : (df?.error || `HTTP ${rf.status}`);
+            throw new Error(msg2);
+          }
+
+          setProp(df);
+          setPropError(`Full refresh timed out after ${timeoutMs}ms; showing partial data (skipped AI + rental/listings).`);
+          // #region agent log
+          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'fast retry success',data:{ms:Date.now()-tFast0,hasDebugSkips:!!df?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          return;
+        } catch (fastErr) {
+          // #region agent log
+          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'fast retry failed',data:{error:String(fastErr?.message||fastErr).slice(0,160)},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          throw e;
+        }
       }
       // #region agent log
       fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'page.js:refreshProp',message:'fetch property response',data:{ok:r.ok,status:r.status},timestamp:Date.now()})}).catch(()=>{});

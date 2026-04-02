@@ -373,6 +373,10 @@ export async function GET(request) {
   const pathMod = await import('node:path');
   const reqUrl = new URL(typeof request?.url === 'string' ? request.url : 'http://localhost');
   const propT0 = Date.now();
+  const skipAi = reqUrl.searchParams.get('skipAi') === '1';
+  const skipRental = reqUrl.searchParams.get('skipRental') === '1';
+  const skipListings = reqUrl.searchParams.get('skipListings') === '1';
+  const skipSalesListings = reqUrl.searchParams.get('skipSalesListings') === '1';
   debugLogFile({
     hypothesisId: 'H2',
     location: 'property/route.js:GET',
@@ -380,6 +384,10 @@ export async function GET(request) {
     data: {
       areaParam: reqUrl.searchParams.get('area') || '',
       mode: reqUrl.searchParams.get('mode') || '',
+      skipAi,
+      skipRental,
+      skipListings,
+      skipSalesListings,
       hasListingsEnv: !!process.env.PROPERTY_LISTINGS_CSV_URL?.trim(),
       hasSalesListingsEnv: !!process.env.PROPERTY_SALES_LISTINGS_CSV_URL?.trim(),
     },
@@ -458,7 +466,7 @@ export async function GET(request) {
 
     const buildOpts = {
       area: areaParam || undefined,
-      skipAi: areaFilterActive,
+      skipAi: areaFilterActive || skipAi,
     };
 
     if ((salesUrlEnv?.trim() || blobReadWriteToken()) && !csvPathFromQuery) {
@@ -479,9 +487,9 @@ export async function GET(request) {
 
     const listingsUrlEnv = process.env.PROPERTY_LISTINGS_CSV_URL?.trim();
     const salesListingsUrlEnv = process.env.PROPERTY_SALES_LISTINGS_CSV_URL?.trim();
-    const needRental = !!(rentalUrlEnv && result.windows);
-    const needListings = !!listingsUrlEnv;
-    const needSalesListings = !!salesListingsUrlEnv;
+    const needRental = !skipRental && !!(rentalUrlEnv && result.windows);
+    const needListings = !skipListings && !!listingsUrlEnv;
+    const needSalesListings = !skipSalesListings && !!salesListingsUrlEnv;
 
     /* Sequential rental → rental listings → sales listings (not parallel) to cap peak RAM */
     if (needRental || needListings || needSalesListings) {
@@ -693,6 +701,15 @@ export async function GET(request) {
     }
 
     delete result.body._yield_sales_rows;
+    // #region debug skips
+    result.body._debug_skips = {
+      skipAi,
+      skipRental,
+      skipListings,
+      skipSalesListings,
+      areaFilterActive,
+    };
+    // #endregion
     // #region agent log
     fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H2',location:'property/route.js:GET',message:'return csv build path',data:{ms:Date.now()-propT0,hasListings:!!result.body?.listings,hasSalesListings:!!result.body?.sales_listings},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
