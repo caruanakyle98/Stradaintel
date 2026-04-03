@@ -1272,15 +1272,19 @@ export function DashboardView() {
     setRefreshingPropSnapshot(true);
     setPropError(null);
     try {
-      const headers = { 'Content-Type': 'application/json' };
+      const headers = {};
       if (adminToken) headers['x-intel-admin-token'] = adminToken;
-      const r = await fetch('/api/property-refresh', { method: 'POST', headers });
+      const r = await Promise.race([
+        fetch('/api/property-refresh', { method: 'POST', headers }),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('Property snapshot build timed out after 5 minutes')), 300000)),
+      ]);
       const d = await r.json().catch(() => ({}));
-      if (!r.ok || !d.ok) throw new Error(d?.error || `HTTP ${r.status}`);
+      if (!r.ok || !d.ok) throw new Error(d?.error || d?.detail || `HTTP ${r.status}`);
       const rr = await fetch('/api/property-read', { cache: 'no-store' });
       const dd = await rr.json().catch(() => ({}));
       if (rr.ok && dd?.ok) {
         setProp(dd);
+        setPropError(null);
       }
     } catch (e) {
       setPropError(e.message || 'Property snapshot refresh failed');
