@@ -1269,29 +1269,29 @@ export function DashboardView() {
 
   const refreshPropSnapshot = useCallback(async () => {
     if (isClientView) return;
+    if (!prop || !prop.ok) {
+      setPropError('Load property data first before saving a snapshot.');
+      return;
+    }
     setRefreshingPropSnapshot(true);
     setPropError(null);
     try {
-      const headers = {};
+      const headers = { 'Content-Type': 'application/json' };
       if (adminToken) headers['x-intel-admin-token'] = adminToken;
-      const r = await Promise.race([
-        fetch('/api/property-refresh', { method: 'POST', headers }),
-        new Promise((_, rej) => setTimeout(() => rej(new Error('Property snapshot build timed out after 5 minutes')), 300000)),
-      ]);
+      const r = await fetch('/api/property-refresh', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(prop),
+      });
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.ok) throw new Error(d?.error || d?.detail || `HTTP ${r.status}`);
-      const rr = await fetch('/api/property-read', { cache: 'no-store' });
-      const dd = await rr.json().catch(() => ({}));
-      if (rr.ok && dd?.ok) {
-        setProp(dd);
-        setPropError(null);
-      }
+      setPropError(null);
     } catch (e) {
-      setPropError(e.message || 'Property snapshot refresh failed');
+      setPropError(e.message || 'Property snapshot save failed');
     } finally {
       setRefreshingPropSnapshot(false);
     }
-  }, [adminToken, isClientView]);
+  }, [adminToken, isClientView, prop]);
 
   const refreshProp = useCallback(async (forcedPath, overrideArea) => {
     setLoadProp(true); setPropError(null);

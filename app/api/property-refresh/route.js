@@ -1,12 +1,8 @@
 import { put } from '@vercel/blob';
 
-import { buildPayloadFromCsvText, deriveAnalysisWindows } from '../../../lib/salesCsvPayload.js';
-import { mergeRentalIntoPayload } from '../../../lib/rentalCsvPayload.js';
-import { buildListingsPayload } from '../../../lib/listingsCsvPayload.js';
-
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const maxDuration = 300;
+export const maxDuration = 30;
 
 function blobToken() {
   return (
@@ -37,72 +33,10 @@ function tokenFromRequest(request) {
   }
 }
 
-/** Fetch URL as text; retry 502/503/504 a few times. */
-async function fetchText(url, { timeoutMs = 50000, maxAttempts = 4 } = {}) {
-  let lastStatus = 0;
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-      const r = await fetch(url, {
-        headers: { 'User-Agent': 'Stradaintel/1' },
-        cache: 'no-store',
-        signal: controller.signal,
-      });
-      clearTimeout(timer);
-      lastStatus = r.status;
-      if (r.ok) return r.text();
-      if (![502, 503, 504].includes(r.status) || attempt === maxAttempts) {
-        throw new Error(`GET ${url} → HTTP ${r.status}`);
-      }
-    } catch (e) {
-      clearTimeout(timer);
-      if (e?.name === 'AbortError') {
-        if (attempt === maxAttempts) {
-          throw new Error(`GET ${url} → timed out after ${timeoutMs}ms`);
-        }
-        continue;
-      }
-      throw e;
-    }
-  }
-  throw new Error(`GET ${url} → HTTP ${lastStatus}`);
-}
-
-async function loadCsvFromUrls(envVar, blobPathname) {
-  const token = blobToken();
-  const rawUrls = (envVar || '').split(/[,\n\r]+/).map(s => s.trim()).filter(u => u.startsWith('http'));
-  const errs = [];
-
-  for (const u of rawUrls) {
-    try {
-      return { text: await fetchText(u), label: u };
-    } catch (e) {
-      errs.push(`${u.slice(0, 48)}… → ${e?.message || e}`);
-    }
-  }
-
-  if (token && blobPathname) {
-    const { get } = await import('@vercel/blob');
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        const out = await get(blobPathname, { access: 'public', token });
-        if (out?.stream) {
-          const text = await new Response(out.stream).text();
-          if (text.length > 100) return { text, label: `blob:${blobPathname}` };
-        }
-        break;
-      } catch (e) {
-        if (attempt === 3) errs.push(`blob: ${e?.message || e}`);
-        if (!(e?.message || '').includes('503') || attempt === 3) break;
-        await new Promise(r => setTimeout(r, 400 * attempt));
-      }
-    }
-  }
-
-  throw new Error(`CSV load failed: ${errs.join(' | ') || 'no source configured'}`);
-}
-
+/**
+ * Receives the already-built property payload from the admin frontend
+ * and saves it to Blob. No CSV processing — avoids Vercel OOM.
+ */
 export async function POST(request) {
   const expected = adminToken();
   if (!expected) {
@@ -117,124 +51,14 @@ export async function POST(request) {
     return Response.json({ ok: false, error: 'Blob token missing. Set BLOB_READ_WRITE_TOKEN.' }, { status: 500 });
   }
 
-  const t0 = Date.now();
-
   try {
-    // Sequential CSV processing to cap peak RAM (Vercel OOM at ~1GB).
-    // Each CSV is fetched, parsed, and released before the next one starts.
-
-    const rentalUrlEnv = process.env.PROPERTY_RENTAL_CSV_URL || '';
-    const listingsUrlEnv = (process.env.PROPERTY_LISTINGS_CSV_URL || '').trim();
-    const salesListingsUrlEnv = (process.env.PROPERTY_SALES_LISTINGS_CSV_URL || '').trim();
-
-    // 1. Load + parse sales CSV, then release raw text
-    const salesUrlEnv = process.env.PROPERTY_SALES_CSV_URL || '';
-    let salesCsv = await loadCsvFromUrls(
-      salesUrlEnv,
-      process.env.BLOB_SALES_PATHNAME || 'stradaintel/sales.csv',
-    );
-    const result = buildPayloadFromCsvText(salesCsv.text, salesCsv.label, {});
-    salesCsv = null; // release ~MB of CSV text
-    if (!result.ok) {
-      return Response.json({ ok: false, error: result.body?.error || 'Sales CSV parse failed' }, { status: 500 });
-    }
-    const payload = { ...result.body };
-    const windows = result.windows;
-    delete payload._stats_for_ai;
-
-    // 2. Load + merge rental CSV, then release
-    if (rentalUrlEnv) {
-      try {
-        let rentalCsv = await loadCsvFromUrls(
-          rentalUrlEnv,
-          process.env.BLOB_RENTAL_PATHNAME || 'stradaintel/rentals.csv',
-        );
-        mergeRentalIntoPayload(payload, rentalCsv.text, rentalCsv.label, windows, {});
-        rentalCsv = null;
-      } catch (e) {
-        payload.rental = payload.rental || {};
-        payload.rental.note = `Rental CSV failed: ${e?.message || e}`;
-      }
+    const body = await request.json();
+    if (!body || typeof body !== 'object' || !body.ok) {
+      return Response.json({ ok: false, error: 'Invalid payload. Expected property data with ok: true.' }, { status: 400 });
     }
 
-    // 3. Load + build rental listings, then release
-    if (listingsUrlEnv) {
-      try {
-        let listingsCsv = await loadCsvFromUrls(listingsUrlEnv, null);
-        const rentalTxnAvgByBeds = {
-          studio: parseFloat(payload.rental?.studio_avg_aed) || null,
-          '1br':  parseFloat(payload.rental?.apt_1br_avg_aed) || null,
-          '2br':  parseFloat(payload.rental?.apt_2br_avg_aed) || null,
-          '3br':  parseFloat(payload.rental?.villa_3br_avg_aed) || null,
-        };
-        const built = buildListingsPayload(listingsCsv.text, listingsCsv.label, {
-          rentalTxnAvgByBeds,
-          rentalTxnByBuildingBed: payload.rental?.txn_by_building_bed || {},
-          rentalTxnByCommunityBed: payload.rental?.txn_by_community_bed || {},
-          dataType: 'rental',
-          filterArea: '',
-          skipHotListings: false,
-        });
-        listingsCsv = null;
-
-        if (built.ok && built.listings) {
-          const weeklyRentals = parseInt(payload.weekly?.rent_volume?.value) || null;
-          if (weeklyRentals && weeklyRentals > 0) {
-            const weeksOfSupply = built.listings.total / weeklyRentals;
-            built.listings.supply_depth = {
-              weeks: parseFloat(weeksOfSupply.toFixed(1)),
-              listings_total: built.listings.total,
-              weekly_registrations: weeklyRentals,
-              label: `${weeksOfSupply.toFixed(1)} weeks of rental listing cover`,
-            };
-          }
-          payload.listings = built.listings;
-        } else {
-          payload.listings = { error: built.error };
-        }
-      } catch (e) {
-        payload.listings = { error: `Listings build failed: ${e?.message || e}` };
-      }
-    }
-
-    // 4. Load + build sales listings, then release
-    if (salesListingsUrlEnv) {
-      try {
-        let salesListingsCsv = await loadCsvFromUrls(salesListingsUrlEnv, null);
-        const built = buildListingsPayload(salesListingsCsv.text, salesListingsCsv.label, {
-          salesTxnAvgByBeds: payload.sale_txn_avg_by_beds || {},
-          salesTxnByBuildingBed: payload.sale_txn_by_building_bed || {},
-          salesTxnByCommunityBed: payload.sale_txn_by_community_bed || {},
-          dataType: 'sales',
-          filterArea: '',
-          skipHotListings: false,
-        });
-        salesListingsCsv = null;
-
-        if (built.ok && built.listings) {
-          const weeklySales = parseInt(payload.weekly?.sale_volume?.value, 10) || null;
-          if (weeklySales && weeklySales > 0) {
-            const weeksOfSupply = built.listings.total / weeklySales;
-            built.listings.supply_depth = {
-              weeks: parseFloat(weeksOfSupply.toFixed(1)),
-              listings_total: built.listings.total,
-              weekly_registrations: weeklySales,
-              label: `${weeksOfSupply.toFixed(1)} weeks of sales listing cover`,
-            };
-          }
-          payload.sales_listings = built.listings;
-        } else {
-          payload.sales_listings = { error: built.error };
-        }
-      } catch (e) {
-        payload.sales_listings = { error: `Sales listings build failed: ${e?.message || e}` };
-      }
-    }
-
-    // 8. Stamp and save to Blob
-    payload.ok = true;
     const stamped = {
-      ...payload,
+      ...body,
       snapshot_refreshed_at: new Date().toISOString(),
       snapshot_source: 'property-refresh',
     };
@@ -253,11 +77,10 @@ export async function POST(request) {
       snapshot_refreshed_at: stamped.snapshot_refreshed_at,
       snapshot_path: path,
       snapshot_url: saved?.url || null,
-      build_ms: Date.now() - t0,
     });
   } catch (e) {
     return Response.json(
-      { ok: false, error: 'Failed to refresh property snapshot.', detail: String(e?.message || e) },
+      { ok: false, error: 'Failed to save property snapshot.', detail: String(e?.message || e) },
       { status: 500 },
     );
   }
