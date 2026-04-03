@@ -1395,8 +1395,8 @@ export function DashboardView() {
           // Property route maxDuration 300s (vercel.json). Logs: parallel rental+sales both at 285s — rental barely won,
           // sales-listings timed twice; also "Failed to fetch" when both hit the origin at once. Sequential sales pull
           // + longer client race + skipHot on sales-only reduces CPU so the handler can finish.
-          const ENRICH_MS_DEFERRED = 310000;
-          const ENRICH_MS_SALES_LISTINGS = 330000;
+          const ENRICH_MS_DEFERRED = 120000;
+          const ENRICH_MS_SALES_LISTINGS = 120000;
           const ingestEnrich = (message, data, hypothesisId = 'H13') => {
             fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
               method: 'POST',
@@ -1535,7 +1535,7 @@ export function DashboardView() {
               if (!sameEpoch()) return;
 
               let outSL = { r: null, d: null, err: null };
-              for (let attempt = 0; attempt < 3 && sameEpoch(); attempt++) {
+              for (let attempt = 0; attempt < 1 && sameEpoch(); attempt++) {
                 if (attempt > 0) {
                   ingestEnrich('deferred enrich sales-listings retry loop', { attempt }, 'H15');
                   await new Promise((res) => {
@@ -1574,32 +1574,23 @@ export function DashboardView() {
 
             if (sameEpoch()) {
               const rentalOk = rentalNA || rentalEnriched;
-              const listingsOk =
-                (rentalListingsNA || rentalListingsOk) && (salesListingsNA || salesListingsOk);
-              if (rentalOk && listingsOk) {
+              const rentalLOk = rentalListingsNA || rentalListingsOk;
+              const salesLOk = salesListingsNA || salesListingsOk;
+              const isProgressMsg = (s) => {
+                const t = String(s || '');
+                return t.includes('background') || t.includes('Showing core sales')
+                  || t.includes('Rental loaded') || t.includes('Almost done');
+              };
+              if (rentalOk && rentalLOk && salesLOk) {
                 setPropError(null);
-              } else if (!rentalOk && !listingsOk) {
-                setPropError((prevErr) =>
-                  prevErr &&
-                  (String(prevErr).includes('background') ||
-                    String(prevErr).includes('Sales loaded first') ||
-                    String(prevErr).includes('Showing core sales'))
-                    ? 'Sales loaded first; rental and listings could not be loaded in time — try refresh.'
-                    : prevErr,
-                );
               } else {
-                let miss = 'listings';
-                if (!rentalOk) miss = 'rental';
-                else if (rentalListingsOk && !salesListingsOk && !salesListingsNA) miss = 'sales listings';
-                else if (salesListingsOk && !rentalListingsOk && !rentalListingsNA) miss = 'rental listings';
-                setPropError((prevErr) =>
-                  prevErr &&
-                  (String(prevErr).includes('background') ||
-                    String(prevErr).includes('Sales loaded first') ||
-                    String(prevErr).includes('Showing core sales'))
-                    ? `Sales loaded first; ${miss} still missing or failed — try refresh.`
-                    : prevErr,
-                );
+                const missing = [];
+                if (!rentalOk) missing.push('rental');
+                if (!rentalLOk) missing.push('rental listings');
+                if (!salesLOk) missing.push('sales listings');
+                setPropError((prev) => isProgressMsg(prev)
+                  ? `Could not load ${missing.join(', ')} — try refreshing.`
+                  : prev);
               }
             }
           })();
