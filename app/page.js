@@ -1202,6 +1202,7 @@ export function DashboardView() {
   const [propTab, setPropTab] = useState('sales'); // 'sales' | 'rental'
   const [hotTypeByTab, setHotTypeByTab] = useState({ sales: 'apartment', rental: 'apartment' });
   const [refreshingSnapshot, setRefreshingSnapshot] = useState(false);
+  const [refreshingPropSnapshot, setRefreshingPropSnapshot] = useState(false);
 
   useEffect(() => {
     try {
@@ -1266,6 +1267,28 @@ export function DashboardView() {
     }
   }, [adminToken, isClientView, refreshIntel]);
 
+  const refreshPropSnapshot = useCallback(async () => {
+    if (isClientView) return;
+    setRefreshingPropSnapshot(true);
+    setPropError(null);
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (adminToken) headers['x-intel-admin-token'] = adminToken;
+      const r = await fetch('/api/property-refresh', { method: 'POST', headers });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.ok) throw new Error(d?.error || `HTTP ${r.status}`);
+      const rr = await fetch('/api/property-read', { cache: 'no-store' });
+      const dd = await rr.json().catch(() => ({}));
+      if (rr.ok && dd?.ok) {
+        setProp(dd);
+      }
+    } catch (e) {
+      setPropError(e.message || 'Property snapshot refresh failed');
+    } finally {
+      setRefreshingPropSnapshot(false);
+    }
+  }, [adminToken, isClientView]);
+
   const refreshProp = useCallback(async (forcedPath, overrideArea) => {
     setLoadProp(true); setPropError(null);
     propEnrichEpochRef.current += 1;
@@ -1276,6 +1299,21 @@ export function DashboardView() {
     try {
       const customPath = (forcedPath || salesCsvPath).trim();
       const a = (overrideArea !== undefined ? overrideArea : area).trim();
+
+      // Client view with no custom path/area: read pre-built snapshot (instant).
+      if (isClientView && !customPath && !a) {
+        try {
+          const sr = await fetch('/api/property-read', { cache: 'no-store' });
+          const sd = await sr.json().catch(() => ({}));
+          if (sr.ok && sd?.ok) {
+            setProp(sd);
+            return;
+          }
+        } catch {
+          // snapshot unavailable — fall through to live build
+        }
+      }
+
       const q = new URLSearchParams();
       if (customPath) q.set('salesCsv', customPath);
       if (a) q.set('area', a);
@@ -1706,7 +1744,7 @@ export function DashboardView() {
       // #endregion
       setLoadProp(false);
     }
-  }, [salesCsvPath, area, propTab]);
+  }, [salesCsvPath, area, propTab, isClientView]);
 
   const applyAreaClient = useCallback((nextArea) => {
     const text = uploadedCsvTextRef.current;
@@ -2049,6 +2087,11 @@ export function DashboardView() {
               {!isClientView && (
                 <button onClick={() => refreshIntelSnapshot()} disabled={refreshingSnapshot} className="lp-btn lp-btn-ghost lp-btn-accent" title="Runs live intelligence once, stores snapshot for clients">
                   {refreshingSnapshot ? 'Refreshing…' : 'Update snapshot'}
+                </button>
+              )}
+              {!isClientView && (
+                <button onClick={() => refreshPropSnapshot()} disabled={refreshingPropSnapshot} className="lp-btn lp-btn-ghost lp-btn-accent" title="Builds full property data (sales+rental+listings) and stores snapshot for clients">
+                  {refreshingPropSnapshot ? 'Building…' : 'Update property snapshot'}
                 </button>
               )}
               {/* PDF/print export removed per request */}
