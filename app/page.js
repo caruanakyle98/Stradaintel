@@ -2519,49 +2519,180 @@ export function DashboardView() {
                 </div>
               </div>
 
-              {/* New listings per day — same Dubai 7-day window as “last 7 days” counts */}
+              {/* New listings per day — Dubai rolling week vs prior week; flow vs stock + listing cover */}
               {!listingsForTab?.error && (
                 loadProp ? (
                   <div className="lp-card print-keep-together" style={{ padding: '14px 18px', marginBottom: 12 }}>
-                    <Skel h={12} w="55%" mb={10} />
-                    <Skel h={72} />
+                    <Skel h={12} w="55%" mb={8} />
+                    <Skel h={10} w="90%" mb={10} />
+                    <Skel h={10} w="70%" mb={10} />
+                    <Skel h={88} />
                   </div>
                 ) : (listingsForTab?.listings_added_by_day?.length > 0) ? (
                   (() => {
                     const added = listingsForTab.listings_added_by_day;
-                    const maxC = Math.max(1, ...added.map((d) => d.count));
+                    const prevDays = listingsForTab.listings_added_prev_by_day;
+                    const dualWeek = Array.isArray(prevDays) && prevDays.length === added.length;
+                    const flow = listingsForTab.listings_flow;
+                    const maxC = dualWeek
+                      ? Math.max(1, ...added.map((d) => d.count), ...prevDays.map((d) => d.count))
+                      : Math.max(1, ...added.map((d) => d.count));
+                    const ariaDays = added.map((d, i) => {
+                      const p = dualWeek ? prevDays[i] : null;
+                      return p ? `${d.label} this week ${d.count}, prior week ${p.count}` : `${d.label} ${d.count}`;
+                    }).join('; ');
+                    const absHint = propTab === 'sales'
+                      ? 'By listed date (Dubai rolling week). Not the same as recorded sales volume — use Listing cover (weeks) to compare on-market asks with weekly deal pace.'
+                      : 'By listed date (Dubai rolling week). Not the same as Ejari registrations — use Listing cover (weeks) to compare on-market asks with weekly registration pace.';
+                    const elevatedSupply = flow?.pct_of_inventory_week != null && flow.pct_of_inventory_week >= 10
+                      && listingsForTab.wow_new_pct != null && listingsForTab.wow_new_pct >= 12;
                     return (
                       <div className="reveal print-keep-together lp-card" style={{ padding: '14px 18px', marginBottom: 12 }}>
-                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 4 }}>
-                          {propTab === 'sales' ? 'Sales listings added per day' : 'Rental listings added per day'}
+                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 6 }}>
+                          {propTab === 'sales' ? 'Sales listings — new supply by day' : 'Rental listings — new supply by day'}
                         </div>
-                        {listingsForTab.listings_added_period && (
-                          <div style={{ fontSize: 10, color: C.tm, marginBottom: 12 }}>{listingsForTab.listings_added_period}</div>
+                        <div style={{ fontSize: 10, color: C.tm, marginBottom: 10, lineHeight: 1.45 }}>{absHint}</div>
+                        {elevatedSupply && (
+                          <div style={{ fontSize: 10, color: C.am, marginBottom: 10, lineHeight: 1.45, padding: '8px 10px', borderRadius: 6, background: 'rgba(201,168,76,0.08)', border: `1px solid ${C.border}` }}>
+                            New listings are elevated vs last week and represent a sizable share of on-market stock — this may indicate rising supply pressure (not a forecast).
+                          </div>
                         )}
-                        <div
-                          role="img"
-                          aria-label={`Listings added per day in the Dubai week: ${added.map((d) => `${d.label} ${d.count}`).join(', ')}.`}
-                          style={{ display: 'flex', gap: 4, alignItems: 'flex-end', minHeight: 88 }}
-                        >
-                          {added.map((d) => (
-                            <div key={d.date} style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', height: 88, justifyContent: 'flex-end' }}>
-                              <div style={{ fontSize: 10, fontWeight: 700, color: d.count > 0 ? C.amL : C.tm, marginBottom: 4, fontVariantNumeric: 'tabular-nums' }}>{d.count}</div>
-                              <div style={{ width: '100%', maxWidth: 40, height: 56, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', borderRadius: 4, background: `linear-gradient(to top, ${C.border} 0%, transparent 8%)` }}>
-                                <div
-                                  style={{
-                                    width: 'min(100%, 36px)',
-                                    height: `${(d.count / maxC) * 100}%`,
-                                    minHeight: d.count > 0 ? 3 : 0,
-                                    borderRadius: 4,
-                                    background: d.count > 0 ? `linear-gradient(180deg, ${C.amL}, rgba(201,168,76,0.45))` : 'transparent',
-                                    boxShadow: d.count > 0 ? C.glowMetric : 'none',
-                                  }}
-                                />
-                              </div>
-                              <div style={{ fontSize: 8, color: C.tm, marginTop: 6, textAlign: 'center', lineHeight: 1.2 }}>{d.label}</div>
+                        {flow && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px', marginBottom: 10, fontSize: 10, color: C.t2, lineHeight: 1.45 }}>
+                            <div>
+                              Avg <strong style={{ color: C.amL }}>{flow.avg_per_day_current}</strong>/day this week vs <strong>{flow.avg_per_day_prior}</strong> prior
                             </div>
-                          ))}
+                            {flow.pct_of_inventory_week != null && (
+                              <div>
+                                <strong style={{ color: C.amL }}>{flow.pct_of_inventory_week}%</strong> of active listings newly listed this week
+                              </div>
+                            )}
+                            {(flow.peak_day_current?.count > 0 || flow.peak_day_prior?.count > 0) && (
+                              <div style={{ color: C.tm }}>
+                                Peaks — this week: <strong style={{ color: C.t2 }}>{flow.peak_day_current.count}</strong> ({flow.peak_day_current.label})
+                                {dualWeek && (
+                                  <>
+                                    {' · '}prior: <strong style={{ color: C.t2 }}>{flow.peak_day_prior.count}</strong> ({flow.peak_day_prior.label})
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        <div style={{ fontSize: 10, color: C.tm, marginBottom: 8 }}>
+                          <div><strong style={{ color: C.t2 }}>This week:</strong> {listingsForTab.listings_added_period}</div>
+                          {dualWeek && listingsForTab.listings_added_period_prior && (
+                            <div style={{ marginTop: 2 }}><strong style={{ color: C.t2 }}>Prior week (same chart index):</strong> {listingsForTab.listings_added_period_prior}</div>
+                          )}
                         </div>
+                        {dualWeek && (
+                          <div style={{ display: 'flex', gap: 14, fontSize: 9, color: C.tm, marginBottom: 8, flexWrap: 'wrap' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span style={{ width: 12, height: 12, borderRadius: 2, background: `linear-gradient(180deg, ${C.amL}, rgba(201,168,76,0.45))` }} />
+                              This week
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span style={{ width: 12, height: 12, borderRadius: 2, background: 'rgba(140,140,150,0.35)', border: `1px solid ${C.border}` }} />
+                              Prior week
+                            </span>
+                          </div>
+                        )}
+                        <div className="tx-scroll-wrap" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                          <div
+                            role="img"
+                            aria-label={`Listings added per day (Dubai). ${ariaDays}.`}
+                            style={{
+                              display: 'flex',
+                              gap: dualWeek ? 6 : 4,
+                              alignItems: 'flex-end',
+                              minHeight: 100,
+                              minWidth: dualWeek ? Math.max(340, added.length * 56) : Math.max(280, added.length * 40),
+                              paddingBottom: 2,
+                            }}
+                          >
+                            {added.map((d, i) => {
+                              const p = dualWeek ? prevDays[i] : null;
+                              return (
+                                <div
+                                  key={d.date}
+                                  style={{
+                                    flex: dualWeek ? '0 0 52px' : '1 1 0',
+                                    minWidth: dualWeek ? 48 : 0,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-end',
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', gap: 3, alignItems: 'flex-end', height: 62, marginBottom: 4 }}>
+                                    {dualWeek && (
+                                      <div
+                                        style={{
+                                          width: 18,
+                                          height: 58,
+                                          display: 'flex',
+                                          alignItems: 'flex-end',
+                                          justifyContent: 'center',
+                                          borderRadius: 4,
+                                          background: `linear-gradient(to top, ${C.border} 0%, transparent 10%)`,
+                                        }}
+                                        title={`Prior week day ${i + 1}: ${p.count}`}
+                                      >
+                                        <div
+                                          style={{
+                                            width: 15,
+                                            height: `${(p.count / maxC) * 100}%`,
+                                            minHeight: p.count > 0 ? 3 : 0,
+                                            borderRadius: 3,
+                                            background: p.count > 0 ? 'rgba(140,140,150,0.4)' : 'transparent',
+                                            border: p.count > 0 ? `1px solid ${C.border}` : 'none',
+                                          }}
+                                        />
+                                      </div>
+                                    )}
+                                    <div
+                                      style={{
+                                        width: dualWeek ? 18 : '100%',
+                                        maxWidth: dualWeek ? 18 : 40,
+                                        height: 58,
+                                        display: 'flex',
+                                        alignItems: 'flex-end',
+                                        justifyContent: 'center',
+                                        borderRadius: 4,
+                                        background: `linear-gradient(to top, ${C.border} 0%, transparent 10%)`,
+                                      }}
+                                      title={`This week ${d.label}: ${d.count}`}
+                                    >
+                                      <div
+                                        style={{
+                                          width: dualWeek ? 15 : 'min(100%, 36px)',
+                                          height: `${(d.count / maxC) * 100}%`,
+                                          minHeight: d.count > 0 ? 3 : 0,
+                                          borderRadius: 4,
+                                          background: d.count > 0 ? `linear-gradient(180deg, ${C.amL}, rgba(201,168,76,0.45))` : 'transparent',
+                                          boxShadow: d.count > 0 ? C.glowMetric : 'none',
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div style={{ fontSize: 9, fontWeight: 700, color: d.count > 0 ? C.amL : C.tm, fontVariantNumeric: 'tabular-nums' }}>{d.count}</div>
+                                  {dualWeek && (
+                                    <div style={{ fontSize: 8, fontWeight: 600, color: p.count > 0 ? C.t2 : C.tm, fontVariantNumeric: 'tabular-nums' }}>{p.count}</div>
+                                  )}
+                                  <div style={{ fontSize: 7, color: C.tm, marginTop: 4, textAlign: 'center', lineHeight: 1.2 }}>Day {i + 1}</div>
+                                  <div style={{ fontSize: 8, color: C.tm, textAlign: 'center', lineHeight: 1.2 }}>{d.label}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        {listingsForTab.supply_depth && (
+                          <div style={{ fontSize: 10, color: C.tm, marginTop: 12, lineHeight: 1.5, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>
+                            At current {propTab === 'sales' ? 'sales' : 'rental'} transaction pace (~{listingsForTab.supply_depth.weekly_registrations.toLocaleString()}
+                            /wk), active stock is roughly <strong style={{ color: C.t2 }}>{listingsForTab.supply_depth.weeks}</strong> weeks of cover (
+                            {listingsForTab.supply_depth.listings_total.toLocaleString()} listings).
+                          </div>
+                        )}
                       </div>
                     );
                   })()
