@@ -2546,57 +2546,98 @@ export function DashboardView() {
                       : 'By listed date (Dubai rolling week). Not the same as Ejari registrations — use Listing cover (weeks) to compare on-market asks with weekly registration pace.';
                     const elevatedSupply = flow?.pct_of_inventory_week != null && flow.pct_of_inventory_week >= 10
                       && listingsForTab.wow_new_pct != null && listingsForTab.wow_new_pct >= 12;
+                    {
+                      const wowPct = listingsForTab.wow_new_pct;
+                      const wowUp = wowPct != null && wowPct > 0;
+                      const wowDown = wowPct != null && wowPct < 0;
+                      const wowCol = wowUp ? C.red : wowDown ? C.g : C.t2;
+                      const wowArrow = wowUp ? '\u2191' : wowDown ? '\u2193' : '\u2192';
+                      const flowChgPct = flow ? ((flow.avg_per_day_current - flow.avg_per_day_prior) / (flow.avg_per_day_prior || 1) * 100) : null;
+                      const flowChgCol = flowChgPct != null ? (flowChgPct > 5 ? C.red : flowChgPct < -5 ? C.g : C.t2) : C.t2;
                     return (
-                      <div className="reveal print-keep-together lp-card" style={{ padding: '14px 18px', marginBottom: 12 }}>
-                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 6 }}>
-                          {propTab === 'sales' ? 'Sales listings — new supply by day' : 'Rental listings — new supply by day'}
+                      <div className="reveal print-keep-together lp-card" style={{ padding: '20px 22px', marginBottom: 12 }}>
+                        {/* ── Header ── */}
+                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 4 }}>
+                          New Supply Flow
                         </div>
-                        <div style={{ fontSize: 10, color: C.tm, marginBottom: 10, lineHeight: 1.45 }}>{absHint}</div>
-                        {elevatedSupply && (
-                          <div style={{ fontSize: 10, color: C.am, marginBottom: 10, lineHeight: 1.45, padding: '8px 10px', borderRadius: 6, background: 'rgba(201,168,76,0.08)', border: `1px solid ${C.border}` }}>
-                            New listings are elevated vs last week and represent a sizable share of on-market stock — this may indicate rising supply pressure (not a forecast).
-                          </div>
-                        )}
+                        <div style={{ fontSize: 11, color: C.t2, marginBottom: 16, lineHeight: 1.5 }}>
+                          How many new {propTab === 'sales' ? 'sale' : 'rental'} listings are entering the market each day — this week vs last week.
+                        </div>
+
+                        {/* ── Key metrics row ── */}
                         {flow && (
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px', marginBottom: 10, fontSize: 10, color: C.t2, lineHeight: 1.45 }}>
-                            <div>
-                              Avg <strong style={{ color: C.amL }}>{flow.avg_per_day_current}</strong>/day this week vs <strong>{flow.avg_per_day_prior}</strong> prior
-                            </div>
-                            {flow.pct_of_inventory_week != null && (
-                              <div>
-                                <strong style={{ color: C.amL }}>{flow.pct_of_inventory_week}%</strong> of active listings newly listed this week
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 10, marginBottom: 18 }}>
+                            {/* Avg per day */}
+                            <div style={{ background: C.surf, borderRadius: 8, padding: '12px 14px', border: `1px solid ${C.border}` }}>
+                              <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: C.tm, marginBottom: 6 }}>Avg / Day</div>
+                              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                                <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 22, fontWeight: 800, color: C.amL }}>{flow.avg_per_day_current}</span>
+                                <span style={{ fontSize: 10, color: C.tm }}>vs {flow.avg_per_day_prior} prior</span>
                               </div>
-                            )}
-                            {(flow.peak_day_current?.count > 0 || flow.peak_day_prior?.count > 0) && (
-                              <div style={{ color: C.tm }}>
-                                Peaks — this week: <strong style={{ color: C.t2 }}>{flow.peak_day_current.count}</strong> ({flow.peak_day_current.label})
-                                {dualWeek && (
-                                  <>
-                                    {' · '}prior: <strong style={{ color: C.t2 }}>{flow.peak_day_prior.count}</strong> ({flow.peak_day_prior.label})
-                                  </>
+                              {flowChgPct != null && (
+                                <div style={{ fontSize: 10, fontWeight: 600, color: flowChgCol, marginTop: 4 }}>
+                                  {flowChgPct > 0 ? '+' : ''}{flowChgPct.toFixed(0)}% week-on-week
+                                </div>
+                              )}
+                            </div>
+
+                            {/* WoW new listings */}
+                            <div style={{ background: C.surf, borderRadius: 8, padding: '12px 14px', border: `1px solid ${C.border}` }}>
+                              <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: C.tm, marginBottom: 6 }}>New This Week</div>
+                              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                                <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 22, fontWeight: 800, color: C.t1 }}>{listingsForTab.new_this_week?.toLocaleString() || '—'}</span>
+                                {wowPct != null && (
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: wowCol }}>{wowArrow} {Math.abs(wowPct).toFixed(0)}%</span>
                                 )}
                               </div>
+                              <div style={{ fontSize: 10, color: C.tm, marginTop: 4 }}>
+                                vs {listingsForTab.new_prev_7_days?.toLocaleString() || '—'} prior week
+                              </div>
+                            </div>
+
+                            {/* Fresh inventory share */}
+                            {flow.pct_of_inventory_week != null && (
+                              <div style={{ background: C.surf, borderRadius: 8, padding: '12px 14px', border: `1px solid ${C.border}` }}>
+                                <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: C.tm, marginBottom: 6 }}>Fresh Stock</div>
+                                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                                  <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 22, fontWeight: 800, color: flow.pct_of_inventory_week >= 10 ? C.am : C.t1 }}>{flow.pct_of_inventory_week}%</span>
+                                </div>
+                                <div style={{ fontSize: 10, color: C.tm, marginTop: 4 }}>of all active listings are new this week</div>
+                              </div>
                             )}
                           </div>
                         )}
-                        <div style={{ fontSize: 10, color: C.tm, marginBottom: 8 }}>
-                          <div><strong style={{ color: C.t2 }}>This week:</strong> {listingsForTab.listings_added_period}</div>
-                          {dualWeek && listingsForTab.listings_added_period_prior && (
-                            <div style={{ marginTop: 2 }}><strong style={{ color: C.t2 }}>Prior week (same chart index):</strong> {listingsForTab.listings_added_period_prior}</div>
-                          )}
-                        </div>
-                        {dualWeek && (
-                          <div style={{ display: 'flex', gap: 14, fontSize: 9, color: C.tm, marginBottom: 8, flexWrap: 'wrap' }}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <span style={{ width: 12, height: 12, borderRadius: 2, background: `linear-gradient(180deg, ${C.amL}, rgba(201,168,76,0.45))` }} />
-                              This week
-                            </span>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <span style={{ width: 12, height: 12, borderRadius: 2, background: 'rgba(140,140,150,0.35)', border: `1px solid ${C.border}` }} />
-                              Prior week
-                            </span>
+
+                        {/* ── Elevated supply alert ── */}
+                        {elevatedSupply && (
+                          <div style={{ fontSize: 10, color: C.am, marginBottom: 16, lineHeight: 1.5, padding: '10px 12px', borderRadius: 8, background: 'rgba(245,158,11,0.06)', border: `1px solid rgba(245,158,11,0.2)` }}>
+                            New listings are elevated vs last week and represent a sizable share of on-market stock — this may indicate rising supply pressure.
                           </div>
                         )}
+
+                        {/* ── Chart legend + period labels ── */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
+                          <div style={{ fontSize: 10, color: C.tm }}>
+                            {listingsForTab.listings_added_period}
+                            {dualWeek && listingsForTab.listings_added_period_prior && (
+                              <span style={{ color: C.td }}>{' vs '}{listingsForTab.listings_added_period_prior}</span>
+                            )}
+                          </div>
+                          {dualWeek && (
+                            <div style={{ display: 'flex', gap: 14, fontSize: 9, color: C.tm }}>
+                              <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <span style={{ width: 10, height: 10, borderRadius: 2, background: `linear-gradient(180deg, ${C.amL}, rgba(201,168,76,0.45))` }} />
+                                This week
+                              </span>
+                              <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <span style={{ width: 10, height: 10, borderRadius: 2, background: 'rgba(140,140,150,0.35)', border: `1px solid ${C.border}` }} />
+                                Prior week
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* ── Bar chart ── */}
                         <div className="tx-scroll-wrap" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                           <div
                             role="img"
@@ -2605,96 +2646,117 @@ export function DashboardView() {
                               display: 'flex',
                               gap: dualWeek ? 6 : 4,
                               alignItems: 'flex-end',
-                              minHeight: 100,
-                              minWidth: dualWeek ? Math.max(340, added.length * 56) : Math.max(280, added.length * 40),
+                              minHeight: 130,
+                              minWidth: dualWeek ? Math.max(360, added.length * 62) : Math.max(280, added.length * 44),
                               paddingBottom: 2,
                             }}
                           >
                             {added.map((d, i) => {
                               const p = dualWeek ? prevDays[i] : null;
+                              const isHighest = d.count === maxC;
                               return (
                                 <div
                                   key={d.date}
                                   style={{
-                                    flex: dualWeek ? '0 0 52px' : '1 1 0',
-                                    minWidth: dualWeek ? 48 : 0,
+                                    flex: dualWeek ? '0 0 56px' : '1 1 0',
+                                    minWidth: dualWeek ? 52 : 0,
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     justifyContent: 'flex-end',
                                   }}
                                 >
-                                  <div style={{ display: 'flex', gap: 3, alignItems: 'flex-end', height: 62, marginBottom: 4 }}>
+                                  {/* Bar pair */}
+                                  <div style={{ display: 'flex', gap: 3, alignItems: 'flex-end', height: 80, marginBottom: 5 }}>
                                     {dualWeek && (
                                       <div
                                         style={{
-                                          width: 18,
-                                          height: 58,
+                                          width: 20,
+                                          height: 76,
                                           display: 'flex',
                                           alignItems: 'flex-end',
                                           justifyContent: 'center',
                                           borderRadius: 4,
-                                          background: `linear-gradient(to top, ${C.border} 0%, transparent 10%)`,
                                         }}
-                                        title={`Prior week day ${i + 1}: ${p.count}`}
+                                        title={`Prior week ${p.label}: ${p.count}`}
                                       >
                                         <div
                                           style={{
-                                            width: 15,
-                                            height: `${(p.count / maxC) * 100}%`,
-                                            minHeight: p.count > 0 ? 3 : 0,
-                                            borderRadius: 3,
-                                            background: p.count > 0 ? 'rgba(140,140,150,0.4)' : 'transparent',
+                                            width: 17,
+                                            height: `${Math.max((p.count / maxC) * 100, p.count > 0 ? 5 : 0)}%`,
+                                            borderRadius: 4,
+                                            background: p.count > 0 ? 'rgba(140,140,150,0.35)' : 'transparent',
                                             border: p.count > 0 ? `1px solid ${C.border}` : 'none',
+                                            transition: 'height 0.4s ease',
                                           }}
                                         />
                                       </div>
                                     )}
                                     <div
                                       style={{
-                                        width: dualWeek ? 18 : '100%',
-                                        maxWidth: dualWeek ? 18 : 40,
-                                        height: 58,
+                                        width: dualWeek ? 20 : '100%',
+                                        maxWidth: dualWeek ? 20 : 44,
+                                        height: 76,
                                         display: 'flex',
                                         alignItems: 'flex-end',
                                         justifyContent: 'center',
                                         borderRadius: 4,
-                                        background: `linear-gradient(to top, ${C.border} 0%, transparent 10%)`,
                                       }}
                                       title={`This week ${d.label}: ${d.count}`}
                                     >
                                       <div
                                         style={{
-                                          width: dualWeek ? 15 : 'min(100%, 36px)',
-                                          height: `${(d.count / maxC) * 100}%`,
-                                          minHeight: d.count > 0 ? 3 : 0,
+                                          width: dualWeek ? 17 : 'min(100%, 38px)',
+                                          height: `${Math.max((d.count / maxC) * 100, d.count > 0 ? 5 : 0)}%`,
                                           borderRadius: 4,
-                                          background: d.count > 0 ? `linear-gradient(180deg, ${C.amL}, rgba(201,168,76,0.45))` : 'transparent',
-                                          boxShadow: d.count > 0 ? C.glowMetric : 'none',
+                                          background: d.count > 0 ? `linear-gradient(180deg, ${C.amL}, rgba(201,168,76,0.35))` : 'transparent',
+                                          boxShadow: isHighest && d.count > 0 ? C.glowAm : d.count > 0 ? '0 0 8px rgba(251,191,36,0.15)' : 'none',
+                                          transition: 'height 0.4s ease',
                                         }}
                                       />
                                     </div>
                                   </div>
-                                  <div style={{ fontSize: 9, fontWeight: 700, color: d.count > 0 ? C.amL : C.tm, fontVariantNumeric: 'tabular-nums' }}>{d.count}</div>
+
+                                  {/* Counts */}
+                                  <div style={{ fontSize: 10, fontWeight: 700, color: d.count > 0 ? (isHighest ? C.amL : C.t1) : C.tm, fontVariantNumeric: 'tabular-nums' }}>{d.count}</div>
                                   {dualWeek && (
-                                    <div style={{ fontSize: 8, fontWeight: 600, color: p.count > 0 ? C.t2 : C.tm, fontVariantNumeric: 'tabular-nums' }}>{p.count}</div>
+                                    <div style={{ fontSize: 9, fontWeight: 600, color: p.count > 0 ? C.t2 : C.tm, fontVariantNumeric: 'tabular-nums', marginTop: 1 }}>{p.count}</div>
                                   )}
-                                  <div style={{ fontSize: 7, color: C.tm, marginTop: 4, textAlign: 'center', lineHeight: 1.2 }}>Day {i + 1}</div>
-                                  <div style={{ fontSize: 8, color: C.tm, textAlign: 'center', lineHeight: 1.2 }}>{d.label}</div>
+
+                                  {/* Day labels */}
+                                  <div style={{ fontSize: 9, fontWeight: 600, color: C.t2, marginTop: 5, textAlign: 'center', lineHeight: 1.2 }}>{d.label}</div>
                                 </div>
                               );
                             })}
                           </div>
                         </div>
-                        {listingsForTab.supply_depth && (
-                          <div style={{ fontSize: 10, color: C.tm, marginTop: 12, lineHeight: 1.5, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>
-                            At current {propTab === 'sales' ? 'sales' : 'rental'} transaction pace (~{listingsForTab.supply_depth.weekly_registrations.toLocaleString()}
-                            /wk), active stock is roughly <strong style={{ color: C.t2 }}>{listingsForTab.supply_depth.weeks}</strong> weeks of cover (
-                            {listingsForTab.supply_depth.listings_total.toLocaleString()} listings).
+
+                        {/* ── Peak day callout ── */}
+                        {flow && (flow.peak_day_current?.count > 0 || flow.peak_day_prior?.count > 0) && (
+                          <div style={{ display: 'flex', gap: 12, marginTop: 14, flexWrap: 'wrap' }}>
+                            <div style={{ fontSize: 10, color: C.tm }}>
+                              Peak day: <strong style={{ color: C.amL }}>{flow.peak_day_current.count}</strong> on {flow.peak_day_current.label}
+                              {dualWeek && flow.peak_day_prior?.count > 0 && (
+                                <span style={{ color: C.td }}>{' (prior: '}{flow.peak_day_prior.count} on {flow.peak_day_prior.label}{')'}</span>
+                              )}
+                            </div>
                           </div>
                         )}
+
+                        {/* ── Supply depth context ── */}
+                        {listingsForTab.supply_depth && (
+                          <div style={{ fontSize: 10, color: C.tm, marginTop: 14, lineHeight: 1.5, paddingTop: 12, borderTop: `1px solid ${C.border}` }}>
+                            At current {propTab === 'sales' ? 'deal' : 'registration'} pace (~{listingsForTab.supply_depth.weekly_registrations.toLocaleString()}
+                            /wk), active stock represents roughly <strong style={{ color: C.t2 }}>{listingsForTab.supply_depth.weeks} weeks</strong> of cover
+                            ({listingsForTab.supply_depth.listings_total.toLocaleString()} listings).
+                          </div>
+                        )}
+
+                        {/* ── Contextual footnote ── */}
+                        <div style={{ fontSize: 9, color: C.td, marginTop: 10, lineHeight: 1.4 }}>{absHint}</div>
                       </div>
                     );
+                    }
                   })()
                 ) : null
               )}
