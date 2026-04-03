@@ -2533,7 +2533,25 @@ export function DashboardView() {
                     const added = listingsForTab.listings_added_by_day;
                     const prevDays = listingsForTab.listings_added_prev_by_day;
                     const dualWeek = Array.isArray(prevDays) && prevDays.length === added.length;
-                    const flow = listingsForTab.listings_flow;
+                    // Derive flow metrics from available data if listings_flow is missing
+                    const flow = listingsForTab.listings_flow || (() => {
+                      const ntw = listingsForTab.new_this_week;
+                      const npw = listingsForTab.new_prev_7_days;
+                      if (ntw == null || !added.length) return null;
+                      const peakFrom = (arr) => {
+                        if (!arr?.length) return { label: '—', count: 0 };
+                        let best = arr[0];
+                        for (const d of arr) { if (d.count > best.count) best = d; }
+                        return { label: best.label, count: best.count };
+                      };
+                      return {
+                        avg_per_day_current: parseFloat((ntw / 7).toFixed(1)),
+                        avg_per_day_prior: npw != null ? parseFloat((npw / 7).toFixed(1)) : null,
+                        pct_of_inventory_week: listingsForTab.total > 0 ? parseFloat(((ntw / listingsForTab.total) * 100).toFixed(1)) : null,
+                        peak_day_current: peakFrom(added),
+                        peak_day_prior: dualWeek ? peakFrom(prevDays) : { label: '—', count: 0 },
+                      };
+                    })();
                     const maxC = dualWeek
                       ? Math.max(1, ...added.map((d) => d.count), ...prevDays.map((d) => d.count))
                       : Math.max(1, ...added.map((d) => d.count));
@@ -2676,18 +2694,18 @@ export function DashboardView() {
                                           display: 'flex',
                                           alignItems: 'flex-end',
                                           justifyContent: 'center',
-                                          borderRadius: 4,
+                                          borderRadius: 6,
+                                          background: 'rgba(36,52,80,0.2)',
                                         }}
                                         title={`Prior week ${p.label}: ${p.count}`}
                                       >
                                         <div
                                           style={{
-                                            width: 17,
-                                            height: `${Math.max((p.count / maxC) * 100, p.count > 0 ? 5 : 0)}%`,
-                                            borderRadius: 4,
+                                            width: '100%',
+                                            height: `${Math.max((p.count / maxC) * 100, p.count > 0 ? 6 : 0)}%`,
+                                            borderRadius: 6,
                                             background: p.count > 0 ? 'rgba(140,140,150,0.35)' : 'transparent',
                                             border: p.count > 0 ? `1px solid ${C.border}` : 'none',
-                                            transition: 'height 0.4s ease',
                                           }}
                                         />
                                       </div>
@@ -2700,18 +2718,18 @@ export function DashboardView() {
                                         display: 'flex',
                                         alignItems: 'flex-end',
                                         justifyContent: 'center',
-                                        borderRadius: 4,
+                                        borderRadius: 6,
+                                        background: `rgba(36,52,80,0.3)`,
                                       }}
                                       title={`This week ${d.label}: ${d.count}`}
                                     >
                                       <div
                                         style={{
-                                          width: dualWeek ? 17 : 'min(100%, 38px)',
-                                          height: `${Math.max((d.count / maxC) * 100, d.count > 0 ? 5 : 0)}%`,
-                                          borderRadius: 4,
-                                          background: d.count > 0 ? `linear-gradient(180deg, ${C.amL}, rgba(201,168,76,0.35))` : 'transparent',
-                                          boxShadow: isHighest && d.count > 0 ? C.glowAm : d.count > 0 ? '0 0 8px rgba(251,191,36,0.15)' : 'none',
-                                          transition: 'height 0.4s ease',
+                                          width: '100%',
+                                          height: `${Math.max((d.count / maxC) * 100, d.count > 0 ? 6 : 0)}%`,
+                                          borderRadius: 6,
+                                          background: d.count > 0 ? `linear-gradient(180deg, ${C.amL} 0%, rgba(201,168,76,0.4) 100%)` : 'transparent',
+                                          boxShadow: isHighest && d.count > 0 ? C.glowAm : d.count > 0 ? '0 0 10px rgba(251,191,36,0.18)' : 'none',
                                         }}
                                       />
                                     </div>
