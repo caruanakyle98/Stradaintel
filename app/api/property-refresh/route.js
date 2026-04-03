@@ -120,35 +120,21 @@ export async function POST(request) {
   const t0 = Date.now();
 
   try {
-    // 1. Load sales CSV
-    const salesUrlEnv = process.env.PROPERTY_SALES_CSV_URL || '';
-    const { text: salesRaw, label: salesLabel } = await loadCsvFromUrls(
-      salesUrlEnv,
-      process.env.BLOB_SALES_PATHNAME || 'stradaintel/sales.csv',
-    );
+    // Sequential CSV processing to cap peak RAM (Vercel OOM at ~1GB).
+    // Each CSV is fetched, parsed, and released before the next one starts.
 
-    // 2. Start rental + listings fetches in parallel with sales parse
     const rentalUrlEnv = process.env.PROPERTY_RENTAL_CSV_URL || '';
     const listingsUrlEnv = (process.env.PROPERTY_LISTINGS_CSV_URL || '').trim();
     const salesListingsUrlEnv = (process.env.PROPERTY_SALES_LISTINGS_CSV_URL || '').trim();
 
-    const rentalPromise = rentalUrlEnv
-      ? loadCsvFromUrls(rentalUrlEnv, process.env.BLOB_RENTAL_PATHNAME || 'stradaintel/rentals.csv')
-          .then(v => ({ ok: true, ...v }), e => ({ ok: false, error: e }))
-      : Promise.resolve(null);
-
-    const listingsPromise = listingsUrlEnv
-      ? loadCsvFromUrls(listingsUrlEnv, null)
-          .then(v => ({ ok: true, ...v }), e => ({ ok: false, error: e }))
-      : Promise.resolve(null);
-
-    const salesListingsPromise = salesListingsUrlEnv
-      ? loadCsvFromUrls(salesListingsUrlEnv, null)
-          .then(v => ({ ok: true, ...v }), e => ({ ok: false, error: e }))
-      : Promise.resolve(null);
-
-    // 3. Build sales payload
-    const result = buildPayloadFromCsvText(salesRaw, salesLabel, {});
+    // 1. Load + parse sales CSV, then release raw text
+    const salesUrlEnv = process.env.PROPERTY_SALES_CSV_URL || '';
+    let salesCsv = await loadCsvFromUrls(
+      salesUrlEnv,
+      process.env.BLOB_SALES_PATHNAME || 'stradaintel/sales.csv',
+    );
+    const result = buildPayloadFromCsvText(salesCsv.text, salesCsv.label, {});
+    salesCsv = null; // release ~MB of CSV text
     if (!result.ok) {
       return Response.json({ ok: false, error: result.body?.error || 'Sales CSV parse failed' }, { status: 500 });
     }
@@ -156,46 +142,40 @@ export async function POST(request) {
     const windows = result.windows;
     delete payload._stats_for_ai;
 
-    // 4. Await all parallel CSV fetches
-    const [rentalResult, listingsResult, salesListingsResult] = await Promise.all([
-      rentalPromise,
-      listingsPromise,
-      salesListingsPromise,
-    ]);
-
-    // 5. Merge rental
-    if (rentalResult?.ok && windows) {
+    // 2. Load + merge rental CSV, then release
+    if (rentalUrlEnv) {
       try {
-        mergeRentalIntoPayload(payload, rentalResult.text, rentalResult.label, windows, {});
+        let rentalCsv = await loadCsvFromUrls(
+          rentalUrlEnv,
+          process.env.BLOB_RENTAL_PATHNAME || 'stradaintel/rentals.csv',
+        );
+        mergeRentalIntoPayload(payload, rentalCsv.text, rentalCsv.label, windows, {});
+        rentalCsv = null;
       } catch (e) {
         payload.rental = payload.rental || {};
-        payload.rental.note = `Rental merge failed: ${e?.message || e}`;
+        payload.rental.note = `Rental CSV failed: ${e?.message || e}`;
       }
-    } else if (rentalResult && !rentalResult.ok) {
-      payload.rental = payload.rental || {};
-      payload.rental.note = `Rental CSV failed: ${rentalResult.error?.message || rentalResult.error}`;
     }
 
-    // 6. Merge rental listings
-    if (listingsResult?.ok) {
+    // 3. Load + build rental listings, then release
+    if (listingsUrlEnv) {
       try {
+        let listingsCsv = await loadCsvFromUrls(listingsUrlEnv, null);
         const rentalTxnAvgByBeds = {
           studio: parseFloat(payload.rental?.studio_avg_aed) || null,
           '1br':  parseFloat(payload.rental?.apt_1br_avg_aed) || null,
           '2br':  parseFloat(payload.rental?.apt_2br_avg_aed) || null,
           '3br':  parseFloat(payload.rental?.villa_3br_avg_aed) || null,
         };
-        const rentalTxnByBuildingBed = payload.rental?.txn_by_building_bed || {};
-        const rentalTxnByCommunityBed = payload.rental?.txn_by_community_bed || {};
-
-        const built = buildListingsPayload(listingsResult.text, listingsResult.label, {
+        const built = buildListingsPayload(listingsCsv.text, listingsCsv.label, {
           rentalTxnAvgByBeds,
-          rentalTxnByBuildingBed,
-          rentalTxnByCommunityBed,
+          rentalTxnByBuildingBed: payload.rental?.txn_by_building_bed || {},
+          rentalTxnByCommunityBed: payload.rental?.txn_by_community_bed || {},
           dataType: 'rental',
           filterArea: '',
           skipHotListings: false,
         });
+        listingsCsv = null;
 
         if (built.ok && built.listings) {
           const weeklyRentals = parseInt(payload.weekly?.rent_volume?.value) || null;
@@ -210,28 +190,26 @@ export async function POST(request) {
           }
           payload.listings = built.listings;
         } else {
-          payload.listings = { error: built.error, source: listingsResult.label };
+          payload.listings = { error: built.error };
         }
       } catch (e) {
         payload.listings = { error: `Listings build failed: ${e?.message || e}` };
       }
     }
 
-    // 7. Merge sales listings
-    if (salesListingsResult?.ok) {
+    // 4. Load + build sales listings, then release
+    if (salesListingsUrlEnv) {
       try {
-        const salesTxnAvgByBeds = payload.sale_txn_avg_by_beds || {};
-        const salesTxnByBuildingBed = payload.sale_txn_by_building_bed || {};
-        const salesTxnByCommunityBed = payload.sale_txn_by_community_bed || {};
-
-        const built = buildListingsPayload(salesListingsResult.text, salesListingsResult.label, {
-          salesTxnAvgByBeds,
-          salesTxnByBuildingBed,
-          salesTxnByCommunityBed,
+        let salesListingsCsv = await loadCsvFromUrls(salesListingsUrlEnv, null);
+        const built = buildListingsPayload(salesListingsCsv.text, salesListingsCsv.label, {
+          salesTxnAvgByBeds: payload.sale_txn_avg_by_beds || {},
+          salesTxnByBuildingBed: payload.sale_txn_by_building_bed || {},
+          salesTxnByCommunityBed: payload.sale_txn_by_community_bed || {},
           dataType: 'sales',
           filterArea: '',
           skipHotListings: false,
         });
+        salesListingsCsv = null;
 
         if (built.ok && built.listings) {
           const weeklySales = parseInt(payload.weekly?.sale_volume?.value, 10) || null;
@@ -246,7 +224,7 @@ export async function POST(request) {
           }
           payload.sales_listings = built.listings;
         } else {
-          payload.sales_listings = { error: built.error, source: salesListingsResult.label };
+          payload.sales_listings = { error: built.error };
         }
       } catch (e) {
         payload.sales_listings = { error: `Sales listings build failed: ${e?.message || e}` };
