@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 import { appendFile } from 'node:fs/promises';
+import { NextResponse } from 'next/server';
 
 import { buildPayloadFromCsvText, deriveAnalysisWindows } from '../../../lib/salesCsvPayload.js';
 import { mergeRentalIntoPayload } from '../../../lib/rentalCsvPayload.js';
@@ -424,7 +425,10 @@ export async function GET(request) {
       const json = JSON.parse(text);
         if (json && typeof json === 'object' && json.ok !== false) {
         const body = json.ok === undefined ? { ok: true, ...json } : json;
-        if (!skipRental && rentalUrlEnv && body && typeof body === 'object') {
+        const snapshotTrust =
+          body._property_snapshot_v1 === true ||
+          String(body.data_freshness || '').includes('snapshot build');
+        if (!skipRental && rentalUrlEnv && body && typeof body === 'object' && !snapshotTrust) {
           try {
             const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
             const windows = deriveAnalysisWindows([]);
@@ -437,7 +441,11 @@ export async function GET(request) {
         // #region agent log
         fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H5',location:'property/route.js:GET',message:'return metrics_json path',data:{ms:Date.now()-propT0},timestamp:Date.now()})}).catch(()=>{});
         // #endregion
-        return Response.json(body);
+        return NextResponse.json(body, {
+          headers: {
+            'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        });
       }
     } catch {
       /* fall through to CSV URLs */

@@ -1323,10 +1323,9 @@ export function DashboardView() {
       if (a) q.set('area', a);
       const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
       const tFetch0 = Date.now();
-      // Short budget for the *full* response (snapshot + rental + listings). When that path is slow (common on
-      // large CSVs), waiting 120s only delays first paint; fast sales-only + deferred enrich still load the rest.
-      // Fast metrics/snapshot builds usually finish well under this; heavy builds rarely beat 120s anyway (logs).
-      const timeoutMs = 55000;
+      // Default view (no upload path / area): allow time for PROPERTY_METRICS_JSON_URL snapshot download.
+      // Custom live paths keep a shorter race so we fail fast to sales-only + /api/property/live segments.
+      const timeoutMs = !customPath && !a ? 120000 : 55000;
       let r;
       try {
         r = await Promise.race([
@@ -1390,13 +1389,8 @@ export function DashboardView() {
           // #region agent log
           fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H6',location:'page.js:refreshProp',message:'fast retry success',data:{ms:Date.now()-tFast0,hasDebugSkips:!!df?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
           // #endregion
-          // Deferred enrichment: same full /api/property work, but without blocking the
-          // main spinner (loadProp clears in finally). Epoch guard drops stale runs.
-          // Property route maxDuration 300s (vercel.json). Logs: parallel rental+sales both at 285s — rental barely won,
-          // sales-listings timed twice; also "Failed to fetch" when both hit the origin at once. Sequential sales pull
-          // + longer client race + skipHot on sales-only reduces CPU so the handler can finish.
-          const ENRICH_MS_DEFERRED = 120000;
-          const ENRICH_MS_SALES_LISTINGS = 120000;
+          // Deferred: parallel /api/property/live segments (CDN-cacheable); epoch guard cancels stale runs.
+          const ENRICH_SEGMENT_MS = 310000;
           const ingestEnrich = (message, data, hypothesisId = 'H13') => {
             fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844', {
               method: 'POST',
@@ -1414,311 +1408,95 @@ export function DashboardView() {
           };
           void (async () => {
             const sameEpoch = () => propEnrichEpochRef.current === enrichEpoch;
-            let rentalEnriched = false;
-            let rentalNA = false;
-            let rentalListingsNA = false;
-            let rentalListingsOk = false;
-            let salesListingsNA = false;
-            let salesListingsOk = false;
-            // Skip "full" deferred attempt: logs show it always hit ~119s timeout (noSnapshot CSV path) before rental-only.
-
+            const pullSeg = async (type) => {
+              try {
+                const liveQ = new URLSearchParams(q);
+                liveQ.set('type', type);
+                const r = await Promise.race([
+                  fetch(`/api/property/live?${liveQ.toString()}`),
+                  new Promise((_, rej) => {
+                    setTimeout(() => rej(new Error(`live segment timeout ${type}`)), ENRICH_SEGMENT_MS);
+                  }),
+                ]);
+                const d = await r.json().catch(() => ({}));
+                return { r, d, err: null };
+              } catch (err) {
+                return { r: null, d: null, err };
+              }
+            };
             try {
-              const qRent = new URLSearchParams(q);
-              qRent.set('noSnapshot', '1');
-              qRent.set('skipAi', '1');
-              qRent.set('skipListings', '1');
-              qRent.set('skipSalesListings', '1');
-              qRent.set('skipHotListings', '1');
-              ingestEnrich('deferred enrich rental-only start', {});
-              const r2 = await Promise.race([
-                fetch(`/api/property?${qRent.toString()}`),
-                new Promise((_, rej) => {
-                  setTimeout(() => rej(new Error('deferred rental timeout')), ENRICH_MS_DEFERRED);
-                }),
+              ingestEnrich('deferred enrich live parallel start', { types: ['rental', 'listings_rental', 'listings_sales'] }, 'H14');
+              const [outR, outRL, outSL] = await Promise.all([
+                pullSeg('rental'),
+                pullSeg('listings_rental'),
+                pullSeg('listings_sales'),
               ]);
-              const d2 = await r2.json().catch(() => ({}));
-              if (sameEpoch() && r2.ok && d2?.ok) {
-                setProp((prev) => mergeRentalSliceFromFetch(prev, d2));
-                const rn = String(d2.rental?.note || '');
+              if (!sameEpoch()) return;
+
+              let rentalEnriched = false;
+              let rentalNA = false;
+              let rentalListingsNA = false;
+              let rentalListingsOk = false;
+              let salesListingsNA = false;
+              let salesListingsOk = false;
+
+              if (outR.err || !outR.r?.ok || !outR.d?.ok) {
+                ingestEnrich('deferred enrich live rental miss', { err: String(outR.err?.message || outR.err || '').slice(0, 120) }, 'H13');
+              } else {
+                const rn = String(outR.d.rental?.note || '');
                 if (rn.includes('not connected yet')) rentalNA = true;
                 else rentalEnriched = !rn.includes('Rental URL failed');
-                if (rentalEnriched || rentalNA) {
-                  setPropError((prev) => prev && (String(prev).includes('background') || String(prev).includes('Showing core sales'))
-                    ? 'Rental loaded; still loading listings in the background…'
-                    : prev);
-                }
-                ingestEnrich('deferred enrich rental-only ok', { rentalEnriched, rentalNA });
+              }
+              if (!outRL.err && outRL.r?.ok && outRL.d?.ok) {
+                if (outRL.d.listings == null) rentalListingsNA = true;
+                else rentalListingsOk = !outRL.d.listings.error;
               } else {
-                ingestEnrich('deferred enrich rental-only miss', { httpOk: r2?.ok, bodyOk: d2?.ok });
+                ingestEnrich('deferred enrich live rl miss', {}, 'H14');
               }
-            } catch (e2) {
-              ingestEnrich('deferred enrich rental-only err', { err: String(e2?.message || e2).slice(0, 160) });
-            }
-
-            if (!sameEpoch()) return;
-
-            // Sequential: sales-listings alone gets a full client window after rental-listings (avoids parallel overload).
-            const qRentalListings = new URLSearchParams(q);
-            qRentalListings.set('noSnapshot', '1');
-            qRentalListings.set('skipAi', '1');
-            qRentalListings.set('skipRental', '1');
-            qRentalListings.delete('skipListings');
-            qRentalListings.set('skipSalesListings', '1');
-            // Hot listings need computeHotListings (skipHotListings=0); was forced on for speed but left tabs empty.
-
-            const qSalesListingsOnly = new URLSearchParams(q);
-            qSalesListingsOnly.set('noSnapshot', '1');
-            qSalesListingsOnly.set('skipAi', '1');
-            qSalesListingsOnly.set('skipRental', '1');
-            qSalesListingsOnly.set('skipListings', '1');
-            qSalesListingsOnly.delete('skipSalesListings');
-            qSalesListingsOnly.set('skipHotListings', '1');
-
-            ingestEnrich('deferred enrich listings sequential start', {}, 'H14');
-
-            const pullRentalListings = async () => {
-              try {
-                const r = await Promise.race([
-                  fetch(`/api/property?${qRentalListings.toString()}`),
-                  new Promise((_, rej) => {
-                    setTimeout(() => rej(new Error('deferred rental-listings timeout')), ENRICH_MS_DEFERRED);
-                  }),
-                ]);
-                const d = await r.json().catch(() => ({}));
-                return { r, d, err: null };
-              } catch (err) {
-                return { r: null, d: null, err };
-              }
-            };
-
-            const pullSalesListings = async () => {
-              try {
-                const r = await Promise.race([
-                  fetch(`/api/property?${qSalesListingsOnly.toString()}`),
-                  new Promise((_, rej) => {
-                    setTimeout(() => rej(new Error('deferred sales-listings timeout')), ENRICH_MS_SALES_LISTINGS);
-                  }),
-                ]);
-                const d = await r.json().catch(() => ({}));
-                return { r, d, err: null };
-              } catch (err) {
-                return { r: null, d: null, err };
-              }
-            };
-
-            try {
-              const outRL = await pullRentalListings();
-
-              if (!sameEpoch()) return;
-
-              if (outRL.err) {
-                ingestEnrich('deferred enrich rental-listings err', { err: String(outRL.err?.message || outRL.err).slice(0, 160) }, 'H14');
-              } else if (outRL.r?.ok && outRL.d?.ok) {
-                const d = outRL.d;
-                setProp((prev) =>
-                  prev && d.listings != null
-                    ? { ...prev, listings: d.listings }
-                    : prev,
-                );
-                if (d.listings == null) rentalListingsNA = true;
-                else rentalListingsOk = !d.listings.error;
-                if (rentalListingsOk || rentalListingsNA) {
-                  setPropError((prev) => prev && (String(prev).includes('background') || String(prev).includes('Rental loaded') || String(prev).includes('Showing core sales'))
-                    ? 'Almost done; loading sales listings…'
-                    : prev);
-                }
-                ingestEnrich('deferred enrich rental-listings ok', { rentalListingsOk, rentalListingsNA }, 'H14');
+              if (!outSL.err && outSL.r?.ok && outSL.d?.ok) {
+                if (outSL.d.sales_listings == null) salesListingsNA = true;
+                else salesListingsOk = !outSL.d.sales_listings.error;
               } else {
-                ingestEnrich('deferred enrich rental-listings miss', { httpOk: outRL.r?.ok, bodyOk: outRL.d?.ok }, 'H14');
+                ingestEnrich('deferred enrich live sl miss', {}, 'H15');
               }
 
-              if (!sameEpoch()) return;
-
-              let outSL = { r: null, d: null, err: null };
-              for (let attempt = 0; attempt < 1 && sameEpoch(); attempt++) {
-                if (attempt > 0) {
-                  ingestEnrich('deferred enrich sales-listings retry loop', { attempt }, 'H15');
-                  await new Promise((res) => {
-                    setTimeout(res, 2000 * attempt);
-                  });
+              setProp((prev) => {
+                let p = prev;
+                if (!outR.err && outR.r?.ok && outR.d?.ok) p = mergeRentalSliceFromFetch(p, outR.d);
+                if (!outRL.err && outRL.r?.ok && outRL.d?.ok && outRL.d.listings != null) {
+                  p = { ...p, listings: outRL.d.listings };
                 }
-                outSL = await pullSalesListings();
-                if (!outSL.err && outSL.r?.ok && outSL.d?.ok) break;
-                const emsg = String(outSL.err?.message || '');
-                if (!emsg.includes('timeout') && !emsg.includes('Failed to fetch')) break;
-              }
+                if (!outSL.err && outSL.r?.ok && outSL.d?.ok && outSL.d.sales_listings != null) {
+                  p = { ...p, sales_listings: outSL.d.sales_listings };
+                }
+                return p;
+              });
 
-              if (!sameEpoch()) return;
-
-              if (outSL.err) {
-                ingestEnrich('deferred enrich sales-listings err', { err: String(outSL.err?.message || outSL.err).slice(0, 160) }, 'H15');
-              } else if (outSL.r?.ok && outSL.d?.ok) {
-                const d = outSL.d;
-                setProp((prev) =>
-                  prev && d.sales_listings != null
-                    ? { ...prev, sales_listings: d.sales_listings }
-                    : prev,
-                );
-                if (d.sales_listings == null) salesListingsNA = true;
-                else salesListingsOk = !d.sales_listings.error;
-                if (salesListingsOk || salesListingsNA) {
+              if (sameEpoch()) {
+                const rentalOk = rentalNA || rentalEnriched;
+                const rentalLOk = rentalListingsNA || rentalListingsOk;
+                const salesLOk = salesListingsNA || salesListingsOk;
+                const isProgressMsg = (s) => {
+                  const t = String(s || '');
+                  return t.includes('background') || t.includes('Showing core sales')
+                    || t.includes('Rental loaded') || t.includes('Almost done');
+                };
+                if (rentalOk && rentalLOk && salesLOk) {
                   setPropError(null);
+                } else {
+                  const missing = [];
+                  if (!rentalOk) missing.push('rental');
+                  if (!rentalLOk) missing.push('rental listings');
+                  if (!salesLOk) missing.push('sales listings');
+                  setPropError((prev) => isProgressMsg(prev)
+                    ? `Could not load ${missing.join(', ')} — try refreshing.`
+                    : prev);
                 }
-                ingestEnrich('deferred enrich sales-listings ok', { salesListingsOk, salesListingsNA }, 'H15');
-              } else {
-                ingestEnrich('deferred enrich sales-listings miss', { httpOk: outSL.r?.ok, bodyOk: outSL.d?.ok }, 'H15');
               }
             } catch (e3) {
-              ingestEnrich('deferred enrich listings sequential err', { err: String(e3?.message || e3).slice(0, 160) }, 'H14');
-            }
-
-            if (sameEpoch()) {
-              const rentalOk = rentalNA || rentalEnriched;
-              const rentalLOk = rentalListingsNA || rentalListingsOk;
-              const salesLOk = salesListingsNA || salesListingsOk;
-              const isProgressMsg = (s) => {
-                const t = String(s || '');
-                return t.includes('background') || t.includes('Showing core sales')
-                  || t.includes('Rental loaded') || t.includes('Almost done');
-              };
-              if (rentalOk && rentalLOk && salesLOk) {
-                setPropError(null);
-              } else {
-                const missing = [];
-                if (!rentalOk) missing.push('rental');
-                if (!rentalLOk) missing.push('rental listings');
-                if (!salesLOk) missing.push('sales listings');
-                setPropError((prev) => isProgressMsg(prev)
-                  ? `Could not load ${missing.join(', ')} — try refreshing.`
-                  : prev);
-              }
+              ingestEnrich('deferred enrich live parallel err', { err: String(e3?.message || e3).slice(0, 160) }, 'H14');
             }
           })();
-
-          return;
-
-          // #region agent log
-          fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H7',location:'page.js:refreshProp',message:'try listings-only variant',data:{fastTimeoutMs},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
-
-          // Variant A: keep listings + sales listings (still skip rental + AI)
-          const qListingsOnly = new URLSearchParams(qFast);
-          qListingsOnly.set('skipRental', '1');
-          qListingsOnly.set('skipListings', '0');
-          qListingsOnly.set('skipSalesListings', '0');
-          // Force a short listings CSV fetch to determine if the stall is network/retries vs CPU parsing.
-          qListingsOnly.set('listingsTimeoutMs', '5000');
-          qListingsOnly.set('listingsMaxAttempts', '1');
-          qListingsOnly.set('salesListingsTimeoutMs', '5000');
-          qListingsOnly.set('salesListingsMaxAttempts', '1');
-          const propUrlListingsOnly = `/api/property?${qListingsOnly.toString()}`;
-
-          const listingsOnlyTimeoutMs = 25000;
-          try {
-            const tA0 = Date.now();
-            const rfA = await Promise.race([
-              fetch(propUrlListingsOnly),
-              new Promise((_, reject) => {
-                setTimeout(() => reject(new Error(`prop listings-only retry timeout after ${listingsOnlyTimeoutMs}ms`)), listingsOnlyTimeoutMs);
-              }),
-            ]);
-            const dfA = await rfA.json().catch(() => ({}));
-            if (rfA.ok && dfA?.ok) {
-              setProp(dfA);
-              setPropError(`Full refresh timed out; partial loaded (listings-only variant).`);
-              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H7',location:'page.js:refreshProp',message:'listings-only variant success',data:{ms:Date.now()-tA0,skips:dfA?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
-            } else {
-              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H7',location:'page.js:refreshProp',message:'listings-only variant non-ok',data:{status:rfA?.status,detail:dfA?.detail,skips:dfA?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
-            }
-          } catch (eA) {
-            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H7',location:'page.js:refreshProp',message:'listings-only variant timed out',data:{ms:timeoutMs},timestamp:Date.now()})}).catch(()=>{});
-
-            // Variant B: keep rental (still skip listings + sales listings + AI)
-            const qRentalOnly = new URLSearchParams(qFast);
-            qRentalOnly.set('skipRental', '0');
-            qRentalOnly.set('skipListings', '1');
-            qRentalOnly.set('skipSalesListings', '1');
-            const propUrlRentalOnly = `/api/property?${qRentalOnly.toString()}`;
-
-            const rentalOnlyTimeoutMs = 25000;
-            try {
-              const tB0 = Date.now();
-              const rfB = await Promise.race([
-                fetch(propUrlRentalOnly),
-                new Promise((_, reject) => {
-                  setTimeout(() => reject(new Error(`prop rental-only retry timeout after ${rentalOnlyTimeoutMs}ms`)), rentalOnlyTimeoutMs);
-                }),
-              ]);
-              const dfB = await rfB.json().catch(() => ({}));
-              if (rfB.ok && dfB?.ok) {
-                setProp(dfB);
-                setPropError(`Full refresh timed out; partial loaded (rental-only variant).`);
-                fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H8',location:'page.js:refreshProp',message:'rental-only variant success',data:{ms:Date.now()-tB0,skips:dfB?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
-              } else {
-                fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H8',location:'page.js:refreshProp',message:'rental-only variant non-ok',data:{status:rfB?.status,detail:dfB?.detail,skips:dfB?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
-              }
-            } catch (eB) {
-              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H8',location:'page.js:refreshProp',message:'rental-only variant timed out',data:{error:String(eB?.message||eB).slice(0,120)},timestamp:Date.now()})}).catch(()=>{});
-            }
-          }
-
-          // Variant C: rentals listings only (skip sales listings)
-          const qRentListingsOnly = new URLSearchParams(qFast);
-          qRentListingsOnly.set('skipRental', '1');
-          qRentListingsOnly.set('skipListings', '0');
-          qRentListingsOnly.set('skipSalesListings', '1');
-          qRentListingsOnly.set('listingsTimeoutMs', '5000');
-          qRentListingsOnly.set('listingsMaxAttempts', '1');
-          const propUrlRentListingsOnly = `/api/property?${qRentListingsOnly.toString()}`;
-          const rentListingsOnlyTimeoutMs = 25000;
-          try {
-            const tC0 = Date.now();
-            const rfC = await Promise.race([
-              fetch(propUrlRentListingsOnly),
-              new Promise((_, reject) => {
-                setTimeout(() => reject(new Error(`prop rent-listings-only timeout after ${rentListingsOnlyTimeoutMs}ms`)), rentListingsOnlyTimeoutMs);
-              }),
-            ]);
-            const dfC = await rfC.json().catch(() => ({}));
-            if (rfC.ok && dfC?.ok) {
-              setProp(dfC);
-              setPropError(`Full refresh timed out; partial loaded (rental-listings-only variant).`);
-              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H9',location:'page.js:refreshProp',message:'rent-listings-only variant success',data:{ms:Date.now()-tC0,skips:dfC?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
-              return;
-            }
-            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H9',location:'page.js:refreshProp',message:'rent-listings-only variant non-ok',data:{status:rfC?.status,detail:dfC?.detail,skips:dfC?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
-          } catch (eC) {
-            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H9',location:'page.js:refreshProp',message:'rent-listings-only variant timed out',data:{error:String(eC?.message||eC).slice(0,160)},timestamp:Date.now()})}).catch(()=>{});
-          }
-
-          // Variant D: sales listings only (skip rental listings)
-          const qSalesListingsOnly = new URLSearchParams(qFast);
-          qSalesListingsOnly.set('skipRental', '1');
-          qSalesListingsOnly.set('skipListings', '1');
-          qSalesListingsOnly.set('skipSalesListings', '0');
-          qSalesListingsOnly.set('salesListingsTimeoutMs', '5000');
-          qSalesListingsOnly.set('salesListingsMaxAttempts', '1');
-          const propUrlSalesListingsOnly = `/api/property?${qSalesListingsOnly.toString()}`;
-          const salesListingsOnlyTimeoutMs = 25000;
-          try {
-            const tD0 = Date.now();
-            const rfD = await Promise.race([
-              fetch(propUrlSalesListingsOnly),
-              new Promise((_, reject) => {
-                setTimeout(() => reject(new Error(`prop sales-listings-only timeout after ${salesListingsOnlyTimeoutMs}ms`)), salesListingsOnlyTimeoutMs);
-              }),
-            ]);
-            const dfD = await rfD.json().catch(() => ({}));
-            if (rfD.ok && dfD?.ok) {
-              setProp(dfD);
-              setPropError(`Full refresh timed out; partial loaded (sales-listings-only variant).`);
-              fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H10',location:'page.js:refreshProp',message:'sales-listings-only variant success',data:{ms:Date.now()-tD0,skips:dfD?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
-              return;
-            }
-            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H10',location:'page.js:refreshProp',message:'sales-listings-only variant non-ok',data:{status:rfD?.status,detail:dfD?.detail,skips:dfD?._debug_skips},timestamp:Date.now()})}).catch(()=>{});
-          } catch (eD) {
-            fetch('http://127.0.0.1:7603/ingest/99cc14af-5ec3-4b0c-b7f2-77017c17c844',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'69d0ba'},body:JSON.stringify({sessionId:'69d0ba',runId:'pre-fix',hypothesisId:'H10',location:'page.js:refreshProp',message:'sales-listings-only variant timed out',data:{error:String(eD?.message||eD).slice(0,160)},timestamp:Date.now()})}).catch(()=>{});
-          }
 
           return;
         } catch (fastErr) {

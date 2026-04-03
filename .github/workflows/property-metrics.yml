@@ -1,5 +1,5 @@
-# Nightly (or manual): build property_metrics.json from HTTPS CSV URLs, upload artifact.
-# After first run: download artifact → upload file to Vercel Blob / R2 → set PROPERTY_METRICS_JSON_URL.
+# Builds property_metrics.json from HTTPS CSV URLs and commits data/property/property_metrics.json.
+# Set Vercel PROPERTY_METRICS_JSON_URL to the raw GitHub URL for that file (fast dashboard loads).
 #
 # Required repo secrets:
 #   PROPERTY_SALES_CSV_URL      — HTTPS URL to sales transactions CSV
@@ -7,6 +7,9 @@
 #   PROPERTY_RENTAL_CSV_URL     — HTTPS URL to rental transactions CSV
 #   PROPERTY_LISTINGS_CSV_URL   — HTTPS URL to rental listings CSV
 #   PROPERTY_SALES_LISTINGS_CSV_URL — HTTPS URL to sales listings CSV
+#
+# Optional: from your CSV data repo, trigger this repo via repository_dispatch (event type property_csv_updated)
+# using a PAT with repo scope on this repository.
 
 name: Property metrics snapshot
 
@@ -14,6 +17,11 @@ on:
   schedule:
     - cron: '0 5 * * *' # 05:00 UTC daily
   workflow_dispatch:
+  repository_dispatch:
+    types: [property_csv_updated]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -35,10 +43,18 @@ jobs:
           PROPERTY_LISTINGS_CSV_URL: ${{ secrets.PROPERTY_LISTINGS_CSV_URL }}
           PROPERTY_SALES_LISTINGS_CSV_URL: ${{ secrets.PROPERTY_SALES_LISTINGS_CSV_URL }}
         run: |
-          node scripts/build-property-snapshot.mjs > property_metrics.json
-          test -s property_metrics.json
+          mkdir -p data/property
+          node scripts/build-property-snapshot.mjs > data/property/property_metrics.json
+          test -s data/property/property_metrics.json
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: property-metrics
-          path: property_metrics.json
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/property/property_metrics.json
+          if git diff --staged --quiet; then
+            echo "No snapshot changes."
+          else
+            git commit -m "chore(data): refresh property_metrics.json [skip ci]"
+            git push
+          fi

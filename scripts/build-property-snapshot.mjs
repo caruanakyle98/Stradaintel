@@ -68,6 +68,8 @@ const out = { ...built.body };
 delete out._stats_for_ai;
 delete out._yield_sales_rows;
 out.ok = true;
+/** Server skips live rental CSV merge when serving this snapshot (see /api/property metrics branch). */
+out._property_snapshot_v1 = true;
 
 if (rentalUrl && built.windows) {
   try {

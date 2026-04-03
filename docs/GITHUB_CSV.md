@@ -86,6 +86,10 @@ Replace files → `git commit` → `git push`. No redeploy needed; refresh dashb
 
 ## 4b. No-credit daily snapshot mode
 
+The workflow commits **`data/property/property_metrics.json`** to this repo when the snapshot changes. Point **`PROPERTY_METRICS_JSON_URL`** at the **raw** URL for that path, for example:
+
+`https://raw.githubusercontent.com/<USER>/<REPO>/main/data/property/property_metrics.json`
+
 Use `.github/workflows/property-metrics.yml` to build `property_metrics.json` daily from:
 
 - `PROPERTY_SALES_CSV_URL` (sales transactions)
