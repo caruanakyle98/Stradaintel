@@ -1442,6 +1442,11 @@ export function DashboardView() {
                 const rn = String(d2.rental?.note || '');
                 if (rn.includes('not connected yet')) rentalNA = true;
                 else rentalEnriched = !rn.includes('Rental URL failed');
+                if (rentalEnriched || rentalNA) {
+                  setPropError((prev) => prev && (String(prev).includes('background') || String(prev).includes('Showing core sales'))
+                    ? 'Rental loaded; still loading listings in the background…'
+                    : prev);
+                }
                 ingestEnrich('deferred enrich rental-only ok', { rentalEnriched, rentalNA });
               } else {
                 ingestEnrich('deferred enrich rental-only miss', { httpOk: r2?.ok, bodyOk: d2?.ok });
@@ -1517,6 +1522,11 @@ export function DashboardView() {
                 );
                 if (d.listings == null) rentalListingsNA = true;
                 else rentalListingsOk = !d.listings.error;
+                if (rentalListingsOk || rentalListingsNA) {
+                  setPropError((prev) => prev && (String(prev).includes('background') || String(prev).includes('Rental loaded') || String(prev).includes('Showing core sales'))
+                    ? 'Almost done; loading sales listings…'
+                    : prev);
+                }
                 ingestEnrich('deferred enrich rental-listings ok', { rentalListingsOk, rentalListingsNA }, 'H14');
               } else {
                 ingestEnrich('deferred enrich rental-listings miss', { httpOk: outRL.r?.ok, bodyOk: outRL.d?.ok }, 'H14');
@@ -1551,6 +1561,9 @@ export function DashboardView() {
                 );
                 if (d.sales_listings == null) salesListingsNA = true;
                 else salesListingsOk = !d.sales_listings.error;
+                if (salesListingsOk || salesListingsNA) {
+                  setPropError(null);
+                }
                 ingestEnrich('deferred enrich sales-listings ok', { salesListingsOk, salesListingsNA }, 'H15');
               } else {
                 ingestEnrich('deferred enrich sales-listings miss', { httpOk: outSL.r?.ok, bodyOk: outSL.d?.ok }, 'H15');
