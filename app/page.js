@@ -2593,15 +2593,46 @@ export function DashboardView() {
                           new {type} listings this week{listingsForTab.new_prev_7_days != null ? ` (${listingsForTab.new_prev_7_days.toLocaleString()} last week)` : ''}
                         </div>
 
-                        {/* ── What this means ── */}
-                        <div style={{ fontSize: 11, color: C.t2, marginBottom: 20, lineHeight: 1.6, padding: '10px 14px', borderRadius: 8, background: 'rgba(15,22,38,0.6)', borderLeft: `3px solid ${wowUp ? C.am : wowDown ? C.g : C.border}` }}>
-                          {wowUp
-                            ? `More ${type} listings are hitting the market compared to last week — buyers have more choice, which can put downward pressure on prices.`
-                            : wowDown
-                            ? `Fewer new ${type} listings this week than last — supply is tightening, which tends to support prices.`
-                            : `New ${type} supply is broadly flat week-on-week — market conditions are stable.`
+                        {/* ── What this means — based on supply depth (most reliable signal), WoW used only as context ── */}
+                        {(() => {
+                          const sd = listingsForTab.supply_depth;
+                          const weeks = sd?.weeks;
+                          // Derive supply pressure from inventory cover, not from a single WoW move
+                          let supplyLabel, supplyMsg, borderCol;
+                          if (weeks != null) {
+                            if (weeks <= 4) {
+                              supplyLabel = 'Supply is tight';
+                              supplyMsg = `At current pace, active stock would be absorbed in under ${weeks} weeks. There are relatively few ${type} listings on the market right now.`;
+                              borderCol = C.g;
+                            } else if (weeks <= 8) {
+                              supplyLabel = 'Supply is balanced';
+                              supplyMsg = `There are around ${weeks} weeks of active ${type} stock at current pace — a relatively healthy level, not strongly favouring buyers or sellers.`;
+                              borderCol = C.border;
+                            } else if (weeks <= 16) {
+                              supplyLabel = 'Supply is building';
+                              supplyMsg = `With ${weeks} weeks of ${type} inventory at current pace, buyers have meaningful choice. Rising stock levels can moderate price growth.`;
+                              borderCol = C.am;
+                            } else {
+                              supplyLabel = 'Supply is elevated';
+                              supplyMsg = `${weeks} weeks of active ${type} inventory is a high level — there are significantly more listings than the market is currently absorbing.`;
+                              borderCol = C.red;
+                            }
+                          } else {
+                            supplyLabel = null;
+                            supplyMsg = null;
+                            borderCol = C.border;
                           }
-                        </div>
+                          const wowNote = wowPct != null
+                            ? ` New listings this week are ${wowUp ? 'up' : wowDown ? 'down' : 'flat'} ${Math.abs(wowPct).toFixed(0)}% vs last week — one week is not enough to call a trend.`
+                            : '';
+                          return (
+                            <div style={{ fontSize: 11, color: C.t2, marginBottom: 20, lineHeight: 1.6, padding: '10px 14px', borderRadius: 8, background: 'rgba(15,22,38,0.6)', borderLeft: `3px solid ${borderCol}` }}>
+                              {supplyLabel && <strong style={{ color: C.t1 }}>{supplyLabel}. </strong>}
+                              {supplyMsg || `New ${type} listings this week are ${wowUp ? 'up' : wowDown ? 'down' : 'flat'} week-on-week — one week of data is not enough to call a trend.`}
+                              {supplyMsg && wowNote}
+                            </div>
+                          );
+                        })()}
 
                         {/* ── Bar chart: new listings per day ── */}
                         <div style={{ fontSize: 10, color: C.tm, marginBottom: 10 }}>
