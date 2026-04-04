@@ -1639,7 +1639,30 @@ export function DashboardView() {
   const eiborRate= parseFloat(intel?.eibor?.rate_pct||0);
   const pmiVal   = parseFloat(intel?.uae_pmi?.headline||0);
 
-  const listingsForTab = propTab === 'sales' ? prop?.sales_listings : prop?.listings;
+  const listingsForTab = (() => {
+    const raw = propTab === 'sales' ? prop?.sales_listings : prop?.listings;
+    if (!raw) return raw;
+    // Derive supply_depth if missing from JSON — needs listing total + weekly transaction pace
+    if (!raw.supply_depth && raw.total > 0) {
+      const weeklyVol = parseInt(
+        propTab === 'sales' ? prop?.weekly?.sale_volume?.value : prop?.weekly?.rent_volume?.value,
+        10,
+      ) || null;
+      if (weeklyVol && weeklyVol > 0) {
+        const weeks = parseFloat((raw.total / weeklyVol).toFixed(1));
+        return {
+          ...raw,
+          supply_depth: {
+            weeks,
+            listings_total: raw.total,
+            weekly_registrations: weeklyVol,
+            label: `${weeks} weeks of ${propTab === 'sales' ? 'sales' : 'rental'} listing cover`,
+          },
+        };
+      }
+    }
+    return raw;
+  })();
   const activeHotType = hotTypeByTab[propTab] || 'apartment';
   const hotTypeOptions = [
     ['apartment', 'Apartments'],
