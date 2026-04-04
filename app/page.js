@@ -2685,54 +2685,37 @@ export function DashboardView() {
                                   }}
                                 >
                                   {/* Bar pair */}
-                                  <div style={{ display: 'flex', gap: 3, alignItems: 'flex-end', height: 80, marginBottom: 5 }}>
-                                    {dualWeek && (
-                                      <div
-                                        style={{
-                                          width: 20,
-                                          height: 76,
-                                          display: 'flex',
-                                          alignItems: 'flex-end',
-                                          justifyContent: 'center',
-                                          borderRadius: 6,
-                                          background: 'rgba(36,52,80,0.2)',
-                                        }}
-                                        title={`Prior week ${p.label}: ${p.count}`}
-                                      >
+                                  <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 90, marginBottom: 5 }}>
+                                    {dualWeek && (() => {
+                                      const barH = Math.max(Math.round((p.count / maxC) * 80), p.count > 0 ? 6 : 0);
+                                      return (
                                         <div
                                           style={{
-                                            width: '100%',
-                                            height: `${Math.max((p.count / maxC) * 100, p.count > 0 ? 6 : 0)}%`,
-                                            borderRadius: 6,
-                                            background: p.count > 0 ? 'rgba(140,140,150,0.35)' : 'transparent',
-                                            border: p.count > 0 ? `1px solid ${C.border}` : 'none',
+                                            width: 22,
+                                            height: barH,
+                                            borderRadius: 5,
+                                            background: p.count > 0 ? 'rgba(147,163,183,0.3)' : 'transparent',
+                                            border: p.count > 0 ? `1px solid rgba(147,163,183,0.2)` : 'none',
                                           }}
+                                          title={`Prior week ${p.label}: ${p.count}`}
                                         />
-                                      </div>
-                                    )}
-                                    <div
-                                      style={{
-                                        width: dualWeek ? 20 : '100%',
-                                        maxWidth: dualWeek ? 20 : 44,
-                                        height: 76,
-                                        display: 'flex',
-                                        alignItems: 'flex-end',
-                                        justifyContent: 'center',
-                                        borderRadius: 6,
-                                        background: `rgba(36,52,80,0.3)`,
-                                      }}
-                                      title={`This week ${d.label}: ${d.count}`}
-                                    >
-                                      <div
-                                        style={{
-                                          width: '100%',
-                                          height: `${Math.max((d.count / maxC) * 100, d.count > 0 ? 6 : 0)}%`,
-                                          borderRadius: 6,
-                                          background: d.count > 0 ? `linear-gradient(180deg, ${C.amL} 0%, rgba(201,168,76,0.4) 100%)` : 'transparent',
-                                          boxShadow: isHighest && d.count > 0 ? C.glowAm : d.count > 0 ? '0 0 10px rgba(251,191,36,0.18)' : 'none',
-                                        }}
-                                      />
-                                    </div>
+                                      );
+                                    })()}
+                                    {(() => {
+                                      const barH = Math.max(Math.round((d.count / maxC) * 80), d.count > 0 ? 6 : 0);
+                                      return (
+                                        <div
+                                          style={{
+                                            width: dualWeek ? 22 : 32,
+                                            height: barH,
+                                            borderRadius: 5,
+                                            background: d.count > 0 ? `linear-gradient(180deg, ${C.amL}, rgba(201,168,76,0.5))` : 'transparent',
+                                            boxShadow: isHighest && d.count > 0 ? `0 0 14px rgba(251,191,36,0.5)` : d.count > 0 ? '0 0 8px rgba(251,191,36,0.2)' : 'none',
+                                          }}
+                                          title={`This week ${d.label}: ${d.count}`}
+                                        />
+                                      );
+                                    })()}
                                   </div>
 
                                   {/* Counts */}
