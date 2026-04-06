@@ -1330,8 +1330,9 @@ export function DashboardView() {
       const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
       const tFetch0 = Date.now();
       // Default view (no upload path / area / building): allow time for PROPERTY_METRICS_JSON_URL snapshot download.
-      // Custom live paths keep a shorter race so we fail fast to sales-only + /api/property/live segments.
-      const timeoutMs = !customPath && !a && !b ? 120000 : 55000;
+      // Days-only changes use same timeout (just windowing the same data).
+      // Custom live paths (area/building/CSV) keep a shorter race so we fail fast to sales-only + /api/property/live segments.
+      const timeoutMs = (!customPath && !a && !b) ? 120000 : 55000;
       let r;
       try {
         r = await Promise.race([
