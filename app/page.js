@@ -16,6 +16,9 @@ const na = v => { const s=str(v); return (!s||s==='N/A'||s==='null'||s==='undefi
 /** Merge rental-related fields from a full /api/property body (used after a sales-only fast path). */
 function mergeRentalSliceFromFetch(prev, d) {
   if (!prev || !d) return prev || d;
+  // Don't overwrite weekly sales metrics when a building filter is active — the rental segment
+  // fetch may return area-level weekly data, which would overwrite correctly building-scoped counts.
+  const keepPrevWeekly = !!(prev.filter_building);
   return {
     ...prev,
     rental: d.rental ?? prev.rental,
@@ -25,7 +28,7 @@ function mergeRentalSliceFromFetch(prev, d) {
     recent_rental_transactions: d.recent_rental_transactions ?? prev.recent_rental_transactions,
     rental_owner_briefing: d.rental_owner_briefing ?? prev.rental_owner_briefing,
     yields: d.yields ?? prev.yields,
-    weekly: d.weekly ?? prev.weekly,
+    weekly: keepPrevWeekly ? prev.weekly : (d.weekly ?? prev.weekly),
     sources_used: d.sources_used ?? prev.sources_used,
   };
 }

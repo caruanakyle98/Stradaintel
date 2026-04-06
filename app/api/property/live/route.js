@@ -47,7 +47,7 @@ export async function GET(request) {
     );
   }
 
-  const forwardKeys = new Set(['area', 'salesCsv']);
+  const forwardKeys = new Set(['area', 'building', 'salesCsv']);
   for (const [key, value] of request.nextUrl.searchParams.entries()) {
     if (key === 'type' || !forwardKeys.has(key)) continue;
     params.set(key, value);
