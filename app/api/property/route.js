@@ -304,8 +304,8 @@ async function loadSalesListingsCsvText({ timeoutMs = 50000, maxAttempts = 4 } =
   );
 }
 
-async function buildFromSalesText(csvRaw, label, { area, skipAi } = {}) {
-  const result = buildPayloadFromCsvText(csvRaw, label, { area: area || undefined });
+async function buildFromSalesText(csvRaw, label, { area, building, skipAi } = {}) {
+  const result = buildPayloadFromCsvText(csvRaw, label, { area: area || undefined, building: building || undefined });
   if (!result.ok) return result;
   const payload = { ...result.body };
   const windows = result.windows;
