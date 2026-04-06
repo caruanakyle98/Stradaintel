@@ -788,7 +788,7 @@ function SectionHead({ n, title, desc }) {
 }
 
 // ── Property transaction card ─────────────────────────────────
-function TxCard({ label, value, wowChg, yoyChg, trend, loading, period, source }) {
+function TxCard({ label, value, wowChg, yoyChg, trend, loading, period, source, chgPeriodLabel }) {
   const tc = trendCol(trend);
   const isMonthly = !!(period && /\b(month|months|monthly)\b/i.test(period));
   return (
@@ -799,7 +799,7 @@ function TxCard({ label, value, wowChg, yoyChg, trend, loading, period, source }
           {na(value)} <span style={{fontSize:16}}>{trendArrow(trend)}</span>
         </div>
         <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:4 }}>
-          {wowChg&&wowChg!=='N/A'&&<span style={{ fontSize:10, color:'var(--muted)' }}>vs last week: <span style={{color:wowChg.startsWith('+')?C.g:C.red,fontWeight:600}}>{wowChg}</span></span>}
+          {wowChg&&wowChg!=='N/A'&&<span style={{ fontSize:10, color:'var(--muted)' }}>{chgPeriodLabel || 'vs last week'}: <span style={{color:wowChg.startsWith('+')?C.g:C.red,fontWeight:600}}>{wowChg}</span></span>}
           {yoyChg&&yoyChg!=='N/A'&&<span style={{ fontSize:10, color:'var(--muted)' }}>vs last year: <span style={{color:yoyChg.startsWith('+')?C.g:C.red,fontWeight:600}}>{yoyChg}</span></span>}
         </div>
         {(period||(source&&!String(source).includes('Self-hosted CSV')))&&(
@@ -2136,8 +2136,8 @@ export function DashboardView() {
             <div className="reveal" style={{ marginBottom:16 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>HOW MANY DEALS ARE HAPPENING · {prop?.weekly?.period_label||'Latest week'}</div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                <TxCard label="Properties Sold" value={prop?.weekly?.sale_volume?.value} wowChg={prop?.weekly?.sale_volume?.chg_wow} yoyChg={prop?.weekly?.sale_volume?.chg_yoy} trend={prop?.weekly?.sale_volume?.trend} period={prop?.weekly?.sale_volume?.period} source={prop?.weekly?.sale_volume?.source} loading={loadProp}/>
-                <TxCard label="Total Sales Value" value={prop?.weekly?.sale_value_aed?.value} wowChg={prop?.weekly?.sale_value_aed?.chg_wow} yoyChg={prop?.weekly?.sale_value_aed?.chg_yoy} trend={prop?.weekly?.sale_value_aed?.trend} period={prop?.weekly?.sale_value_aed?.period} source={prop?.weekly?.sale_value_aed?.source} loading={loadProp}/>
+                <TxCard label="Properties Sold" value={prop?.weekly?.sale_volume?.value} wowChg={prop?.weekly?.sale_volume?.chg_wow} yoyChg={prop?.weekly?.sale_volume?.chg_yoy} trend={prop?.weekly?.sale_volume?.trend} period={prop?.weekly?.sale_volume?.period} source={prop?.weekly?.sale_volume?.source} chgPeriodLabel={prop?.weekly?.sale_volume?.chg_period_label} loading={loadProp}/>
+                <TxCard label="Total Sales Value" value={prop?.weekly?.sale_value_aed?.value} wowChg={prop?.weekly?.sale_value_aed?.chg_wow} yoyChg={prop?.weekly?.sale_value_aed?.chg_yoy} trend={prop?.weekly?.sale_value_aed?.trend} period={prop?.weekly?.sale_value_aed?.period} source={prop?.weekly?.sale_value_aed?.source} chgPeriodLabel={prop?.weekly?.sale_value_aed?.chg_period_label} loading={loadProp}/>
               </div>
             </div>
           )}
@@ -2196,8 +2196,8 @@ export function DashboardView() {
             <div className="reveal" style={{ marginBottom:16 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>RENTAL ACTIVITY · {prop?.weekly?.period_label||'Latest week'}</div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                <TxCard label="Rental registrations" value={prop?.weekly?.rent_volume?.value} wowChg={prop?.weekly?.rent_volume?.chg_wow} yoyChg={prop?.weekly?.rent_volume?.chg_yoy} trend={prop?.weekly?.rent_volume?.trend} period={prop?.weekly?.rent_volume?.period} source={prop?.weekly?.rent_volume?.source} loading={loadProp}/>
-                <TxCard label="Annualised rent (week)" value={prop?.weekly?.rent_value_aed?.value} wowChg={prop?.weekly?.rent_value_aed?.chg_wow} yoyChg={prop?.weekly?.rent_value_aed?.chg_yoy} trend={prop?.weekly?.rent_value_aed?.trend} period={prop?.weekly?.rent_value_aed?.period} source={prop?.weekly?.rent_value_aed?.source} loading={loadProp}/>
+                <TxCard label="Rental registrations" value={prop?.weekly?.rent_volume?.value} wowChg={prop?.weekly?.rent_volume?.chg_wow} yoyChg={prop?.weekly?.rent_volume?.chg_yoy} trend={prop?.weekly?.rent_volume?.trend} period={prop?.weekly?.rent_volume?.period} source={prop?.weekly?.rent_volume?.source} chgPeriodLabel={prop?.weekly?.rent_volume?.chg_period_label} loading={loadProp}/>
+                <TxCard label="Annualised rent (week)" value={prop?.weekly?.rent_value_aed?.value} wowChg={prop?.weekly?.rent_value_aed?.chg_wow} yoyChg={prop?.weekly?.rent_value_aed?.chg_yoy} trend={prop?.weekly?.rent_value_aed?.trend} period={prop?.weekly?.rent_value_aed?.period} source={prop?.weekly?.rent_value_aed?.source} chgPeriodLabel={prop?.weekly?.rent_value_aed?.chg_period_label} loading={loadProp}/>
               </div>
               {prop?.weekly?.rent_new_vs_renewal && !loadProp && (
                 <div className="reveal print-keep-together lp-card" style={{ marginTop:12, padding:'20px 22px' }}>
