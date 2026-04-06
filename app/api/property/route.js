@@ -431,8 +431,8 @@ export async function GET(request) {
         // Fall back to old format if snapshots not present (backwards compat)
         let body;
         if (json.snapshots && typeof json.snapshots === 'object') {
-          const snapshotKey = Math.min(30, Math.max(7, daysParam)); // clamp to 7-30
-          body = json.snapshots[snapshotKey] || json.snapshots[7] || { ok: false };
+          const snapshotKey = String(Math.min(30, Math.max(7, daysParam))); // clamp to 7-30, convert to string
+          body = json.snapshots[snapshotKey] || json.snapshots['7'] || { ok: false };
         } else {
           body = json.ok === undefined ? { ok: true, ...json } : json;
         }
