@@ -16,9 +16,6 @@ const na = v => { const s=str(v); return (!s||s==='N/A'||s==='null'||s==='undefi
 /** Merge rental-related fields from a full /api/property body (used after a sales-only fast path). */
 function mergeRentalSliceFromFetch(prev, d) {
   if (!prev || !d) return prev || d;
-  // Don't overwrite weekly sales metrics when a building filter is active — the rental segment
-  // fetch may return area-level weekly data, which would overwrite correctly building-scoped counts.
-  const keepPrevWeekly = !!(prev.filter_building);
   return {
     ...prev,
     rental: d.rental ?? prev.rental,
@@ -28,7 +25,7 @@ function mergeRentalSliceFromFetch(prev, d) {
     recent_rental_transactions: d.recent_rental_transactions ?? prev.recent_rental_transactions,
     rental_owner_briefing: d.rental_owner_briefing ?? prev.rental_owner_briefing,
     yields: d.yields ?? prev.yields,
-    weekly: keepPrevWeekly ? prev.weekly : (d.weekly ?? prev.weekly),
+    weekly: d.weekly ?? prev.weekly,
     sources_used: d.sources_used ?? prev.sources_used,
   };
 }
@@ -2116,7 +2113,7 @@ export function DashboardView() {
               <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.border}` }}>
                 <div style={{ fontFamily: "var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)' }}>Recent sales transactions</div>
                 <div style={{ fontSize: 10, color: C.tm, marginTop: 4 }}>
-                  Last 25 by date{prop?.filter_area ? ` · ${prop.filter_area}` : ''}
+                  Last 25 by date{prop?.filter_building ? ` · ${prop.filter_building}` : prop?.filter_area ? ` · ${prop.filter_area}` : ''}
                 </div>
               </div>
               {loadProp ? (
@@ -2159,15 +2156,7 @@ export function DashboardView() {
           )}
 
           {/* ── RENTAL TAB: weekly rental counts ── */}
-          {propTab === 'rental' && prop?.filter_building && (
-            <div className="reveal lp-card" style={{ marginBottom:12, padding:'14px 18px', borderLeft:`3px solid ${C.am}` }}>
-              <div style={{ fontSize:11, color:C.am, fontWeight:600, marginBottom:4 }}>Building filter active — rental data is area-level</div>
-              <div style={{ fontSize:11, color:'var(--muted)', lineHeight:1.55 }}>
-                Rental registrations come from a separate data source that cannot be filtered to a specific building.
-                The figures below reflect <strong style={{ color:C.t2 }}>{prop.filter_area || 'the selected area'}</strong> as a whole, not {prop.filter_building} specifically.
-              </div>
-            </div>
-          )}
+
           {propTab === 'rental' && (
             <div className="reveal" style={{ marginBottom:16 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>RENTAL ACTIVITY · {prop?.weekly?.period_label||'Latest week'}</div>
@@ -2210,13 +2199,13 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* ── RENTAL TAB: last 25 transactions (area-filtered, hidden at building level) ── */}
-          {propTab === 'rental' && !prop?.filter_building && (
+          {/* ── RENTAL TAB: last 25 transactions ── */}
+          {propTab === 'rental' && (
             <div className="reveal lp-card print-keep-together" style={{ marginBottom: 16, padding: 0, overflow: 'hidden' }}>
               <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.border}` }}>
                 <div style={{ fontFamily: "var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)' }}>Recent rental transactions</div>
                 <div style={{ fontSize: 10, color: C.tm, marginTop: 4 }}>
-                  Last 25 by date{prop?.filter_area ? ` · ${prop.filter_area}` : ''}
+                  Last 25 by date{prop?.filter_building ? ` · ${prop.filter_building}` : prop?.filter_area ? ` · ${prop.filter_area}` : ''}
                 </div>
               </div>
               {loadProp ? (
