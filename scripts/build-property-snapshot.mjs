@@ -58,77 +58,99 @@ async function fetchText(url, { timeoutMs = 50000 } = {}) {
 }
 
 const salesRaw = await fetchText(salesUrl);
-const built = buildPayloadFromCsvText(salesRaw, salesUrl, {});
-if (!built.ok) {
-  console.error(JSON.stringify(built.body, null, 2));
-  process.exit(1);
+
+/** Build snapshots for 7, 14, and 30-day windows */
+async function buildSnapshot(days) {
+  const built = buildPayloadFromCsvText(salesRaw, salesUrl, { days });
+  if (!built.ok) {
+    throw new Error(`buildPayloadFromCsvText failed: ${built.body?.error}`);
+  }
+
+  const out = { ...built.body };
+  delete out._stats_for_ai;
+  delete out._yield_sales_rows;
+  out.ok = true;
+  /** Server skips live rental CSV merge when serving this snapshot (see /api/property metrics branch). */
+  out._property_snapshot_v1 = true;
+
+  if (rentalUrl && built.windows) {
+    try {
+      const rentalRaw = await fetchText(rentalUrl);
+      mergeRentalIntoPayload(out, rentalRaw, rentalUrl, built.windows, { filterArea: '' });
+    } catch (e) {
+      out.rental = out.rental || {};
+      out.rental.note = `Rental URL failed during snapshot build: ${e?.message || e}`;
+    }
+  }
+
+  if (rentalListingsUrl) {
+    try {
+      const listingsRaw = await fetchText(rentalListingsUrl);
+      const rentalTxnAvgByBeds = {
+        studio: parseFloat(out.rental?.studio_avg_aed) || null,
+        '1br': parseFloat(out.rental?.apt_1br_avg_aed) || null,
+        '2br': parseFloat(out.rental?.apt_2br_avg_aed) || null,
+        '3br': parseFloat(out.rental?.villa_3br_avg_aed) || null,
+      };
+      const listingsResult = buildListingsPayload(listingsRaw, rentalListingsUrl, {
+        rentalTxnAvgByBeds,
+        rentalTxnByBuildingBed: out.rental?.txn_by_building_bed || {},
+        rentalTxnByCommunityBed: out.rental?.txn_by_community_bed || {},
+        dataType: 'rental',
+        filterArea: '',
+      });
+      out.listings = listingsResult.ok
+        ? listingsResult.listings
+        : { error: listingsResult.error, source: rentalListingsUrl };
+    } catch (e) {
+      out.listings = {
+        error: `Rental listings URL failed during snapshot build: ${e?.message || e}`,
+        source: rentalListingsUrl,
+      };
+    }
+  }
+
+  if (salesListingsUrl) {
+    try {
+      const salesListingsRaw = await fetchText(salesListingsUrl);
+      const salesListingsResult = buildListingsPayload(salesListingsRaw, salesListingsUrl, {
+        salesTxnAvgByBeds: out.sale_txn_avg_by_beds || {},
+        salesTxnByBuildingBed: out.sale_txn_by_building_bed || {},
+        salesTxnByCommunityBed: out.sale_txn_by_community_bed || {},
+        dataType: 'sales',
+        filterArea: '',
+      });
+      out.sales_listings = salesListingsResult.ok
+        ? salesListingsResult.listings
+        : { error: salesListingsResult.error, source: salesListingsUrl };
+    } catch (e) {
+      out.sales_listings = {
+        error: `Sales listings URL failed during snapshot build: ${e?.message || e}`,
+        source: salesListingsUrl,
+      };
+    }
+  }
+
+  out.data_freshness = `${out.data_freshness || ''}${out.data_freshness ? ' · ' : ''}snapshot build (${days}d)`;
+  delete out._yield_sales_rows;
+  return out;
 }
 
-const out = { ...built.body };
-delete out._stats_for_ai;
-delete out._yield_sales_rows;
-out.ok = true;
-/** Server skips live rental CSV merge when serving this snapshot (see /api/property metrics branch). */
-out._property_snapshot_v1 = true;
-
-if (rentalUrl && built.windows) {
+// Build all three snapshots and output them
+const snapshots = {};
+for (const days of [7, 14, 30]) {
   try {
-    const rentalRaw = await fetchText(rentalUrl);
-    mergeRentalIntoPayload(out, rentalRaw, rentalUrl, built.windows, { filterArea: '' });
+    snapshots[days] = await buildSnapshot(days);
   } catch (e) {
-    out.rental = out.rental || {};
-    out.rental.note = `Rental URL failed during snapshot build: ${e?.message || e}`;
+    console.error(`Failed to build ${days}d snapshot: ${e?.message || e}`);
+    process.exit(1);
   }
 }
 
-if (rentalListingsUrl) {
-  try {
-    const listingsRaw = await fetchText(rentalListingsUrl);
-    const rentalTxnAvgByBeds = {
-      studio: parseFloat(out.rental?.studio_avg_aed) || null,
-      '1br': parseFloat(out.rental?.apt_1br_avg_aed) || null,
-      '2br': parseFloat(out.rental?.apt_2br_avg_aed) || null,
-      '3br': parseFloat(out.rental?.villa_3br_avg_aed) || null,
-    };
-    const listingsResult = buildListingsPayload(listingsRaw, rentalListingsUrl, {
-      rentalTxnAvgByBeds,
-      rentalTxnByBuildingBed: out.rental?.txn_by_building_bed || {},
-      rentalTxnByCommunityBed: out.rental?.txn_by_community_bed || {},
-      dataType: 'rental',
-      filterArea: '',
-    });
-    out.listings = listingsResult.ok
-      ? listingsResult.listings
-      : { error: listingsResult.error, source: rentalListingsUrl };
-  } catch (e) {
-    out.listings = {
-      error: `Rental listings URL failed during snapshot build: ${e?.message || e}`,
-      source: rentalListingsUrl,
-    };
-  }
-}
-
-if (salesListingsUrl) {
-  try {
-    const salesListingsRaw = await fetchText(salesListingsUrl);
-    const salesListingsResult = buildListingsPayload(salesListingsRaw, salesListingsUrl, {
-      salesTxnAvgByBeds: out.sale_txn_avg_by_beds || {},
-      salesTxnByBuildingBed: out.sale_txn_by_building_bed || {},
-      salesTxnByCommunityBed: out.sale_txn_by_community_bed || {},
-      dataType: 'sales',
-      filterArea: '',
-    });
-    out.sales_listings = salesListingsResult.ok
-      ? salesListingsResult.listings
-      : { error: salesListingsResult.error, source: salesListingsUrl };
-  } catch (e) {
-    out.sales_listings = {
-      error: `Sales listings URL failed during snapshot build: ${e?.message || e}`,
-      source: salesListingsUrl,
-    };
-  }
-}
-
-out.data_freshness = `${out.data_freshness || ''}${out.data_freshness ? ' · ' : ''}snapshot build`;
-delete out._yield_sales_rows;
-process.stdout.write(`${JSON.stringify(out, null, 2)}\n`);
+// Output as JSON object with snapshot metadata
+const output = {
+  ok: true,
+  snapshots,
+  generated_at: new Date().toISOString(),
+};
+process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);

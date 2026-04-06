@@ -426,8 +426,20 @@ export async function GET(request) {
     try {
       const text = await fetchText(metricsUrl);
       const json = JSON.parse(text);
-        if (json && typeof json === 'object' && json.ok !== false) {
-        const body = json.ok === undefined ? { ok: true, ...json } : json;
+      if (json && typeof json === 'object' && json.ok !== false) {
+        // New snapshot format: { snapshots: { 7: {...}, 14: {...}, 30: {...} } }
+        // Fall back to old format if snapshots not present (backwards compat)
+        let body;
+        if (json.snapshots && typeof json.snapshots === 'object') {
+          const snapshotKey = Math.min(30, Math.max(7, daysParam)); // clamp to 7-30
+          body = json.snapshots[snapshotKey] || json.snapshots[7] || { ok: false };
+        } else {
+          body = json.ok === undefined ? { ok: true, ...json } : json;
+        }
+
+        if (!body.ok) {
+          throw new Error('Invalid snapshot');
+        }
         const snapshotTrust =
           body._property_snapshot_v1 === true ||
           String(body.data_freshness || '').includes('snapshot build');

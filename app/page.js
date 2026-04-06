@@ -1295,7 +1295,7 @@ export function DashboardView() {
     }
   }, [adminToken, isClientView, prop]);
 
-  const refreshProp = useCallback(async (forcedPath, overrideArea, overrideBuilding) => {
+  const refreshProp = useCallback(async (forcedPath, overrideArea, overrideBuilding, overrideDays) => {
     setLoadProp(true); setPropError(null);
     propEnrichEpochRef.current += 1;
     const enrichEpoch = propEnrichEpochRef.current;
@@ -1306,6 +1306,7 @@ export function DashboardView() {
       const customPath = (forcedPath || salesCsvPath).trim();
       const a = (overrideArea    !== undefined ? overrideArea    : area).trim();
       const b = (overrideBuilding !== undefined ? overrideBuilding : building).trim();
+      const daysVal = overrideDays !== undefined ? overrideDays : days;
 
       // Client view with no custom path/area/building: read pre-built snapshot (instant).
       if (isClientView && !customPath && !a && !b) {
@@ -1325,8 +1326,7 @@ export function DashboardView() {
       if (customPath) q.set('salesCsv', customPath);
       if (a) q.set('area', a);
       if (b) q.set('building', b);
-      // Days filtering only works client-side with uploaded CSV; server snapshots are always 7d
-      // if (daysVal !== 7) q.set('days', String(daysVal));
+      if (daysVal !== 7) q.set('days', String(daysVal));
       const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
       const tFetch0 = Date.now();
       // Default view (no upload path / area / building): allow time for PROPERTY_METRICS_JSON_URL snapshot download.
@@ -1970,10 +1970,10 @@ export function DashboardView() {
                       onClick={() => {
                         setDays(d);
                         if (uploadedCsvTextRef.current) applyAreaClient(area, building, d);
-                        // Note: days filtering only works with uploaded CSV (client-side). Server snapshots are always 7d.
+                        else refreshProp(undefined, undefined, undefined, d);
                       }}
-                      disabled={loadProp || !uploadedCsvTextRef.current}
-                      title={uploadedCsvTextRef.current ? `Switch to ${d}-day window` : 'Upload a CSV to use date range filtering'}
+                      disabled={loadProp}
+                      title={`View ${d}-day metrics`}
                       style={{
                         padding:'7px 12px',
                         background: days === d ? 'rgba(201,168,76,0.18)' : 'rgba(11,18,32,0.88)',
@@ -1983,8 +1983,7 @@ export function DashboardView() {
                         fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)",
                         fontSize:9,
                         fontWeight: days === d ? 700 : 400,
-                        cursor: (loadProp || !uploadedCsvTextRef.current) ? 'not-allowed' : 'pointer',
-                        opacity: (loadProp || !uploadedCsvTextRef.current) ? 0.5 : 1,
+                        cursor: loadProp ? 'not-allowed' : 'pointer',
                       }}
                     >
                       {d}d
