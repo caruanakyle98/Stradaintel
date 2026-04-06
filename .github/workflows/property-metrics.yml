@@ -56,5 +56,6 @@ jobs:
             echo "No snapshot changes."
           else
             git commit -m "chore(data): refresh property_metrics.json [skip ci]"
+            git pull --rebase origin main
             git push
           fi
