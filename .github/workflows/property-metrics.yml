@@ -56,6 +56,7 @@ jobs:
             echo "No snapshot changes."
           else
             git commit -m "chore(data): refresh property_metrics.json [skip ci]"
-            git pull --rebase origin main
+            # The JSON is fully regenerated each run, so on conflict just take ours
+            git pull --rebase -X theirs origin main
             git push
           fi
