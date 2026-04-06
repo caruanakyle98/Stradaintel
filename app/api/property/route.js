@@ -422,7 +422,8 @@ export async function GET(request) {
 
   const metricsUrl = process.env.PROPERTY_METRICS_JSON_URL;
   const buildingFilterActive = !!(buildingParam && buildingParam !== '__all__');
-  if (metricsUrl && !reqUrl.searchParams.get('noSnapshot') && !areaFilterActive && !buildingFilterActive) {
+  const daysFilterActive = daysParam !== 7;
+  if (metricsUrl && !reqUrl.searchParams.get('noSnapshot') && !areaFilterActive && !buildingFilterActive && !daysFilterActive) {
     try {
       const text = await fetchText(metricsUrl);
       const json = JSON.parse(text);
