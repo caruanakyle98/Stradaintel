@@ -2221,7 +2221,7 @@ export function DashboardView() {
           )}
 
           {/* ── Prices card — sales tab: PSF + optional asking sale by bed / rental tab: asking rent by bedroom ── */}
-          <div className={`reveal ${propTab === 'sales' ? 'mob-stack-2' : ''}`} style={{ display:'grid', gridTemplateColumns: propTab === 'sales' ? (prop?.sales_listings?.by_beds || prop?.monthly || loadProp ? 'repeat(3, minmax(0, 1fr))' : '1fr 1fr') : '1fr', gap:12, marginBottom:12 }}>
+          <div className={`reveal ${propTab === 'sales' ? 'mob-stack-2' : ''}`} style={{ display:'grid', gridTemplateColumns: propTab === 'sales' ? 'repeat(3, minmax(0, 1fr))' : '1fr', gap:12, marginBottom:12 }}>
             {propTab === 'sales' ? (
               <>
               <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
@@ -2265,40 +2265,6 @@ export function DashboardView() {
                       </div>
                     </div>
                   )}
-                </div>
-              )}
-              {(prop?.sales_listings?.by_beds || loadProp) && (
-                <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
-                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>
-                    Average Asking Sale Price by Bedroom · {sanitizeRawGithubLinks(na(prop?.sales_listings?.source))}
-                  </div>
-                  {loadProp ? <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>{[1,2,3,4].map(i=><Skel key={i} h={72} style={{ flex:1, minWidth:100 }}/>)}</div> : (()=>{
-                    const beds = prop?.sales_listings?.by_beds || {};
-                    const cmpMap = prop?.sales_listings?.asking_vs_txn_by_beds || {};
-                    const bedOrder = ['Studio','1','2','3','4+'];
-                    const rows = bedOrder.filter(k => beds[k]);
-                    return (
-                      <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                        {rows.map(key => {
-                          const d = beds[key];
-                          const dpct = cmpMap[key]?.delta_pct;
-                          const dpctColor = dpct == null ? C.tm : dpct > 5 ? C.red : dpct < -5 ? C.g : C.am;
-                          return (
-                            <div key={key} style={{ flex:'1 1 min(100px,100%)', padding:'12px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10, minWidth:'min(100px,100%)' }}>
-                              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--muted)', marginBottom:8 }}>{key === 'Studio' ? 'Studio' : `${key} Bed`}</div>
-                              <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:20, fontWeight:800, color:C.metric, textShadow:C.glowMetric }}>{d.avg_price_fmt}</div>
-                              <div style={{ fontSize:10, color:'var(--muted)', marginTop:3 }}>{d.count.toLocaleString()} listings</div>
-                              {dpct != null && (
-                                <div style={{ fontSize:10, fontWeight:600, color:dpctColor, marginTop:3 }}>
-                                  {dpct > 0 ? '+' : ''}{dpct}% vs transacted
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })()}
                 </div>
               )}
               </>
@@ -2362,38 +2328,48 @@ export function DashboardView() {
             )}
           </div>
 
-          {/* ── Transacted Prices by Bedroom — month-to-date vs prior full month ── */}
-          {propTab === 'sales' && (prop?.monthly?.cur_avg_by_beds || loadProp) && (
+          {/* ── Bedroom Prices — unified transacted MTD + asking + MoM ── */}
+          {propTab === 'sales' && (prop?.monthly?.cur_avg_by_beds || prop?.sales_listings?.by_beds || loadProp) && (
             <div className="reveal print-keep-together lp-card" style={{ padding:'20px 22px', marginBottom:12 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>
-                Transacted Avg Price by Bedroom · {na(prop?.monthly?.cur_label)} MTD
-                {prop?.monthly?.prev_label && <span style={{ fontWeight:400, color:'var(--muted)', letterSpacing:'1px', marginLeft:8 }}>vs {na(prop.monthly.prev_label)} (full month)</span>}
+                Bedroom Prices · {na(prop?.monthly?.cur_label || 'Current Month')} MTD
+                {prop?.monthly?.prev_label && <span style={{ fontWeight:400, color:'var(--muted)', letterSpacing:'1px', marginLeft:8 }}>vs {na(prop.monthly.prev_label)}</span>}
               </div>
               {loadProp ? (
-                <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>{[1,2,3,4].map(i=><Skel key={i} h={80} style={{ flex:1, minWidth:100 }}/>)}</div>
+                <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>{[1,2,3,4,5].map(i=><Skel key={i} h={100} style={{ flex:1, minWidth:100 }}/>)}</div>
               ) : (()=>{
-                const curBeds  = prop.monthly.cur_avg_by_beds  || {};
-                const prevBeds = prop.monthly.prev_avg_by_beds || {};
-                const momBeds  = prop.monthly.mom_avg_by_beds_pct || {};
+                const curBeds  = prop?.monthly?.cur_avg_by_beds  || {};
+                const prevBeds = prop?.monthly?.prev_avg_by_beds || {};
+                const momBeds  = prop?.monthly?.mom_avg_by_beds_pct || {};
+                const askBeds  = prop?.sales_listings?.by_beds || {};
+                const cmpMap   = prop?.sales_listings?.asking_vs_txn_by_beds || {};
                 const bedOrder = ['Studio','1','2','3','4+'];
-                const rows = bedOrder.filter(k => curBeds[k]);
+                const rows = bedOrder.filter(k => curBeds[k] || askBeds[k]);
                 return (
                   <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
                     {rows.map(key => {
-                      const d    = curBeds[key];
+                      const txn  = curBeds[key];
                       const prev = prevBeds[key];
                       const mom  = momBeds[key];
+                      const ask  = askBeds[key];
+                      const dpct = cmpMap[key]?.delta_pct;
+                      const dpctColor = dpct == null ? C.tm : dpct > 5 ? C.red : dpct < -5 ? C.g : C.am;
                       return (
                         <div key={key} style={{ flex:'1 1 min(100px,100%)', padding:'12px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10, minWidth:'min(100px,100%)' }}>
                           <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--muted)', marginBottom:8 }}>{key === 'Studio' ? 'Studio' : `${key} Bed`}</div>
-                          <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:20, fontWeight:800, color:C.metric, textShadow:C.glowMetric }}>{d.avg_fmt}</div>
-                          {prev && <div style={{ fontSize:10, color:'var(--muted)', marginTop:3 }}>prev: {prev.avg_fmt}</div>}
-                          <div style={{ fontSize:10, color:'var(--muted)', marginTop:2 }}>{d.count.toLocaleString()} txns</div>
-                          {mom != null && (
-                            <div style={{ fontSize:10, fontWeight:600, color: mom >= 0 ? C.g : C.red, marginTop:3 }}>
-                              {mom >= 0 ? '+' : ''}{mom}% MoM
+                          {txn && <>
+                            <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:20, fontWeight:800, color:C.metric, textShadow:C.glowMetric }}>{txn.avg_fmt}</div>
+                            {prev && <div style={{ fontSize:10, color:'var(--muted)', marginTop:2 }}>prev: {prev.avg_fmt}</div>}
+                            <div style={{ fontSize:10, color:'var(--muted)', marginTop:1 }}>{txn.count.toLocaleString()} txns</div>
+                            {mom != null && <div style={{ fontSize:10, fontWeight:600, color: mom >= 0 ? C.g : C.red, marginTop:2 }}>{mom >= 0 ? '+' : ''}{mom}% MoM</div>}
+                          </>}
+                          {ask && <>
+                            <div style={{ borderTop:`1px solid rgba(255,255,255,0.06)`, marginTop:8, paddingTop:8 }}>
+                              <div style={{ fontSize:10, color:'var(--muted)' }}>Asking: {ask.avg_price_fmt}</div>
+                              <div style={{ fontSize:10, color:'var(--muted)' }}>{ask.count.toLocaleString()} listings</div>
+                              {dpct != null && <div style={{ fontSize:10, fontWeight:600, color:dpctColor, marginTop:1 }}>{dpct > 0 ? '+' : ''}{dpct}% vs transacted</div>}
                             </div>
-                          )}
+                          </>}
                         </div>
                       );
                     })}
@@ -2464,30 +2440,6 @@ export function DashboardView() {
                           : 'N/A'}
                       </div>
                     </div>
-                    {prop?.monthly && (
-                      <>
-                        <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
-                          <Tag color={C.am}>Monthly volume</Tag>
-                          <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>{na(prop.monthly.cur_label)} MTD (day {prop.monthly.cur_days_elapsed}) vs {na(prop.monthly.prev_label)}</div>
-                          <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:13, fontWeight:700, color:(prop.monthly.mom_count_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:10 }}>
-                            {prop.monthly.cur_count?.toLocaleString()} txns vs {prop.monthly.prev_count?.toLocaleString()}:{' '}
-                            {prop.monthly.mom_count_pct != null
-                              ? `${prop.monthly.mom_count_pct >= 0 ? '+' : ''}${prop.monthly.mom_count_pct}% MoM`
-                              : 'N/A'}
-                          </div>
-                        </div>
-                        <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
-                          <Tag color={C.am}>Monthly PPSF</Tag>
-                          <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Median AED/sqft · {na(prop.monthly.cur_label)} MTD vs {na(prop.monthly.prev_label)}</div>
-                          <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:13, fontWeight:700, color:(prop.monthly.mom_psf_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:10 }}>
-                            {prop.monthly.cur_psf_median != null ? Math.round(prop.monthly.cur_psf_median).toLocaleString() : '—'} vs {prop.monthly.prev_psf_median != null ? Math.round(prop.monthly.prev_psf_median).toLocaleString() : '—'}:{' '}
-                            {prop.monthly.mom_psf_pct != null
-                              ? `${prop.monthly.mom_psf_pct >= 0 ? '+' : ''}${prop.monthly.mom_psf_pct}% MoM`
-                              : 'N/A'}
-                          </div>
-                        </div>
-                      </>
-                    )}
                   </>
                 )}
                 </div>
