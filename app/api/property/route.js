@@ -304,8 +304,8 @@ async function loadSalesListingsCsvText({ timeoutMs = 50000, maxAttempts = 4 } =
   );
 }
 
-async function buildFromSalesText(csvRaw, label, { area, building, skipAi } = {}) {
-  const result = buildPayloadFromCsvText(csvRaw, label, { area: area || undefined, building: building || undefined });
+async function buildFromSalesText(csvRaw, label, { area, building, days, skipAi } = {}) {
+  const result = buildPayloadFromCsvText(csvRaw, label, { area: area || undefined, building: building || undefined, days: days || 7 });
   if (!result.ok) return result;
   const payload = { ...result.body };
   const windows = result.windows;
@@ -413,6 +413,7 @@ export async function GET(request) {
 
   const areaParam = (reqUrl.searchParams.get('area') || '').trim();
   const buildingParam = (reqUrl.searchParams.get('building') || '').trim();
+  const daysParam = parseInt(reqUrl.searchParams.get('days'), 10) || 7;
   const areaFilterActive = !!(areaParam && areaParam !== '__all__');
 
   const csvPathFromQuery = reqUrl.searchParams.get('salesCsv') || reqUrl.searchParams.get('csvPath');
@@ -433,7 +434,7 @@ export async function GET(request) {
         if (!skipRental && rentalUrlEnv && body && typeof body === 'object' && !snapshotTrust) {
           try {
             const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
-            const windows = deriveAnalysisWindows([]);
+            const windows = deriveAnalysisWindows([], { days: daysParam });
             mergeRentalIntoPayload(body, rentalRaw, rentalLabel, windows, {
               filterBuilding: buildingFilterActive ? buildingParam : '',
             });
@@ -519,6 +520,7 @@ export async function GET(request) {
     const buildOpts = {
       area:     areaParam     || undefined,
       building: buildingParam || undefined,
+      days:     daysParam,
       skipAi: areaFilterActive || buildingFilterActive || skipAi,
     };
 

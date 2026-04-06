@@ -1194,6 +1194,7 @@ export function DashboardView() {
   const [uploadingCsv,setUploadingCsv]= useState(false);
   const [area, setArea] = useState('');
   const [building, setBuilding] = useState('');
+  const [days, setDays] = useState(7);
   const showDataBeforePrintRef = useRef(false);
   const uploadedCsvTextRef = useRef(null);
   const propEnrichEpochRef = useRef(0);
@@ -1294,7 +1295,7 @@ export function DashboardView() {
     }
   }, [adminToken, isClientView, prop]);
 
-  const refreshProp = useCallback(async (forcedPath, overrideArea, overrideBuilding) => {
+  const refreshProp = useCallback(async (forcedPath, overrideArea, overrideBuilding, overrideDays) => {
     setLoadProp(true); setPropError(null);
     propEnrichEpochRef.current += 1;
     const enrichEpoch = propEnrichEpochRef.current;
@@ -1305,6 +1306,7 @@ export function DashboardView() {
       const customPath = (forcedPath || salesCsvPath).trim();
       const a = (overrideArea    !== undefined ? overrideArea    : area).trim();
       const b = (overrideBuilding !== undefined ? overrideBuilding : building).trim();
+      const daysVal = overrideDays !== undefined ? overrideDays : days;
 
       // Client view with no custom path/area/building: read pre-built snapshot (instant).
       if (isClientView && !customPath && !a && !b) {
@@ -1324,6 +1326,7 @@ export function DashboardView() {
       if (customPath) q.set('salesCsv', customPath);
       if (a) q.set('area', a);
       if (b) q.set('building', b);
+      if (daysVal !== 7) q.set('days', String(daysVal));
       const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
       const tFetch0 = Date.now();
       // Default view (no upload path / area / building): allow time for PROPERTY_METRICS_JSON_URL snapshot download.
@@ -1533,14 +1536,15 @@ export function DashboardView() {
       // #endregion
       setLoadProp(false);
     }
-  }, [salesCsvPath, area, building, propTab, isClientView]);
+  }, [salesCsvPath, area, building, days, propTab, isClientView]);
 
-  const applyAreaClient = useCallback((nextArea, nextBuilding) => {
+  const applyAreaClient = useCallback((nextArea, nextBuilding, nextDays) => {
     const text = uploadedCsvTextRef.current;
     if (!text) return;
     const label = salesCsvPath.replace(/^\(browser\)\s*/i, '') || 'uploaded.csv';
     const b = nextBuilding !== undefined ? nextBuilding : building;
-    const built = buildPayloadFromCsvText(text, label, { area: (nextArea || '').trim() || undefined, building: (b || '').trim() || undefined });
+    const dv = nextDays !== undefined ? nextDays : days;
+    const built = buildPayloadFromCsvText(text, label, { area: (nextArea || '').trim() || undefined, building: (b || '').trim() || undefined, days: dv });
     if (!built.ok) {
       setPropError(built.body?.error || 'Filter failed');
       return;
@@ -1549,7 +1553,7 @@ export function DashboardView() {
     delete payload._stats_for_ai;
     setProp(payload);
     setPropError(null);
-  }, [salesCsvPath]);
+  }, [salesCsvPath, days]);
 
   const uploadCsv = useCallback(async (file) => {
     if (!file) return;
@@ -1956,6 +1960,35 @@ export function DashboardView() {
                   </select>
                 </label>
               )}
+              <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Range</span>
+                <div style={{ display:'flex', gap:0, borderRadius:8, overflow:'hidden', border:'1px solid rgba(201,168,76,0.22)' }}>
+                  {[7, 14, 30].map(d => (
+                    <button
+                      key={d}
+                      onClick={() => {
+                        setDays(d);
+                        if (uploadedCsvTextRef.current) applyAreaClient(area, building, d);
+                        else refreshProp(undefined, undefined, undefined, d);
+                      }}
+                      disabled={loadProp}
+                      style={{
+                        padding:'7px 12px',
+                        background: days === d ? 'rgba(201,168,76,0.18)' : 'rgba(11,18,32,0.88)',
+                        color: days === d ? 'var(--gold)' : 'var(--white)',
+                        border:'none',
+                        borderRight: d !== 30 ? '1px solid rgba(201,168,76,0.22)' : 'none',
+                        fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)",
+                        fontSize:9,
+                        fontWeight: days === d ? 700 : 400,
+                        cursor: loadProp ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      {d}d
+                    </button>
+                  ))}
+                </div>
+              </label>
             </div>
 
             {!isClientView && (
