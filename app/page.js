@@ -1193,6 +1193,7 @@ export function DashboardView() {
   const [salesCsvPath,setSalesCsvPath]= useState('');
   const [uploadingCsv,setUploadingCsv]= useState(false);
   const [area, setArea] = useState('');
+  const [building, setBuilding] = useState('');
   const showDataBeforePrintRef = useRef(false);
   const uploadedCsvTextRef = useRef(null);
   const propEnrichEpochRef = useRef(0);
@@ -1293,7 +1294,7 @@ export function DashboardView() {
     }
   }, [adminToken, isClientView, prop]);
 
-  const refreshProp = useCallback(async (forcedPath, overrideArea) => {
+  const refreshProp = useCallback(async (forcedPath, overrideArea, overrideBuilding) => {
     setLoadProp(true); setPropError(null);
     propEnrichEpochRef.current += 1;
     const enrichEpoch = propEnrichEpochRef.current;
@@ -1302,10 +1303,11 @@ export function DashboardView() {
     // #endregion
     try {
       const customPath = (forcedPath || salesCsvPath).trim();
-      const a = (overrideArea !== undefined ? overrideArea : area).trim();
+      const a = (overrideArea    !== undefined ? overrideArea    : area).trim();
+      const b = (overrideBuilding !== undefined ? overrideBuilding : building).trim();
 
-      // Client view with no custom path/area: read pre-built snapshot (instant).
-      if (isClientView && !customPath && !a) {
+      // Client view with no custom path/area/building: read pre-built snapshot (instant).
+      if (isClientView && !customPath && !a && !b) {
         try {
           const sr = await fetch('/api/property-read', { cache: 'no-store' });
           const sd = await sr.json().catch(() => ({}));
@@ -1321,11 +1323,12 @@ export function DashboardView() {
       const q = new URLSearchParams();
       if (customPath) q.set('salesCsv', customPath);
       if (a) q.set('area', a);
+      if (b) q.set('building', b);
       const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
       const tFetch0 = Date.now();
-      // Default view (no upload path / area): allow time for PROPERTY_METRICS_JSON_URL snapshot download.
+      // Default view (no upload path / area / building): allow time for PROPERTY_METRICS_JSON_URL snapshot download.
       // Custom live paths keep a shorter race so we fail fast to sales-only + /api/property/live segments.
-      const timeoutMs = !customPath && !a ? 120000 : 55000;
+      const timeoutMs = !customPath && !a && !b ? 120000 : 55000;
       let r;
       try {
         r = await Promise.race([
@@ -1530,13 +1533,14 @@ export function DashboardView() {
       // #endregion
       setLoadProp(false);
     }
-  }, [salesCsvPath, area, propTab, isClientView]);
+  }, [salesCsvPath, area, building, propTab, isClientView]);
 
-  const applyAreaClient = useCallback((nextArea) => {
+  const applyAreaClient = useCallback((nextArea, nextBuilding) => {
     const text = uploadedCsvTextRef.current;
     if (!text) return;
     const label = salesCsvPath.replace(/^\(browser\)\s*/i, '') || 'uploaded.csv';
-    const built = buildPayloadFromCsvText(text, label, { area: nextArea.trim() || undefined });
+    const b = nextBuilding !== undefined ? nextBuilding : building;
+    const built = buildPayloadFromCsvText(text, label, { area: (nextArea || '').trim() || undefined, building: (b || '').trim() || undefined });
     if (!built.ok) {
       setPropError(built.body?.error || 'Filter failed');
       return;
@@ -1916,8 +1920,9 @@ export function DashboardView() {
                   onChange={(e) => {
                     const v = e.target.value;
                     setArea(v);
-                    if (uploadedCsvTextRef.current) applyAreaClient(v);
-                    else refreshProp(undefined, v);
+                    setBuilding(''); // clear building when area changes
+                    if (uploadedCsvTextRef.current) applyAreaClient(v, '');
+                    else refreshProp(undefined, v, '');
                   }}
                   disabled={loadProp || (!(prop?.area_options?.length) && !uploadedCsvTextRef.current)}
                   style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:220 }}
@@ -1928,6 +1933,29 @@ export function DashboardView() {
                   ))}
                 </select>
               </label>
+              {prop?.building_options?.length > 0 && (
+                <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Building</span>
+                  <select
+                    value={building}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setBuilding(v);
+                      if (uploadedCsvTextRef.current) applyAreaClient(area, v);
+                      else refreshProp(undefined, undefined, v);
+                    }}
+                    disabled={loadProp}
+                    style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:220 }}
+                  >
+                    <option value="">All buildings</option>
+                    {(prop.building_options)
+                      .filter(b => !area || b.area.trim().toLowerCase() === area.trim().toLowerCase())
+                      .map(b => (
+                        <option key={b.name} value={b.name}>{b.name.length > 38 ? `${b.name.slice(0, 35)}…` : b.name} ({b.count})</option>
+                      ))}
+                  </select>
+                </label>
+              )}
             </div>
 
             {!isClientView && (
@@ -2221,10 +2249,10 @@ export function DashboardView() {
           )}
 
           {/* ── Prices card — sales tab: PSF + optional asking sale by bed / rental tab: asking rent by bedroom ── */}
-          <div className={`reveal ${propTab === 'sales' ? 'mob-stack-2' : ''}`} style={{ display:'grid', gridTemplateColumns: propTab === 'sales' ? 'repeat(3, minmax(0, 1fr))' : '1fr', gap:12, marginBottom:12 }}>
+          <div className={`reveal ${propTab === 'sales' ? 'mob-stack-2' : ''}`} style={{ display:'grid', gridTemplateColumns: propTab === 'sales' ? (prop?.filter_building ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))') : '1fr', gap:12, marginBottom:12 }}>
             {propTab === 'sales' ? (
               <>
-              <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
+              {!prop?.filter_building && <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
                 <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>Average Asking Price Per Square Foot · {sanitizeRawGithubLinks(na(prop?.prices?.price_source))}</div>
                 <div className="mob-stack-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
                   {[
@@ -2239,7 +2267,7 @@ export function DashboardView() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div>}
               {/* Transaction PPSF — current month median vs prior month */}
               {(prop?.monthly || loadProp) && (
                 <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
@@ -2363,7 +2391,7 @@ export function DashboardView() {
                             <div style={{ fontSize:10, color:'var(--muted)', marginTop:1 }}>{txn.count.toLocaleString()} txns</div>
                             {mom != null && <div style={{ fontSize:10, fontWeight:600, color: mom >= 0 ? C.g : C.red, marginTop:2 }}>{mom >= 0 ? '+' : ''}{mom}% MoM</div>}
                           </>}
-                          {ask && <>
+                          {ask && !prop?.filter_building && <>
                             <div style={{ borderTop:`1px solid rgba(255,255,255,0.06)`, marginTop:8, paddingTop:8 }}>
                               <div style={{ fontSize:10, color:'var(--muted)' }}>Asking: {ask.avg_price_fmt}</div>
                               <div style={{ fontSize:10, color:'var(--muted)' }}>{ask.count.toLocaleString()} listings</div>

@@ -412,6 +412,7 @@ export async function GET(request) {
   // #endregion
 
   const areaParam = (reqUrl.searchParams.get('area') || '').trim();
+  const buildingParam = (reqUrl.searchParams.get('building') || '').trim();
   const areaFilterActive = !!(areaParam && areaParam !== '__all__');
 
   const csvPathFromQuery = reqUrl.searchParams.get('salesCsv') || reqUrl.searchParams.get('csvPath');
@@ -419,7 +420,8 @@ export async function GET(request) {
   const rentalUrlEnv = process.env.PROPERTY_RENTAL_CSV_URL;
 
   const metricsUrl = process.env.PROPERTY_METRICS_JSON_URL;
-  if (metricsUrl && !reqUrl.searchParams.get('noSnapshot') && !areaFilterActive) {
+  const buildingFilterActive = !!(buildingParam && buildingParam !== '__all__');
+  if (metricsUrl && !reqUrl.searchParams.get('noSnapshot') && !areaFilterActive && !buildingFilterActive) {
     try {
       const text = await fetchText(metricsUrl);
       const json = JSON.parse(text);
@@ -513,8 +515,9 @@ export async function GET(request) {
     };
 
     const buildOpts = {
-      area: areaParam || undefined,
-      skipAi: areaFilterActive || skipAi,
+      area:     areaParam     || undefined,
+      building: buildingParam || undefined,
+      skipAi: areaFilterActive || buildingFilterActive || skipAi,
     };
 
     if ((salesUrlEnv?.trim() || blobReadWriteToken()) && !csvPathFromQuery) {
