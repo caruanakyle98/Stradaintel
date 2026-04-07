@@ -1938,7 +1938,7 @@ export function DashboardView() {
                   ))}
                 </select>
               </label>
-              {prop?.building_options?.length > 0 && (
+              {prop?.building_options?.length > 0 && area && (
                 <label style={{ display:'flex', alignItems:'center', gap:8 }}>
                   <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Building</span>
                   <select
