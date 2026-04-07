@@ -1956,7 +1956,7 @@ export function DashboardView() {
                     {(prop.building_options)
                       .filter(b => !area || b.area.trim().toLowerCase() === area.trim().toLowerCase())
                       .map(b => (
-                        <option key={b.name} value={b.name}>{b.name.length > 38 ? `${b.name.slice(0, 35)}…` : b.name} ({b.count})</option>
+                        <option key={b.name} value={b.name}>{b.name.length > 38 ? `${b.name.slice(0, 35)}…` : b.name}</option>
                       ))}
                   </select>
                 </label>
