@@ -643,6 +643,7 @@ export async function GET(request) {
               rentalTxnByCommunityBed,
               dataType: 'rental',
               filterArea: areaFilterActive ? areaParam : '',
+              filterBuilding: buildingFilterActive ? buildingParam : '',
               skipHotListings,
             });
             debugLogFile({
@@ -749,6 +750,7 @@ export async function GET(request) {
               salesTxnByCommunityBed,
               dataType: 'sales',
               filterArea: areaFilterActive ? areaParam : '',
+              filterBuilding: buildingFilterActive ? buildingParam : '',
               skipHotListings,
             });
             debugLogFile({
