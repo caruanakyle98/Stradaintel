@@ -1193,6 +1193,7 @@ export function DashboardView() {
   const [salesCsvPath,setSalesCsvPath]= useState('');
   const [uploadingCsv,setUploadingCsv]= useState(false);
   const [area, setArea] = useState('');
+  const [community, setCommunity] = useState('');
   const [building, setBuilding] = useState('');
   const [days, setDays] = useState(7);
   const showDataBeforePrintRef = useRef(false);
@@ -1295,7 +1296,7 @@ export function DashboardView() {
     }
   }, [adminToken, isClientView, prop]);
 
-  const refreshProp = useCallback(async (forcedPath, overrideArea, overrideBuilding, overrideDays) => {
+  const refreshProp = useCallback(async (forcedPath, overrideArea, overrideCommunity, overrideBuilding, overrideDays) => {
     setLoadProp(true); setPropError(null);
     propEnrichEpochRef.current += 1;
     const enrichEpoch = propEnrichEpochRef.current;
@@ -1305,11 +1306,12 @@ export function DashboardView() {
     try {
       const customPath = (forcedPath || salesCsvPath).trim();
       const a = (overrideArea    !== undefined ? overrideArea    : area).trim();
+      const c = (overrideCommunity !== undefined ? overrideCommunity : community).trim();
       const b = (overrideBuilding !== undefined ? overrideBuilding : building).trim();
       const daysVal = overrideDays !== undefined ? overrideDays : days;
 
-      // Client view with no custom path/area/building: read pre-built snapshot (instant).
-      if (isClientView && !customPath && !a && !b) {
+      // Client view with no custom path/area/community/building: read pre-built snapshot (instant).
+      if (isClientView && !customPath && !a && !c && !b) {
         try {
           const sr = await fetch('/api/property-read', { cache: 'no-store' });
           const sd = await sr.json().catch(() => ({}));
@@ -1325,14 +1327,15 @@ export function DashboardView() {
       const q = new URLSearchParams();
       if (customPath) q.set('salesCsv', customPath);
       if (a) q.set('area', a);
+      if (c) q.set('community', c);
       if (b) q.set('building', b);
       if (daysVal !== 7) q.set('days', String(daysVal));
       const propUrl = q.toString() ? `/api/property?${q}` : '/api/property';
       const tFetch0 = Date.now();
-      // Default view (no upload path / area / building): allow time for PROPERTY_METRICS_JSON_URL snapshot download.
+      // Default view (no upload path / area / community / building): allow time for PROPERTY_METRICS_JSON_URL snapshot download.
       // Days-only changes use same timeout (just windowing the same data).
-      // Custom live paths (area/building/CSV) keep a shorter race so we fail fast to sales-only + /api/property/live segments.
-      const timeoutMs = (!customPath && !a && !b) ? 120000 : 55000;
+      // Custom live paths (area/community/building/CSV) keep a shorter race so we fail fast to sales-only + /api/property/live segments.
+      const timeoutMs = (!customPath && !a && !c && !b) ? 120000 : 55000;
       let r;
       try {
         r = await Promise.race([
@@ -1537,15 +1540,16 @@ export function DashboardView() {
       // #endregion
       setLoadProp(false);
     }
-  }, [salesCsvPath, area, building, days, propTab, isClientView]);
+  }, [salesCsvPath, area, community, building, days, propTab, isClientView]);
 
-  const applyAreaClient = useCallback((nextArea, nextBuilding, nextDays) => {
+  const applyAreaClient = useCallback((nextArea, nextCommunity, nextBuilding, nextDays) => {
     const text = uploadedCsvTextRef.current;
     if (!text) return;
     const label = salesCsvPath.replace(/^\(browser\)\s*/i, '') || 'uploaded.csv';
+    const c = nextCommunity !== undefined ? nextCommunity : community;
     const b = nextBuilding !== undefined ? nextBuilding : building;
     const dv = nextDays !== undefined ? nextDays : days;
-    const built = buildPayloadFromCsvText(text, label, { area: (nextArea || '').trim() || undefined, building: (b || '').trim() || undefined, days: dv });
+    const built = buildPayloadFromCsvText(text, label, { area: (nextArea || '').trim() || undefined, community: (c || '').trim() || undefined, building: (b || '').trim() || undefined, days: dv });
     if (!built.ok) {
       setPropError(built.body?.error || 'Filter failed');
       return;
@@ -1554,7 +1558,7 @@ export function DashboardView() {
     delete payload._stats_for_ai;
     setProp(payload);
     setPropError(null);
-  }, [salesCsvPath, days]);
+  }, [salesCsvPath, community, days];
 
   const uploadCsv = useCallback(async (file) => {
     if (!file) return;
@@ -1925,9 +1929,10 @@ export function DashboardView() {
                   onChange={(e) => {
                     const v = e.target.value;
                     setArea(v);
+                    setCommunity(''); // clear community when area changes
                     setBuilding(''); // clear building when area changes
-                    if (uploadedCsvTextRef.current) applyAreaClient(v, '');
-                    else refreshProp(undefined, v, '');
+                    if (uploadedCsvTextRef.current) applyAreaClient(v, '', '', days);
+                    else refreshProp(undefined, v, '', '', undefined);
                   }}
                   disabled={loadProp || (!(prop?.area_options?.length) && !uploadedCsvTextRef.current)}
                   style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:220 }}
@@ -1940,19 +1945,20 @@ export function DashboardView() {
               </label>
               {prop?.building_options?.length > 0 && area && (
                 <label style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Building</span>
+                  <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Community / Building</span>
                   <select
-                    value={building}
+                    value={community}
                     onChange={(e) => {
                       const v = e.target.value;
-                      setBuilding(v);
-                      if (uploadedCsvTextRef.current) applyAreaClient(area, v);
-                      else refreshProp(undefined, undefined, v);
+                      setCommunity(v);
+                      setBuilding('');  // clear sub-building when community changes
+                      if (uploadedCsvTextRef.current) applyAreaClient(area, v, '', days);
+                      else refreshProp(undefined, undefined, v, '', undefined);
                     }}
                     disabled={loadProp}
                     style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:220 }}
                   >
-                    <option value="">All buildings</option>
+                    <option value="">All</option>
                     {(prop.building_options)
                       .filter(b => !area || b.area.trim().toLowerCase() === area.trim().toLowerCase())
                       .map(b => (
@@ -1961,6 +1967,31 @@ export function DashboardView() {
                   </select>
                 </label>
               )}
+
+              {(() => {
+                const selectedCommunityEntry = prop?.building_options?.find(b => b.name === community);
+                return community && selectedCommunityEntry?.sub_buildings?.length > 0 && (
+                  <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Building</span>
+                    <select
+                      value={building}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setBuilding(v);
+                        if (uploadedCsvTextRef.current) applyAreaClient(area, community, v, days);
+                        else refreshProp(undefined, undefined, community, v, undefined);
+                      }}
+                      disabled={loadProp}
+                      style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:220 }}
+                    >
+                      <option value="">All buildings in {community}</option>
+                      {selectedCommunityEntry.sub_buildings.map(b =>
+                        <option key={b} value={b}>{b.length > 38 ? `${b.slice(0, 35)}…` : b}</option>
+                      )}
+                    </select>
+                  </label>
+                );
+              })()}
               <label style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Range</span>
                 <div style={{ display:'flex', gap:0, borderRadius:8, overflow:'hidden', border:'1px solid rgba(201,168,76,0.22)' }}>
@@ -1969,8 +2000,8 @@ export function DashboardView() {
                       key={d}
                       onClick={() => {
                         setDays(d);
-                        if (uploadedCsvTextRef.current) applyAreaClient(area, building, d);
-                        else refreshProp(undefined, undefined, undefined, d);
+                        if (uploadedCsvTextRef.current) applyAreaClient(area, community, building, d);
+                        else refreshProp(undefined, undefined, community, building, d);
                       }}
                       disabled={loadProp}
                       title={`View ${d}-day metrics`}

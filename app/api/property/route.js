@@ -304,8 +304,8 @@ async function loadSalesListingsCsvText({ timeoutMs = 50000, maxAttempts = 4 } =
   );
 }
 
-async function buildFromSalesText(csvRaw, label, { area, building, days, skipAi } = {}) {
-  const result = buildPayloadFromCsvText(csvRaw, label, { area: area || undefined, building: building || undefined, days: days || 7 });
+async function buildFromSalesText(csvRaw, label, { area, community, building, days, skipAi } = {}) {
+  const result = buildPayloadFromCsvText(csvRaw, label, { area: area || undefined, community: community || undefined, building: building || undefined, days: days || 7 });
   if (!result.ok) return result;
   const payload = { ...result.body };
   const windows = result.windows;
@@ -412,9 +412,11 @@ export async function GET(request) {
   // #endregion
 
   const areaParam = (reqUrl.searchParams.get('area') || '').trim();
+  const communityParam = (reqUrl.searchParams.get('community') || '').trim();
   const buildingParam = (reqUrl.searchParams.get('building') || '').trim();
   const daysParam = parseInt(reqUrl.searchParams.get('days'), 10) || 7;
   const areaFilterActive = !!(areaParam && areaParam !== '__all__');
+  const communityFilterActive = !!(communityParam && communityParam !== '__all__');
 
   const csvPathFromQuery = reqUrl.searchParams.get('salesCsv') || reqUrl.searchParams.get('csvPath');
   const salesUrlEnv = process.env.PROPERTY_SALES_CSV_URL;
@@ -422,7 +424,7 @@ export async function GET(request) {
 
   const metricsUrl = process.env.PROPERTY_METRICS_JSON_URL;
   const buildingFilterActive = !!(buildingParam && buildingParam !== '__all__');
-  if (metricsUrl && !reqUrl.searchParams.get('noSnapshot') && !areaFilterActive && !buildingFilterActive) {
+  if (metricsUrl && !reqUrl.searchParams.get('noSnapshot') && !areaFilterActive && !communityFilterActive && !buildingFilterActive) {
     try {
       const text = await fetchText(metricsUrl);
       const json = JSON.parse(text);
@@ -448,6 +450,8 @@ export async function GET(request) {
             const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
             const windows = deriveAnalysisWindows([], { days: daysParam });
             mergeRentalIntoPayload(body, rentalRaw, rentalLabel, windows, {
+              filterArea: areaFilterActive ? areaParam : '',
+              filterCommunity: communityFilterActive ? communityParam : '',
               filterBuilding: buildingFilterActive ? buildingParam : '',
             });
           } catch (e) {
@@ -530,10 +534,11 @@ export async function GET(request) {
     };
 
     const buildOpts = {
-      area:     areaParam     || undefined,
-      building: buildingParam || undefined,
-      days:     daysParam,
-      skipAi: areaFilterActive || buildingFilterActive || skipAi,
+      area:      areaParam      || undefined,
+      community: communityParam || undefined,
+      building:  buildingParam  || undefined,
+      days:      daysParam,
+      skipAi: areaFilterActive || communityFilterActive || buildingFilterActive || skipAi,
     };
 
     if ((salesUrlEnv?.trim() || blobReadWriteToken()) && !csvPathFromQuery) {
@@ -568,6 +573,7 @@ export async function GET(request) {
             const { text: rentalRaw, label: rentalLabel } = await loadRentalCsvText();
             mergeRentalIntoPayload(result.body, rentalRaw, rentalLabel, result.windows, {
               filterArea: areaFilterActive ? areaParam : '',
+              filterCommunity: communityFilterActive ? communityParam : '',
               filterBuilding: buildingFilterActive ? buildingParam : '',
             });
           } catch (e) {
@@ -643,6 +649,7 @@ export async function GET(request) {
               rentalTxnByCommunityBed,
               dataType: 'rental',
               filterArea: areaFilterActive ? areaParam : '',
+              filterCommunity: communityFilterActive ? communityParam : '',
               filterBuilding: buildingFilterActive ? buildingParam : '',
               skipHotListings,
             });
