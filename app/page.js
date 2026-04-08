@@ -966,23 +966,59 @@ function TrendDualChart({ title, subtitle, daily, ma7, dailyColor, maColor, load
 
 function SplitBar({ offplan, secondary, loading }) {
   const op = parseInt(offplan)||0;
+  const sec = 100 - op;
   return (
     <div>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:10, marginBottom:8 }}>
-        <div>
-          <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.g }}>NEW BUILDS (OFF-PLAN) · {op}%</span>
-          <div style={{ fontSize:10, color:'var(--muted)', marginTop:3 }}>Buying directly from a developer before construction finishes</div>
+      {loading ? (
+        <Skel h={56} />
+      ) : (
+        <div style={{ display:'flex', height:56, borderRadius:8, overflow:'hidden', background:'rgba(201,168,76,0.08)', gap:0 }}>
+          {/* Offplan section */}
+          <div style={{
+            flex: `${op} 0 0`,
+            background:`linear-gradient(135deg,${C.gm},${C.g})`,
+            display:'flex',
+            alignItems:'center',
+            justifyContent:'center',
+            padding:'0 12px',
+            minWidth: op > 15 ? 'auto' : 0,
+            overflow: 'hidden'
+          }}>
+            {op > 15 && (
+              <div style={{ textAlign:'center' }}>
+                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:11, fontWeight:700, color:'#070b14' }}>
+                  {op}%
+                </div>
+                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:8, fontWeight:600, color:'rgba(7,11,20,0.85)', letterSpacing:'0.5px', textTransform:'uppercase', marginTop:2 }}>
+                  Off-Plan
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Existing section */}
+          <div style={{
+            flex: `${sec} 0 0`,
+            background:'rgba(100,120,160,0.3)',
+            display:'flex',
+            alignItems:'center',
+            justifyContent:'center',
+            padding:'0 12px',
+            minWidth: sec > 15 ? 'auto' : 0,
+            overflow: 'hidden'
+          }}>
+            {sec > 15 && (
+              <div style={{ textAlign:'center' }}>
+                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:11, fontWeight:700, color:'var(--muted)' }}>
+                  {sec}%
+                </div>
+                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:8, fontWeight:600, color:'var(--muted)', letterSpacing:'0.5px', textTransform:'uppercase', marginTop:2 }}>
+                  Existing
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <div style={{ textAlign:'right' }}>
-          <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--muted)' }}>EXISTING PROPERTIES · {100-op}%</span>
-          <div style={{ fontSize:10, color:'var(--muted)', marginTop:3 }}>Resale of already-built homes</div>
-        </div>
-      </div>
-      {loading?<Skel h={8}/>:
-        <div style={{ height:8, background:'rgba(201,168,76,0.10)', borderRadius:6, overflow:'hidden' }}>
-          <div style={{ width:`${op}%`, height:'100%', background:`linear-gradient(90deg,${C.gm},${C.g})`, borderRadius:6, transition:'width 1.4s ease' }}/>
-        </div>
-      }
+      )}
     </div>
   );
 }
