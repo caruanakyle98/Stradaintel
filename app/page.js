@@ -2610,8 +2610,8 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* Rental yields — sales tab only */}
-          {propTab === 'sales' && (prop?.yields||loadProp) && (
+          {/* Rental yields — TEMPORARILY HIDDEN (inaccurate reporting) */}
+          {false && propTab === 'sales' && (prop?.yields||loadProp) && (
             <div className="print-keep-together reveal" style={{ marginBottom:12 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>Annual Rental Yield — How Much Income Your Property Generates</div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
