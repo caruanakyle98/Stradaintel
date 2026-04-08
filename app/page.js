@@ -2564,10 +2564,10 @@ export function DashboardView() {
                   loading={loadProp}
                 />
                 <TrendDualChart
-                  title="Avg annual rent (AED)"
+                  title="PSF (AED/sq ft)"
                   subtitle="Daily avg (filled) vs 7-day average"
-                  daily={prop?.rental_charts_30d?.rent_avg_aed || []}
-                  ma7={prop?.rental_charts_30d?.rent_avg_aed_ma7 || []}
+                  daily={prop?.rental_charts_30d?.psf || []}
+                  ma7={prop?.rental_charts_30d?.psf_ma7 || []}
                   dailyColor={C.amL}
                   maColor="#e8a060"
                   loading={loadProp}
@@ -2579,7 +2579,7 @@ export function DashboardView() {
                 {loadProp ? (
                   <>
                     <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}><Tag color={C.gm}>Weekly volume</Tag><Skel h={36} /></div>
-                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}><Tag color={C.gm}>Weekly avg rent</Tag><Skel h={36} /></div>
+                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}><Tag color={C.gm}>Weekly PSF</Tag><Skel h={36} /></div>
                   </>
                 ) : (
                   <>
@@ -2594,12 +2594,12 @@ export function DashboardView() {
                       </div>
                     </div>
                     <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
-                      <Tag color={C.gm}>Weekly avg rent</Tag>
-                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Avg annualised rent (AED) — 7-day trend</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:13, fontWeight:700, color:(prop?.rental_charts_30d?.wow_rent_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:10 }}>
+                      <Tag color={C.gm}>Weekly PSF</Tag>
+                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Avg price per sqft (AED) — 7-day trend</div>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:13, fontWeight:700, color:(prop?.rental_charts_30d?.wow_psf_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:10 }}>
                         Avg WoW:{' '}
-                        {prop?.rental_charts_30d?.wow_rent_pct != null && Number.isFinite(prop.rental_charts_30d.wow_rent_pct)
-                          ? `${prop.rental_charts_30d.wow_rent_pct >= 0 ? '+' : ''}${prop.rental_charts_30d.wow_rent_pct}%`
+                        {prop?.rental_charts_30d?.wow_psf_pct != null && Number.isFinite(prop.rental_charts_30d.wow_psf_pct)
+                          ? `${prop.rental_charts_30d.wow_psf_pct >= 0 ? '+' : ''}${prop.rental_charts_30d.wow_psf_pct}%`
                           : 'N/A'}
                       </div>
                     </div>
