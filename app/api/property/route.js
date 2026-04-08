@@ -562,8 +562,9 @@ export async function GET(request) {
       return Response.json(result.body, { status: result.status });
     }
     const needRental = !skipRental && !!(rentalUrlEnv && result.windows);
-    const needListings = !skipListings && !!listingsUrlEnv;
-    const needSalesListings = !skipSalesListings && !!salesListingsUrlEnv;
+    // Skip listings when community filter is active (inconsistent labeling at community level)
+    const needListings = !skipListings && !!listingsUrlEnv && !communityFilterActive;
+    const needSalesListings = !skipSalesListings && !!salesListingsUrlEnv && !communityFilterActive;
 
     /* Sequential rental → rental listings → sales listings (not parallel) to cap peak RAM */
     if (needRental || needListings || needSalesListings) {

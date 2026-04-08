@@ -2365,7 +2365,8 @@ export function DashboardView() {
               </>
             ) : (
               /* Rental tab: average asking rent per bedroom from listings CSV */
-              (prop?.listings?.by_beds || loadProp) && (
+              /* Hidden when community filter active (inconsistent labeling at community level) */
+              !community && (prop?.listings?.by_beds || loadProp) && (
                 <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
                   <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>
                     Average Asking Rent by Bedroom · {sanitizeRawGithubLinks(na(prop?.listings?.source))}
@@ -2842,7 +2843,8 @@ export function DashboardView() {
               )}
 
               {/* Hot Listings — vs transacted benchmark, ≤30d, area-filtered */}
-              {!listingsForTab?.error && (
+              {/* Hidden when community filter active (inconsistent labeling at community level) */}
+              {!community && !listingsForTab?.error && (
                 <div className="reveal print-keep-together lp-card" style={{ marginBottom: 12, padding: 0, overflow: 'hidden' }}>
                   <div style={{ padding: '14px 18px', borderBottom: `1px solid ${C.border}` }}>
                     <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)' }}>Hot Listings</div>
