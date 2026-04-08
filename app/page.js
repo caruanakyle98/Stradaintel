@@ -2782,7 +2782,7 @@ export function DashboardView() {
                         })()}
 
                         {/* ── Bar chart: new listings per day ── */}
-                        <div style={{ fontSize: 10, color: C.tm, marginBottom: 10 }}>
+                        <div style={{ fontSize: 10, color: C.tm, marginBottom: 14, marginTop: 8 }}>
                           New listings per day — {listingsForTab.listings_added_period}
                         </div>
                         <div
