@@ -2252,34 +2252,78 @@ export function DashboardView() {
               </div>
               {prop?.weekly?.rent_new_vs_renewal && !loadProp && (
                 <div className="reveal print-keep-together lp-card" style={{ marginTop:12, padding:'20px 22px' }}>
-                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>NEW VS RENEWAL · SAME WEEK (BY REGISTRATION DATE)</div>
-                  <div style={{ display:'flex', gap:16, flexWrap:'wrap', alignItems:'center', marginBottom:12 }}>
-                    <div style={{ flex:1, minWidth:140 }}>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.ga, marginBottom:6 }}>New Contract</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:28, fontWeight:800, color:C.ga, textShadow:C.glowGa }}>{prop.weekly.rent_new_vs_renewal.new_count}</div>
-                      <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>{prop.weekly.rent_new_vs_renewal.new_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.new_chg_wow}</div>
+                  <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:12 }}>NEW VS RENEWAL · SAME WEEK (BY REGISTRATION DATE)</div>
+                  <div style={{ display:'flex', height:56, borderRadius:8, overflow:'hidden', background:'rgba(100,180,100,0.08)', gap:0, marginBottom:8 }}>
+                    {/* New contracts section */}
+                    <div style={{
+                      flex: `${prop.weekly.rent_new_vs_renewal.new_pct} 0 0`,
+                      background:`linear-gradient(135deg,${C.ga},#6ecc71)`,
+                      display:'flex',
+                      alignItems:'center',
+                      justifyContent:'center',
+                      padding:'0 12px',
+                      minWidth: Number(prop.weekly.rent_new_vs_renewal.new_pct) > 15 ? 'auto' : 0,
+                      overflow: 'hidden'
+                    }}>
+                      {Number(prop.weekly.rent_new_vs_renewal.new_pct) > 15 && (
+                        <div style={{ textAlign:'center' }}>
+                          <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:11, fontWeight:700, color:'#070b14' }}>
+                            {prop.weekly.rent_new_vs_renewal.new_pct}%
+                          </div>
+                          <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:8, fontWeight:600, color:'rgba(7,11,20,0.85)', letterSpacing:'0.5px', textTransform:'uppercase', marginTop:2 }}>
+                            New
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div style={{ flex:1, minWidth:140 }}>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.am, marginBottom:6 }}>Renewal</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:28, fontWeight:800, color:C.am, textShadow:C.glowAm }}>{prop.weekly.rent_new_vs_renewal.renewal_count}</div>
-                      <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>{prop.weekly.rent_new_vs_renewal.renewal_pct}% of split · WoW {prop.weekly.rent_new_vs_renewal.renewal_chg_wow}</div>
+                    {/* Renewal section */}
+                    <div style={{
+                      flex: `${prop.weekly.rent_new_vs_renewal.renewal_pct} 0 0`,
+                      background:`linear-gradient(135deg,${C.am},#f5a623)`,
+                      display:'flex',
+                      alignItems:'center',
+                      justifyContent:'center',
+                      padding:'0 12px',
+                      minWidth: Number(prop.weekly.rent_new_vs_renewal.renewal_pct) > 15 ? 'auto' : 0,
+                      overflow: 'hidden'
+                    }}>
+                      {Number(prop.weekly.rent_new_vs_renewal.renewal_pct) > 15 && (
+                        <div style={{ textAlign:'center' }}>
+                          <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:11, fontWeight:700, color:'#070b14' }}>
+                            {prop.weekly.rent_new_vs_renewal.renewal_pct}%
+                          </div>
+                          <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:8, fontWeight:600, color:'rgba(7,11,20,0.85)', letterSpacing:'0.5px', textTransform:'uppercase', marginTop:2 }}>
+                            Renewal
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    {Number(prop.weekly.rent_new_vs_renewal.other_count) > 0 && (
-                      <div style={{ flex:1, minWidth:140 }}>
-                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:C.t2, marginBottom:6 }}>Other / Unspecified</div>
-                        <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:28, fontWeight:800, color:C.t2 }}>{prop.weekly.rent_new_vs_renewal.other_count}</div>
-                        <div style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>Rows not tagged as new or renewal</div>
+                    {/* Other section (if present) */}
+                    {Number(prop.weekly.rent_new_vs_renewal.other_pct || 0) > 0 && (
+                      <div style={{
+                        flex: `${prop.weekly.rent_new_vs_renewal.other_pct} 0 0`,
+                        background:'rgba(100,120,160,0.3)',
+                        display:'flex',
+                        alignItems:'center',
+                        justifyContent:'center',
+                        padding:'0 12px',
+                        minWidth: Number(prop.weekly.rent_new_vs_renewal.other_pct) > 15 ? 'auto' : 0,
+                        overflow: 'hidden'
+                      }}>
+                        {Number(prop.weekly.rent_new_vs_renewal.other_pct) > 15 && (
+                          <div style={{ textAlign:'center' }}>
+                            <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:11, fontWeight:700, color:'var(--muted)' }}>
+                              {prop.weekly.rent_new_vs_renewal.other_pct}%
+                            </div>
+                            <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:8, fontWeight:600, color:'var(--muted)', letterSpacing:'0.5px', textTransform:'uppercase', marginTop:2 }}>
+                              Other
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                  <div style={{ height:8, background:C.border, borderRadius:4, overflow:'hidden', display:'flex' }}>
-                    <div style={{ width:`${prop.weekly.rent_new_vs_renewal.new_pct}%`, background:C.ga, minWidth: Number(prop.weekly.rent_new_vs_renewal.new_count) > 0 ? 2 : 0 }} title="New" />
-                    <div style={{ width:`${prop.weekly.rent_new_vs_renewal.renewal_pct}%`, background:C.am, minWidth: Number(prop.weekly.rent_new_vs_renewal.renewal_count) > 0 ? 2 : 0 }} title="Renewal" />
-                    {Number(prop.weekly.rent_new_vs_renewal.other_count) > 0 && (
-                      <div style={{ width:`${Math.max(0,100-Number(prop.weekly.rent_new_vs_renewal.new_pct||0)-Number(prop.weekly.rent_new_vs_renewal.renewal_pct||0))}%`, background:C.td, minWidth:2 }} title="Other / unspecified"/>
-                    )}
-                  </div>
-                  <div style={{ fontSize:10, color:'rgba(201,168,76,0.35)', marginTop:10 }}>Split = new + renewal + other ({Number(prop.weekly.rent_new_vs_renewal.new_count) + Number(prop.weekly.rent_new_vs_renewal.renewal_count) + Number(prop.weekly.rent_new_vs_renewal.other_count || 0)} of {prop?.weekly?.rent_volume?.value} registrations). Source: {prop.weekly.rent_new_vs_renewal.column}</div>
+                  <div style={{ fontSize:10, color:'rgba(201,168,76,0.35)' }}>Split = new + renewal + other ({Number(prop.weekly.rent_new_vs_renewal.new_count) + Number(prop.weekly.rent_new_vs_renewal.renewal_count) + Number(prop.weekly.rent_new_vs_renewal.other_count || 0)} of {prop?.weekly?.rent_volume?.value} registrations). Source: {prop.weekly.rent_new_vs_renewal.column}</div>
                 </div>
               )}
             </div>
