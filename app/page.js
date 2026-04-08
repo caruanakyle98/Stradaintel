@@ -2595,7 +2595,7 @@ export function DashboardView() {
                     </div>
                     <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
                       <Tag color={C.gm}>Weekly PSF</Tag>
-                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Avg price per sqft (AED) — 7-day trend</div>
+                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>PSF (AED/sq ft) — 7-day trend</div>
                       <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:13, fontWeight:700, color:(prop?.rental_charts_30d?.wow_psf_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:10 }}>
                         Avg WoW:{' '}
                         {prop?.rental_charts_30d?.wow_psf_pct != null && Number.isFinite(prop.rental_charts_30d.wow_psf_pct)
