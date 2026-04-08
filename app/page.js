@@ -1204,8 +1204,7 @@ export function DashboardView() {
   const [printScope, setPrintScope] = useState(false);
   const [propTab, setPropTab] = useState('sales'); // 'sales' | 'rental'
   const [hotTypeByTab, setHotTypeByTab] = useState({ sales: 'apartment', rental: 'apartment' });
-  const [refreshingSnapshot, setRefreshingSnapshot] = useState(false);
-  const [refreshingPropSnapshot, setRefreshingPropSnapshot] = useState(false);
+  const [refreshingAllSnapshots, setRefreshingAllSnapshots] = useState(false);
 
   useEffect(() => {
     try {
@@ -1243,58 +1242,49 @@ export function DashboardView() {
     }
   }, [isClientView]);
 
-  const refreshIntelSnapshot = useCallback(async () => {
+
+  const refreshAllSnapshots = useCallback(async () => {
     if (isClientView) return;
-    setRefreshingSnapshot(true);
+    setRefreshingAllSnapshots(true);
     setError(null);
+    setPropError(null);
     try {
+      // Step 1: Refresh market signals snapshot
       const headers = { 'Content-Type': 'application/json' };
       if (adminToken) headers['x-intel-admin-token'] = adminToken;
-      const r = await fetch('/api/intelligence-refresh', {
+      const r1 = await fetch('/api/intelligence-refresh', {
         method: 'POST',
         headers,
       });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok || !d.ok) throw new Error(d?.error || `HTTP ${r.status}`);
-      // Refresh using the snapshot-read endpoint so we don't re-run intelligence.
-      const rr = await fetch('/api/intelligence-read', { cache: 'no-store' });
-      const dd = await rr.json().catch(() => ({}));
-      if (rr.ok && dd?.ok) {
-        setIntel(dd);
-        setTs(dd.ts);
+      const d1 = await r1.json().catch(() => ({}));
+      if (!r1.ok || !d1.ok) throw new Error(d1?.error || `Intelligence: HTTP ${r1.status}`);
+      // Load updated snapshot
+      const rr1 = await fetch('/api/intelligence-read', { cache: 'no-store' });
+      const dd1 = await rr1.json().catch(() => ({}));
+      if (rr1.ok && dd1?.ok) {
+        setIntel(dd1);
+        setTs(dd1.ts);
       }
-    } catch (e) {
-      setError(e.message || 'Snapshot refresh failed');
-    } finally {
-      setRefreshingSnapshot(false);
-    }
-  }, [adminToken, isClientView, refreshIntel]);
-
-  const refreshPropSnapshot = useCallback(async () => {
-    if (isClientView) return;
-    if (!prop || !prop.ok) {
-      setPropError('Load property data first before saving a snapshot.');
-      return;
-    }
-    setRefreshingPropSnapshot(true);
-    setPropError(null);
-    try {
-      const headers = { 'Content-Type': 'application/json' };
-      if (adminToken) headers['x-intel-admin-token'] = adminToken;
-      const r = await fetch('/api/property-refresh', {
+      // Step 2: Refresh property snapshot (requires current prop data)
+      if (!prop || !prop.ok) {
+        setPropError('Load property data first.');
+        return;
+      }
+      const r2 = await fetch('/api/property-refresh', {
         method: 'POST',
         headers,
         body: JSON.stringify(prop),
       });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok || !d.ok) throw new Error(d?.error || d?.detail || `HTTP ${r.status}`);
-      setPropError(null);
+      const d2 = await r2.json().catch(() => ({}));
+      if (!r2.ok || !d2.ok) throw new Error(d2?.error || d2?.detail || `Property: HTTP ${r2.status}`);
     } catch (e) {
-      setPropError(e.message || 'Property snapshot save failed');
+      const msg = e.message || 'Snapshot rebuild failed';
+      setError(msg);
+      setPropError(msg);
     } finally {
-      setRefreshingPropSnapshot(false);
+      setRefreshingAllSnapshots(false);
     }
-  }, [adminToken, isClientView, prop]);
+  }, [adminToken, isClientView, prop, refreshIntel]);
 
   const refreshProp = useCallback(async (forcedPath, overrideArea, overrideCommunity, overrideBuilding, overrideDays) => {
     setLoadProp(true); setPropError(null);
@@ -1902,24 +1892,18 @@ export function DashboardView() {
 
             <div className="dash-nav-row2">
               {!isClientView && (
+                <button onClick={() => refreshAllSnapshots()} disabled={refreshingAllSnapshots} className="lp-btn lp-btn-ghost lp-btn-accent" title="Rebuilds market signals + property snapshots for clients">
+                  {refreshingAllSnapshots ? 'Rebuilding…' : 'Rebuild Snapshots'}
+                </button>
+              )}
+              {!isClientView && (
                 <button onClick={() => refreshIntel()} disabled={loadIntel} className="lp-btn lp-btn-ghost">
-                  {loadIntel ? '…' : 'Market signals'}
+                  {loadIntel ? '…' : 'Market Signals'}
                 </button>
               )}
-              {!isClientView && (
-                <button onClick={() => refreshIntelSnapshot()} disabled={refreshingSnapshot} className="lp-btn lp-btn-ghost lp-btn-accent" title="Runs live intelligence once, stores snapshot for clients">
-                  {refreshingSnapshot ? 'Refreshing…' : 'Update snapshot'}
-                </button>
-              )}
-              {!isClientView && (
-                <button onClick={() => refreshPropSnapshot()} disabled={refreshingPropSnapshot} className="lp-btn lp-btn-ghost lp-btn-accent" title="Builds full property data (sales+rental+listings) and stores snapshot for clients">
-                  {refreshingPropSnapshot ? 'Building…' : 'Update property snapshot'}
-                </button>
-              )}
-              {/* PDF/print export removed per request */}
               {!isClientView && (
                 <button onClick={() => refreshProp()} disabled={loadProp} className="lp-btn lp-btn-ghost">
-                  {loadProp ? '…' : 'Property data'}
+                  {loadProp ? '…' : 'Property Data'}
                 </button>
               )}
               <label style={{ display:'flex', alignItems:'center', gap:8 }}>
