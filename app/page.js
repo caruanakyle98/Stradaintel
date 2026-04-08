@@ -1558,7 +1558,7 @@ export function DashboardView() {
     delete payload._stats_for_ai;
     setProp(payload);
     setPropError(null);
-  }, [salesCsvPath, community, days];
+  }, [salesCsvPath, community, days]);
 
   const uploadCsv = useCallback(async (file) => {
     if (!file) return;
