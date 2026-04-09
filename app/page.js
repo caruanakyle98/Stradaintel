@@ -2451,6 +2451,34 @@ export function DashboardView() {
               )
             )}
 
+            {/* Transaction PPSF (rentals) — current month median vs prior month */}
+            {propTab === 'rental' && (prop?.rental_monthly || loadProp) && (
+              <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
+                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:14 }}>
+                  Transaction PSF (Rent) · {na(prop?.rental_monthly?.cur_label)} MTD
+                </div>
+                {loadProp ? <Skel h={100}/> : (
+                  <div style={{ padding:'12px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10 }}>
+                    <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:24, fontWeight:800, color:C.metric, textShadow:C.glowMetric }}>
+                      {prop.rental_monthly.cur_psf_median != null ? `AED ${Math.round(prop.rental_monthly.cur_psf_median).toLocaleString()}` : '—'}
+                      <span style={{ fontSize:10, color:'var(--muted)' }}>/sqft</span>
+                    </div>
+                    <div style={{ fontSize:10, color:'var(--muted)', marginTop:4 }}>
+                      vs {prop.rental_monthly.prev_psf_median != null ? `AED ${Math.round(prop.rental_monthly.prev_psf_median).toLocaleString()}/sqft` : '—'} ({na(prop.rental_monthly.prev_label)})
+                    </div>
+                    {prop.rental_monthly.mom_psf_pct != null && (
+                      <div style={{ fontSize:10, fontWeight:600, color: prop.rental_monthly.mom_psf_pct >= 0 ? C.g : C.red, marginTop:3 }}>
+                        {prop.rental_monthly.mom_psf_pct >= 0 ? '+' : ''}{prop.rental_monthly.mom_psf_pct}% MoM
+                      </div>
+                    )}
+                    <div style={{ fontSize:10, color:'var(--muted)', marginTop:3 }}>
+                      {prop.rental_monthly.cur_count?.toLocaleString()} txns · day {prop.rental_monthly.cur_days_elapsed}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Off-plan vs resale — sales tab only */}
             {propTab === 'sales' && (
               <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
