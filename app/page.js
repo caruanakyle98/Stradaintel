@@ -2583,7 +2583,7 @@ export function DashboardView() {
                     <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
                       <Tag color={C.gm}>Weekly volume</Tag>
                       <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Total transactions Mon–Sun (Dubai)</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#111827', marginTop:8 }}>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#f5f5f5', marginTop:8 }}>
                         {prop?.charts_30d?.sale_volume_weekly && prop.charts_30d.sale_volume_weekly.length > 0
                           ? `${prop.charts_30d.sale_volume_weekly[prop.charts_30d.sale_volume_weekly.length - 1].value}`
                           : 'N/A'}
@@ -2597,7 +2597,7 @@ export function DashboardView() {
                     <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
                       <Tag color={C.gm}>Weekly PSF</Tag>
                       <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Median price per sq ft by week</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#111827', marginTop:8 }}>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#f5f5f5', marginTop:8 }}>
                         {prop?.charts_30d?.psf_weekly && prop.charts_30d.psf_weekly.length > 0
                           ? `AED ${prop.charts_30d.psf_weekly[prop.charts_30d.psf_weekly.length - 1].median?.toFixed(0) || 'N/A'}`
                           : 'N/A'}
@@ -2658,7 +2658,7 @@ export function DashboardView() {
                     <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
                       <Tag color={C.gm}>Weekly volume</Tag>
                       <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Total rental registrations Mon–Sun (Dubai)</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#111827', marginTop:8 }}>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#f5f5f5', marginTop:8 }}>
                         {prop?.rental_charts_30d?.rent_volume_weekly && prop.rental_charts_30d.rent_volume_weekly.length > 0
                           ? `${prop.rental_charts_30d.rent_volume_weekly[prop.rental_charts_30d.rent_volume_weekly.length - 1].value}`
                           : 'N/A'}
@@ -2672,7 +2672,7 @@ export function DashboardView() {
                     <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
                       <Tag color={C.gm}>Weekly PSF</Tag>
                       <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>PSF (AED/sq ft) — 7-day trend</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#111827', marginTop:8 }}>
+                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#f5f5f5', marginTop:8 }}>
                         {prop?.rental_charts_30d?.psf_weekly && prop.rental_charts_30d.psf_weekly.length > 0
                           ? `AED ${prop.rental_charts_30d.psf_weekly[prop.rental_charts_30d.psf_weekly.length - 1].median?.toFixed(0) || 'N/A'}`
                           : 'N/A'}
