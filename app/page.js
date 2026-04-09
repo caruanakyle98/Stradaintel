@@ -2197,6 +2197,7 @@ export function DashboardView() {
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Area</th>
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Location</th>
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Unit</th>
+                        <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Beds</th>
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Type</th>
                         <th title="Segment" style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'left', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Seg.</th>
                         <th style={{ position: 'sticky', top: 0, background: C.card, textAlign: 'right', padding: '4px 5px', borderBottom: `1px solid ${C.border}`, color: C.tm, fontWeight: 700, whiteSpace: 'nowrap' }}>Price</th>
@@ -2210,6 +2211,7 @@ export function DashboardView() {
                           <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 140 }} title={row.area}>{row.area}</td>
                           <td style={{ padding: '4px 5px', color: C.t2, overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 180 }} title={row.location}>{row.location}</td>
                           <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }}>{row.unit_no ?? '—'}</td>
+                          <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }} title={row.beds}>{row.beds}</td>
                           <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }} title={row.unit_type}>{row.unit_type}</td>
                           <td style={{ padding: '4px 5px', color: C.t2, whiteSpace: 'nowrap' }} title={row.segment}>{row.segment}</td>
                           <td style={{ padding: '4px 5px', color: C.metric, textAlign: 'right', whiteSpace: 'nowrap' }}>{row.price_fmt}</td>
