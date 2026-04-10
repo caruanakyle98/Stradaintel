@@ -2394,11 +2394,11 @@ export function DashboardView() {
                   {loadProp ? <Skel h={100}/> : (
                     <div style={{ padding:'12px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10 }}>
                       <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:24, fontWeight:800, color:C.metric, textShadow:C.glowMetric }}>
-                        {prop.monthly.cur_psf_median != null ? `AED ${Math.round(prop.monthly.cur_psf_median).toLocaleString()}` : '—'}
+                        {prop.monthly.cur_psf_avg != null ? `AED ${Math.round(prop.monthly.cur_psf_avg).toLocaleString()}` : '—'}
                         <span style={{ fontSize:10, color:'var(--muted)' }}>/sqft</span>
                       </div>
                       <div style={{ fontSize:10, color:'var(--muted)', marginTop:4 }}>
-                        vs {prop.monthly.prev_psf_median != null ? `AED ${Math.round(prop.monthly.prev_psf_median).toLocaleString()}/sqft` : '—'} ({na(prop.monthly.prev_label)})
+                        vs {prop.monthly.prev_psf_avg != null ? `AED ${Math.round(prop.monthly.prev_psf_avg).toLocaleString()}/sqft` : '—'} ({na(prop.monthly.prev_label)})
                       </div>
                       {prop.monthly.mom_psf_pct != null && (
                         <div style={{ fontSize:10, fontWeight:600, color: prop.monthly.mom_psf_pct >= 0 ? C.g : C.red, marginTop:3 }}>
@@ -2462,11 +2462,11 @@ export function DashboardView() {
                 {loadProp ? <Skel h={100}/> : (
                   <div style={{ padding:'12px 14px', background:'rgba(11,18,32,0.6)', borderRadius:10 }}>
                     <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:24, fontWeight:800, color:C.metric, textShadow:C.glowMetric }}>
-                      {prop.rental_monthly.cur_psf_median != null ? `AED ${Math.round(prop.rental_monthly.cur_psf_median).toLocaleString()}` : '—'}
+                      {prop.rental_monthly.cur_psf_avg != null ? `AED ${Math.round(prop.rental_monthly.cur_psf_avg).toLocaleString()}` : '—'}
                       <span style={{ fontSize:10, color:'var(--muted)' }}>/sqft</span>
                     </div>
                     <div style={{ fontSize:10, color:'var(--muted)', marginTop:4 }}>
-                      vs {prop.rental_monthly.prev_psf_median != null ? `AED ${Math.round(prop.rental_monthly.prev_psf_median).toLocaleString()}/sqft` : '—'} ({na(prop.rental_monthly.prev_label)})
+                      vs {prop.rental_monthly.prev_psf_avg != null ? `AED ${Math.round(prop.rental_monthly.prev_psf_avg).toLocaleString()}/sqft` : '—'} ({na(prop.rental_monthly.prev_label)})
                     </div>
                     {prop.rental_monthly.mom_psf_pct != null && (
                       <div style={{ fontSize:10, fontWeight:600, color: prop.rental_monthly.mom_psf_pct >= 0 ? C.g : C.red, marginTop:3 }}>
