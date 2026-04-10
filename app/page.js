@@ -2610,7 +2610,7 @@ export function DashboardView() {
                     </div>
                     <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
                       <Tag color={C.gm}>Weekly PSF</Tag>
-                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Median price per sq ft by week</div>
+                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Average price per sq ft by week</div>
                       <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#f5f5f5', marginTop:8 }}>
                         {prop?.charts_30d?.psf_weekly && prop.charts_30d.psf_weekly.length > 0
                           ? `AED ${prop.charts_30d.psf_weekly[prop.charts_30d.psf_weekly.length - 1].median?.toFixed(0) || 'N/A'}`
