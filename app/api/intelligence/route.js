@@ -656,6 +656,70 @@ function fallbackNewsPillars(mkt, sp30d, errSlice) {
   };
 }
 
+// ── Transaction data pillar (always snapshot '7' = unfiltered all-Dubai) ──
+/**
+ * Reads property_metrics.json from disk and derives a 1–5 score from
+ * real DLD transaction data. Snapshot '7' is always the full-market,
+ * no-area-filter view — user-selected filters in the property UI never
+ * affect this score.
+ *
+ * Score components:
+ *   60% — 30d business-day volume trend (second half avg vs first half avg)
+ *   40% — MoM PSF direction (only used if current month has ≥7 days elapsed)
+ */
+function loadTransactionScore() {
+  try {
+    const metricsPath = join(process.cwd(), 'data', 'property', 'property_metrics.json');
+    if (!existsSync(metricsPath)) return null;
+    const snap = JSON.parse(readFileSync(metricsPath, 'utf8'))?.snapshots?.['7'];
+    if (!snap) return null;
+
+    // ── 30d volume trend: business days only (exclude weekends/holidays <50 txn) ──
+    const dailyVols = (snap.charts_30d?.sale_volume || [])
+      .map(d => (typeof d.value === 'number' ? d.value : 0))
+      .filter(v => v >= 50); // strip non-trading days
+    let volumeScore = 3;
+    if (dailyVols.length >= 6) {
+      const half = Math.floor(dailyVols.length / 2);
+      const avgFirst  = dailyVols.slice(0, half).reduce((a, b) => a + b, 0) / half;
+      const avgSecond = dailyVols.slice(half).reduce((a, b) => a + b, 0) / (dailyVols.length - half);
+      const trendPct  = avgFirst > 0 ? ((avgSecond - avgFirst) / avgFirst) * 100 : 0;
+      volumeScore = trendPct > 10 ? 5 : trendPct > 3 ? 4 : trendPct > -3 ? 3 : trendPct > -10 ? 2 : 1;
+    }
+
+    // ── PSF direction: MoM from monthly block (skip if too few days elapsed) ──
+    const monthly = snap.monthly && typeof snap.monthly === 'object' && !Array.isArray(snap.monthly)
+      ? snap.monthly : null;
+    const daysElapsed = parseInt(monthly?.cur_days_elapsed || '0', 10);
+    let psfScore = 3;
+    if (monthly && daysElapsed >= 7) {
+      const psfChg = parseFloat(monthly.mom_psf_pct || '0') || 0;
+      psfScore = psfChg > 2 ? 5 : psfChg > 0.5 ? 4 : psfChg > -0.5 ? 3 : psfChg > -2 ? 2 : 1;
+    }
+
+    // ── Blend ──
+    const blendedRaw = volumeScore * 0.6 + psfScore * 0.4;
+    const score = Math.round(Math.min(5, Math.max(1, blendedRaw)));
+
+    return {
+      score,
+      weeklyVol:    snap.weekly?.sale_volume?.value   || 'N/A',
+      weeklyWoW:    snap.weekly?.sale_volume?.chg_wow || 'N/A',
+      weeklyTrend:  snap.weekly?.sale_volume?.trend   || null,
+      period:       snap.weekly?.sale_volume?.period  || '',
+      aptPsf:       snap.prices?.apt_psf_aed          || 'N/A',
+      psfMoM:       monthly?.mom_psf_pct              || 'N/A',
+      curMonth:     monthly?.cur_label                || '',
+      prevMonth:    monthly?.prev_label               || '',
+      offplanPct:   snap.market_split?.offplan_pct    || 'N/A',
+      secondaryPct: snap.market_split?.secondary_pct  || 'N/A',
+      daysElapsed,
+      volumeScore,
+      psfScore,
+    };
+  } catch { return null; }
+}
+
 // ── Run all Haiku calls in parallel ──────────────────────
 async function fetchAllNarrative(today, mkt, sp30d, anthropicKey) {
   const [newsRes, ratesRes] = await Promise.allSettled([
@@ -726,8 +790,11 @@ export async function buildIntelligencePayload() {
   const buyerScore = buyerRaw > 1.5 ? 5 : buyerRaw > 0.5 ? 4 : buyerRaw > -0.5 ? 3 : buyerRaw > -1.5 ? 2 : 1;
   const buyerSig   = buyerScore >= 4 ? 'positive' : buyerScore <= 2 ? 'negative' : 'neutral';
 
+  // ── Transaction data pillar (always all-Dubai, never filtered) ────────────
+  const txn = loadTransactionScore();
+  const txnScore = txn?.score ?? 3;
+
   // ── Existing pillar scores (calibrated so score ↔ narrative ↔ sig align) ──
-  const clamp = n => Math.min(Math.max(parseInt(n, 10) || 3, 1), 5);
   const sigOf = n => (n >= 4 ? 'positive' : n <= 2 ? 'negative' : 'neutral');
   const secScore = calibrateSecurityScore(narrative.security?.score, narrative.security);
   const prpScore = calibratePropertyScore(narrative.property?.score, narrative.property);
@@ -761,17 +828,17 @@ export async function buildIntelligencePayload() {
   const macroBase  = vix>=35?1 : vix>=25?2 : r10>=5.5?2 : r10>=4.5?3 : vix>0?4 : 3;
   const macroScore = Math.round((macroBase * 0.5 + eiborScore * 0.3 + pmiScore * 0.2));
 
-  // ── Composite — updated weights to include buyer demand ─
-  // Security 24% | Oil 16% | Equities 14% | Macro/Rates 14% | Buyer Demand 12% | Aviation 9% | Property 8% | Banking 3%
+  // ── Composite — Security 22% | Oil 15% | Equities 12% | Macro 12% | Buyer 10% | Transactions 10% | Aviation 8% | Property 7% | Banking 4%
   const composite = Math.round((
-    secScore   * 0.24 +
-    oilScore   * 0.16 +
-    eqScore    * 0.14 +
-    macroScore * 0.14 +
-    buyerScore * 0.12 +
-    aviScore   * 0.09 +
-    prpScore   * 0.08 +
-    3          * 0.03
+    secScore   * 0.22 +
+    oilScore   * 0.15 +
+    eqScore    * 0.12 +
+    macroScore * 0.12 +
+    buyerScore * 0.10 +
+    txnScore   * 0.10 +
+    aviScore   * 0.08 +
+    prpScore   * 0.07 +
+    3          * 0.04
   ) * 10) / 10;
 
   const SCENARIOS = [
@@ -835,9 +902,9 @@ export async function buildIntelligencePayload() {
       },
     },
     pillars: {
-      security: { ...narrative.security, score:secScore, weight:24, title:'Security & Geopolitical' },
+      security: { ...narrative.security, score:secScore, weight:22, title:'Security & Geopolitical' },
       oil: {
-        score:oilScore, sig:sigOf(oilScore), weight:16, title:'Oil & GCC Wealth Flow',
+        score:oilScore, sig:sigOf(oilScore), weight:15, title:'Oil & GCC Wealth Flow',
         headline: brent>0
           ? `Brent $${markets.brent?.price}/bbl — ${
               oilDisruptionFlag==='supply_shock'     ? 'supply shock signal — price driven by disruption, not demand' :
@@ -869,15 +936,33 @@ export async function buildIntelligencePayload() {
           ? 'Oil and gold rising together — possible supply disruption. Treat with caution; watch VIX and DLD volumes before acting.'
           : 'Oil supportive and demand-driven. GCC capital flows to Dubai remain intact.',
       },
+      transactions: {
+        score: txnScore, sig: sigOf(txnScore), weight: 10, title: 'DLD Transaction Activity',
+        headline: txn
+          ? `Dubai-wide sales ${txn.weeklyVol} this week (${txn.weeklyWoW} WoW) · Apt PSF AED ${txn.aptPsf} · ${txn.offplanPct}% off-plan`
+          : 'DLD transaction data unavailable',
+        bullets: txn ? [
+          `Weekly sales volume: ${txn.weeklyVol} transactions (${txn.weeklyWoW} vs prior week) — ${txn.period}`,
+          `Apartment avg PSF: AED ${txn.aptPsf} · MoM PSF change: ${txn.psfMoM}%${txn.daysElapsed < 7 ? ' (partial month — directional only)' : ''}`,
+          `Market split: ${txn.offplanPct}% off-plan / ${txn.secondaryPct}% secondary — ${parseInt(txn.offplanPct,10)>70?'off-plan dominant, developers setting price tone':'secondary market carrying more weight'}`,
+        ] : ['No DLD data file found — add data/property/property_metrics.json'],
+        risk: 'Volume decline with flat/negative PSF is the earliest leading indicator of a price correction — leads news by 4–6 weeks',
+        action: txnScore >= 4
+          ? 'Transaction volumes healthy. Data confirms sentiment signal.'
+          : txnScore <= 2
+          ? 'Volume contracting — treat news-driven sentiment with caution. Data does not support a strong market call.'
+          : 'Volume stable but not accelerating. Cross-check area-level data before committing.',
+        source: 'DLD via property_metrics.json (snapshot: all-Dubai, no area filter)',
+      },
       equities: {
-        score:eqScore, sig:sigOf(eqScore), weight:14, title:'UAE & Gulf Equities',
+        score:eqScore, sig:sigOf(eqScore), weight:12, title:'UAE & Gulf Equities',
         headline: `Emaar AED ${markets.emaar?.price||'—'} (${markets.emaar?.pct||'—'}) · DFMGI ${markets.dfmgi?.price||'—'} · DFMREI ${markets.dfmrei?.price||'—'} (${markets.dfmrei?.pct||'—'})`,
         bullets: [`Emaar: AED ${markets.emaar?.price||'N/A'} ${markets.emaar?.chg||''}`, `DFMGI: ${markets.dfmgi?.price||'N/A'} ${markets.dfmgi?.chg||''}`, `DFM Real Estate Index (DFMREI.AE): ${markets.dfmrei?.price||'N/A'} ${markets.dfmrei?.chg||''} ${markets.dfmrei?.pct||''}`, `ENBD: AED ${markets.enbd?.price||'N/A'} · DIB: AED ${markets.dib?.price||'N/A'}`],
         risk:'Emaar stock leads property prices by 60–90 days. Sustained weakness = sell signal.',
         action: eqScore>=4?'Developer stocks bullish — demand confirmed.':eqScore<=2?'Developer stocks weak — reduce off-plan exposure.':'Flat markets — hold, watch for directional break.',
       },
       macro: {
-        score:macroScore, sig:sigOf(macroScore), weight:14, title:'Global Macro · Rates · EIBOR',
+        score:macroScore, sig:sigOf(macroScore), weight:12, title:'Global Macro · Rates · EIBOR',
         headline: `VIX ${markets.vix?.price||'—'} · US10Y ${markets.us10y?.price||'—'}% · EIBOR 3M ${narrative.eibor?.rate_pct||'—'}% · PMI ${narrative.uae_pmi?.headline||'—'}`,
         bullets: [
           `VIX: ${markets.vix?.price||'N/A'} — ${vix<20?'calm markets, risk appetite healthy':vix<30?'moderate volatility':'elevated fear, buyer caution likely'}`,
@@ -888,7 +973,7 @@ export async function buildIntelligencePayload() {
         action: macroScore>=4?'Rates and macro supportive — financing conditions favour buyers.':macroScore<=2?'High rates/fear — cash buyers only, mortgage demand contracting.':'Macro mixed — monitor EIBOR trend weekly.',
       },
       buyer_demand: {
-        score:buyerScore, sig:buyerSig, weight:12, title:'Buyer Origin Markets',
+        score:buyerScore, sig:buyerSig, weight:10, title:'Buyer Origin Markets',
         headline: `Hang Seng ${markets.hsi?.price||'—'} (${markets.hsi?.pct||'—'}) · Sensex ${markets.sensex?.price||'—'} (${markets.sensex?.pct||'—'})`,
         bullets: [
           `India (largest buyer nationality): Sensex ${markets.sensex?.pct||'—'} today · INR/AED 30d: ${inr30d?.chgPct||'N/A'} — ${(inr30d?.rawPct||0)>=0?'rupee firm, Indian buyers have purchasing power':'rupee weak, Dubai more expensive for Indian buyers'}`,
@@ -898,8 +983,8 @@ export async function buildIntelligencePayload() {
         risk:'Simultaneous INR+CNY weakness against AED reduces effective buying power of top 2 nationalities by ~5-10%',
         action: buyerScore>=4?'Buyer origin conditions bullish. Prime and luxury segment well-supported.':buyerScore<=2?'Key buyer markets under pressure. Expect softening in Indian and Chinese buyer segments.':'Mixed signals — GCC buyers likely carrying more weight currently.',
       },
-      aviation: { ...narrative.aviation, score:aviScore, weight:9,  title:'Aviation & Tourism' },
-      property:  { ...narrative.property, score:prpScore, weight:8,  title:'Property Market Sentiment' },
+      aviation: { ...narrative.aviation, score:aviScore, weight:8, title:'Aviation & Tourism' },
+      property:  { ...narrative.property, score:prpScore, weight:7, title:'Property Market Sentiment' },
     },
     composite, label, col, base, down, up, action,
   };
