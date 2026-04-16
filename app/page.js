@@ -27,6 +27,7 @@ function mergeRentalSliceFromFetch(prev, d) {
     yields: d.yields ?? prev.yields,
     weekly: d.weekly ?? prev.weekly,
     sources_used: d.sources_used ?? prev.sources_used,
+    property_type_activity: d.property_type_activity ?? prev.property_type_activity,
   };
 }
 const sanitizeRawGithubLinks = (t) => {
@@ -2176,6 +2177,72 @@ export function DashboardView() {
               </div>
             </div>
           )}
+
+          {/* ── SALES TAB: property type activity (all-Dubai only) ── */}
+          {propTab === 'sales' && prop?.property_type_activity && (() => {
+            const pta = prop.property_type_activity;
+            const TYPES = ['apt', 'villa', 'townhouse'];
+            const ICONS = { apt: '🏢', villa: '🏠', townhouse: '🏘' };
+            const wow = (v) => {
+              if (!v || v === 'N/A') return null;
+              const n = parseFloat(v);
+              return { label: v, col: n > 0 ? C.g : n < 0 ? C.red : C.t2 };
+            };
+            return (
+              <div className="reveal lp-card" style={{ marginBottom: 16, padding: 0, overflow: 'hidden' }}>
+                <div style={{ padding: '12px 18px', borderBottom: `1px solid ${C.border}` }}>
+                  <div style={{ fontFamily: "var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)' }}>
+                    Property Type Activity · All Dubai · {pta.period || 'Latest week'}
+                  </div>
+                  <div style={{ fontSize: 10, color: C.tm, marginTop: 3 }}>What's selling and renting most — weekly volume breakdown</div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
+                  {TYPES.map((t, ti) => {
+                    const e = pta.entries?.[t];
+                    if (!e) return null;
+                    const isHotSale = pta.hottest_sale === t;
+                    const isHotRent = pta.hottest_rent === t;
+                    const sWow = wow(e.sale_wow);
+                    const rWow = wow(e.rent_wow);
+                    return (
+                      <div key={t} style={{ padding: '14px 16px', borderRight: ti < 2 ? `1px solid ${C.border}` : 'none' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                          <span style={{ fontSize: 14 }}>{ICONS[t]}</span>
+                          <span style={{ fontFamily: "var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 10, fontWeight: 700, color: C.t1, letterSpacing: '.08em', textTransform: 'uppercase' }}>{e.label}</span>
+                          {(isHotSale || isHotRent) && (
+                            <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 3, padding: '1px 5px' }}>
+                              {isHotSale && isHotRent ? 'HOTTEST' : isHotSale ? 'TOP SALES' : 'TOP RENTALS'}
+                            </span>
+                          )}
+                        </div>
+                        {/* Sales row */}
+                        <div style={{ marginBottom: 8 }}>
+                          <div style={{ fontSize: 9, color: C.tm, letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 3 }}>Sales</div>
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, flexWrap: 'wrap' }}>
+                            <span style={{ fontFamily: "var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 18, fontWeight: 700, color: C.metric }}>{e.sale_vol ?? '—'}</span>
+                            <span style={{ fontSize: 10, color: C.t2 }}>{e.sale_pct != null ? `${e.sale_pct}%` : ''}</span>
+                            {sWow && <span style={{ fontSize: 10, color: sWow.col }}>{sWow.label.startsWith('-') ? '' : '+'}{sWow.label} WoW</span>}
+                          </div>
+                        </div>
+                        {/* Rentals row */}
+                        <div>
+                          <div style={{ fontSize: 9, color: C.tm, letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 3 }}>Rentals</div>
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, flexWrap: 'wrap' }}>
+                            {e.rent_vol != null
+                              ? <><span style={{ fontFamily: "var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 18, fontWeight: 700, color: C.metric }}>{e.rent_vol}</span>
+                                <span style={{ fontSize: 10, color: C.t2 }}>{e.rent_pct != null ? `${e.rent_pct}%` : ''}</span>
+                                {rWow && <span style={{ fontSize: 10, color: rWow.col }}>{rWow.label.startsWith('-') ? '' : '+'}{rWow.label} WoW</span>}</>
+                              : <span style={{ fontSize: 12, color: C.tm }}>—</span>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* ── SALES TAB: last 25 transactions (area-filtered) ── */}
           {propTab === 'sales' && (
