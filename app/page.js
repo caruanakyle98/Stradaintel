@@ -2426,7 +2426,9 @@ export function DashboardView() {
                 <div style={{ padding: '14px 18px', fontSize: 12, color: C.tm }}>
                   {prop?.rental?.note && String(prop.rental.note).includes('Rental URL failed')
                     ? 'Rental data unavailable — recent transactions not loaded.'
-                    : `No recent rental rows to show${prop?.filter_area ? ` for ${prop.filter_area}` : ''}.`}
+                    : prop?.rental?.note && (String(prop.rental.note).includes('no rows for community') || String(prop.rental.note).includes('no rows for building') || String(prop.rental.note).includes('no rows for area'))
+                      ? prop.rental.note
+                      : `No recent rental rows to show${prop?.filter_area ? ` for ${prop.filter_area}` : ''}.`}
                 </div>
               )}
             </div>
