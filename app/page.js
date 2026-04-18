@@ -1337,7 +1337,7 @@ export function DashboardView() {
       const daysVal = overrideDays !== undefined ? overrideDays : days;
 
       // Client view with no custom path/area/community/building: read pre-built snapshot (instant).
-      if (isClientView && !customPath && !a && !c && !b) {
+      if (isClientView && !customPath && !a && !c && !b && daysVal === 7) {
         try {
           const sr = await fetch('/api/property-read', { cache: 'no-store' });
           const sd = await sr.json().catch(() => ({}));
