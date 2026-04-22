@@ -414,6 +414,13 @@ export async function GET(request) {
   const areaParam = (reqUrl.searchParams.get('area') || '').trim();
   const communityParam = (reqUrl.searchParams.get('community') || '').trim();
   const buildingParam = (reqUrl.searchParams.get('building') || '').trim();
+  // Listings-only filters — independent of transaction community/building so
+  // the listings panels can drill into portal-named buildings (e.g. "Marina
+  // Gate 1") without blanking when the DLD-named main filter is set.
+  const listingsCommunityParam = (reqUrl.searchParams.get('listingsCommunity') || '').trim();
+  const listingsBuildingParam  = (reqUrl.searchParams.get('listingsBuilding')  || '').trim();
+  const listingsCommunityActive = !!(listingsCommunityParam && listingsCommunityParam !== '__all__');
+  const listingsBuildingActive  = !!(listingsBuildingParam  && listingsBuildingParam  !== '__all__');
   const daysParam = parseInt(reqUrl.searchParams.get('days'), 10) || 7;
   const areaFilterActive = !!(areaParam && areaParam !== '__all__');
   const communityFilterActive = !!(communityParam && communityParam !== '__all__');
@@ -562,9 +569,11 @@ export async function GET(request) {
       return Response.json(result.body, { status: result.status });
     }
     const needRental = !skipRental && !!(rentalUrlEnv && result.windows);
-    // Skip listings when community filter is active (inconsistent labeling at community level)
-    const needListings = !skipListings && !!listingsUrlEnv && !communityFilterActive;
-    const needSalesListings = !skipSalesListings && !!salesListingsUrlEnv && !communityFilterActive;
+    // Listings no longer skip when the main community filter is active — the
+    // listings panels use their own listingsCommunity/listingsBuilding filters
+    // (built from portal-named columns, independent of DLD transaction names).
+    const needListings = !skipListings && !!listingsUrlEnv;
+    const needSalesListings = !skipSalesListings && !!salesListingsUrlEnv;
 
     /* Sequential rental → rental listings → sales listings (not parallel) to cap peak RAM */
     if (needRental || needListings || needSalesListings) {
@@ -650,8 +659,8 @@ export async function GET(request) {
               rentalTxnByCommunityBed,
               dataType: 'rental',
               filterArea: areaFilterActive ? areaParam : '',
-              filterCommunity: communityFilterActive ? communityParam : '',
-              filterBuilding: buildingFilterActive ? buildingParam : '',
+              filterCommunity: listingsCommunityActive ? listingsCommunityParam : '',
+              filterBuilding: listingsBuildingActive ? listingsBuildingParam : '',
               skipHotListings,
             });
             debugLogFile({
@@ -758,7 +767,8 @@ export async function GET(request) {
               salesTxnByCommunityBed,
               dataType: 'sales',
               filterArea: areaFilterActive ? areaParam : '',
-              filterBuilding: buildingFilterActive ? buildingParam : '',
+              filterCommunity: listingsCommunityActive ? listingsCommunityParam : '',
+              filterBuilding: listingsBuildingActive ? listingsBuildingParam : '',
               skipHotListings,
             });
             debugLogFile({

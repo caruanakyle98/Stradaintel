@@ -56,7 +56,7 @@ export async function POST(request) {
   const t0 = Date.now();
   try {
     const body = await request.json();
-    const { dataType, benchmarks, area, skipHotListings } = body || {};
+    const { dataType, benchmarks, area, community, building, skipHotListings } = body || {};
 
     if (!dataType || !['rental', 'sales'].includes(dataType)) {
       return Response.json(
@@ -80,6 +80,10 @@ export async function POST(request) {
     const bm = benchmarks || {};
     const filterArea = (area || '').trim();
     const areaFilterActive = !!(filterArea && filterArea !== '__all__');
+    const filterCommunity = (community || '').trim();
+    const filterBuilding  = (building  || '').trim();
+    const commActive  = !!(filterCommunity && filterCommunity !== '__all__');
+    const bldgActive  = !!(filterBuilding  && filterBuilding  !== '__all__');
 
     // Download the listing CSV (the only large file this function touches)
     const csvText = await fetchText(csvUrl);
@@ -93,6 +97,8 @@ export async function POST(request) {
             rentalTxnByCommunityBed: bm.txnByCommunityBed || {},
             dataType: 'rental',
             filterArea: areaFilterActive ? filterArea : '',
+            filterCommunity: commActive ? filterCommunity : '',
+            filterBuilding:  bldgActive ? filterBuilding  : '',
             skipHotListings: !!skipHotListings,
           }
         : {
@@ -101,6 +107,8 @@ export async function POST(request) {
             salesTxnByCommunityBed: bm.txnByCommunityBed || {},
             dataType: 'sales',
             filterArea: areaFilterActive ? filterArea : '',
+            filterCommunity: commActive ? filterCommunity : '',
+            filterBuilding:  bldgActive ? filterBuilding  : '',
             skipHotListings: !!skipHotListings,
           };
 

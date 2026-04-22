@@ -1232,6 +1232,9 @@ export function DashboardView() {
   const [area, setArea] = useState('');
   const [community, setCommunity] = useState('');
   const [building, setBuilding] = useState('');
+  const [listingsBuilding, setListingsBuilding] = useState('');
+  const [listingsSubBuilding, setListingsSubBuilding] = useState('');
+  const [listingsLoading, setListingsLoading] = useState(false);
   const [days, setDays] = useState(7);
   const showDataBeforePrintRef = useRef(false);
   const uploadedCsvTextRef = useRef(null);
@@ -1567,6 +1570,66 @@ export function DashboardView() {
       setLoadProp(false);
     }
   }, [salesCsvPath, area, community, building, days, propTab, isClientView]);
+
+  /**
+   * Refetch just the listings CSV via /api/property-listings with a
+   * listings-only community/building filter, and merge the result into
+   * prop.listings (rental) or prop.sales_listings (sales). Transactions are
+   * left untouched. Called when the secondary listings dropdowns change.
+   */
+  const refreshListingsOnly = useCallback(async (nextBuilding) => {
+    if (!area) return;
+    setListingsLoading(true);
+    try {
+      const key = propTab === 'sales' ? 'sales_listings' : 'listings';
+      const src = propTab === 'sales' ? prop?.sales_listings : prop?.listings;
+      const benchmarks = propTab === 'sales'
+        ? {
+            txnAvgByBeds: {
+              studio: parseFloat(prop?.sale_txn_avg_by_beds?.studio) || null,
+              '1br':  parseFloat(prop?.sale_txn_avg_by_beds?.['1br']) || null,
+              '2br':  parseFloat(prop?.sale_txn_avg_by_beds?.['2br']) || null,
+              '3br':  parseFloat(prop?.sale_txn_avg_by_beds?.['3br']) || null,
+            },
+            txnByBuildingBed: prop?.sale_txn_by_building_bed || {},
+            txnByCommunityBed: prop?.sale_txn_by_community_bed || {},
+            weeklyVolume: parseInt(prop?.weekly?.sale_volume?.value, 10) || null,
+          }
+        : {
+            txnAvgByBeds: {
+              studio: parseFloat(prop?.rental?.studio_avg_aed) || null,
+              '1br':  parseFloat(prop?.rental?.apt_1br_avg_aed) || null,
+              '2br':  parseFloat(prop?.rental?.apt_2br_avg_aed) || null,
+              '3br':  parseFloat(prop?.rental?.villa_3br_avg_aed) || null,
+            },
+            txnByBuildingBed: prop?.rental?.txn_by_building_bed || {},
+            txnByCommunityBed: prop?.rental?.txn_by_community_bed || {},
+            weeklyVolume: parseInt(prop?.weekly?.rent_volume?.value, 10) || null,
+          };
+      const r = await fetch('/api/property-listings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dataType: propTab === 'sales' ? 'sales' : 'rental',
+          area,
+          building: nextBuilding || '',
+          benchmarks,
+        }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok && d?.ok && d.listings) {
+        setProp((p) => p ? { ...p, [key]: { ...d.listings } } : p);
+      } else if (d?.error) {
+        // Preserve the options list if we have one, surface the error note.
+        const existingOpts = src?.listings_building_options || [];
+        setProp((p) => p ? { ...p, [key]: { ...(src || {}), error: d.error, listings_building_options: existingOpts } } : p);
+      }
+    } catch (e) {
+      // Non-fatal: leave existing listings in place.
+    } finally {
+      setListingsLoading(false);
+    }
+  }, [area, propTab, prop]);
 
   const applyAreaClient = useCallback((nextArea, nextCommunity, nextBuilding, nextDays) => {
     const text = uploadedCsvTextRef.current;
@@ -1936,6 +1999,8 @@ export function DashboardView() {
                     setArea(v);
                     setCommunity(''); // clear community when area changes
                     setBuilding(''); // clear building when area changes
+                    setListingsBuilding(''); // clear listings-only filter when area changes
+                    setListingsSubBuilding('');
                     if (uploadedCsvTextRef.current) applyAreaClient(v, '', '', days);
                     else refreshProp(undefined, v, '', '', undefined);
                   }}
@@ -2793,7 +2858,63 @@ export function DashboardView() {
                 {listingsForTab?.filter_area && (
                   <span style={{ color:C.tm, fontWeight:400, marginLeft:6 }}>· {listingsForTab.filter_area}</span>
                 )}
+                {listingsForTab?.filter_building && (
+                  <span style={{ color:C.tm, fontWeight:400, marginLeft:6 }}>· {listingsForTab.filter_building}</span>
+                )}
               </div>
+
+              {/* Listings-only secondary filter (independent of main Community / Building) */}
+              {area && listingsForTab?.listings_building_options?.length > 0 && (
+                <div className="no-print" style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', marginBottom:12 }}>
+                  <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Listings Filter</span>
+                    <select
+                      value={listingsBuilding}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setListingsBuilding(v);
+                        setListingsSubBuilding('');
+                        refreshListingsOnly(v);
+                      }}
+                      disabled={listingsLoading || loadProp}
+                      style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:240 }}
+                    >
+                      <option value="">All listings in {area}</option>
+                      {listingsForTab.listings_building_options.map(b => (
+                        <option key={b.name} value={b.name}>
+                          {b.name.length > 38 ? `${b.name.slice(0, 35)}…` : b.name}
+                          {b.sub_buildings?.length ? ` (${b.sub_buildings.length})` : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {(() => {
+                    const sel = listingsForTab.listings_building_options.find(b => b.name === listingsBuilding);
+                    if (!sel?.sub_buildings?.length) return null;
+                    return (
+                      <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Specific Tower</span>
+                        <select
+                          value={listingsSubBuilding}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            setListingsSubBuilding(v);
+                            refreshListingsOnly(v || listingsBuilding);
+                          }}
+                          disabled={listingsLoading || loadProp}
+                          style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:240 }}
+                        >
+                          <option value="">All in {listingsBuilding}</option>
+                          {sel.sub_buildings.map(b => (
+                            <option key={b} value={b}>{b.length > 38 ? `${b.slice(0, 35)}…` : b}</option>
+                          ))}
+                        </select>
+                      </label>
+                    );
+                  })()}
+                  {listingsLoading && <span style={{ fontSize:9, color:C.tm }}>Updating…</span>}
+                </div>
+              )}
 
               {!loadProp && listingsForTab?.error && (
                 <div className="lp-card" style={{ padding:'12px 16px', marginBottom:12, fontSize:12, color:C.am, lineHeight:1.5 }}>{listingsForTab.error}</div>
