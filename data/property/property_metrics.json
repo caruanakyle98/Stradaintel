@@ -6,11 +6,6 @@
       "charts_30d": {
         "sale_volume": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 413
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
             "value": 9
@@ -154,14 +149,14 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 0
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 0
           }
         ],
         "psf": [
-          {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 2300
-          },
           {
             "date": "2026-03-28",
             "label": "28 Mar",
@@ -306,43 +301,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 2618
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 2618
           }
         ],
         "sale_volume_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 413
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 211
+            "value": 9
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 146
+            "value": 12.5
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 280.8
+            "value": 236.7
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 382.4
+            "value": 374.8
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 409.5
+            "value": 408.8
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 457.4
+            "value": 464.8
           },
           {
             "date": "2026-04-03",
@@ -458,43 +453,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 82.7
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 82.1
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 2300
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 2052
+            "value": 1804
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 2012
+            "value": 1868
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 2025.3
+            "value": 1933.7
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 2054
+            "value": 1992.5
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 2044
+            "value": 1992.8
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 2054.7
+            "value": 2013.8
           },
           {
             "date": "2026-04-03",
@@ -610,13 +605,18 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 2406.6
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 2618
           }
         ],
         "sale_volume_weekly": [
           {
             "date": "2026-03-23",
             "label": "Wk 23 Mar",
-            "value": 438
+            "value": 25
           },
           {
             "date": "2026-03-30",
@@ -643,9 +643,9 @@
           {
             "date": "2026-03-23",
             "label": "Wk 23 Mar",
-            "median": 2276,
-            "p25": 1554,
-            "p75": 2741.75
+            "median": 1886,
+            "p25": 1576,
+            "p75": 2153
           },
           {
             "date": "2026-03-30",
@@ -678,7 +678,7 @@
         ],
         "wow_volume_pct": -77,
         "wow_psf_pct": 32.1,
-        "window_label": "2026-03-27 → 2026-04-25 (Dubai, 30 days)"
+        "window_label": "2026-03-28 → 2026-04-26 (Dubai, 30 days)"
       },
       "recent_sales_transactions": [
         {
@@ -959,120 +959,84 @@
       ],
       "weekly": {
         "sale_volume": {
-          "value": "575",
-          "chg_wow": "-77.0%",
+          "value": "0",
+          "chg_wow": "-100.0%",
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026",
+          "period": "Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "sale_value_aed": {
-          "value": "AED 2.12B",
-          "chg_wow": "-70.4%",
+          "value": "AED N/A",
+          "chg_wow": "-100.0%",
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026",
+          "period": "Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "rent_volume": {
-          "value": "3136",
-          "chg_wow": "-54.8%",
+          "value": "742",
+          "chg_wow": "-90.6%",
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026",
+          "period": "Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
         },
         "rent_value_aed": {
-          "value": "AED 208.58M",
-          "chg_wow": "-54.6%",
+          "value": "AED 58.59M",
+          "chg_wow": "-89.6%",
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026",
+          "period": "Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "note": "Sum of annualised rent (AED) for the week — contract rent not used."
         },
-        "period_label": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026",
+        "period_label": "Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026",
         "rent_new_vs_renewal": {
-          "new_count": "1673",
-          "renewal_count": "1460",
-          "other_count": "3",
-          "new_pct": "53.3",
-          "renewal_pct": "46.6",
+          "new_count": "194",
+          "renewal_count": "547",
+          "other_count": "1",
+          "new_pct": "26.1",
+          "renewal_pct": "73.7",
           "other_pct": "0.1",
-          "new_chg_wow": "-60.5%",
-          "renewal_chg_wow": "-45.9%",
-          "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026",
+          "new_chg_wow": "-95.6%",
+          "renewal_chg_wow": "-84.3%",
+          "period": "Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "column": "rent recurrence"
         }
       },
       "prices": {
-        "apt_psf_aed": "2746",
-        "villa_psf_aed": "1973",
-        "townhouse_psf_aed": "1471",
-        "apt_avg_aed": "AED 3.01M",
-        "villa_avg_aed": "AED 11.62M",
-        "townhouse_avg_aed": "AED 3.99M",
-        "apt_avg_aed_num": 3005349.514,
-        "villa_avg_aed_num": 11615376.296296297,
-        "townhouse_avg_aed_num": 3991858.2790697673,
+        "apt_psf_aed": "N/A",
+        "villa_psf_aed": "N/A",
+        "townhouse_psf_aed": "N/A",
+        "apt_avg_aed": "AED N/A",
+        "villa_avg_aed": "AED N/A",
+        "townhouse_avg_aed": "AED N/A",
+        "apt_avg_aed_num": null,
+        "villa_avg_aed_num": null,
+        "townhouse_avg_aed_num": null,
         "apt_avg_aed_yield_ref_num": 2125632.492477353,
         "villa_avg_aed_yield_ref_num": 11675591.76451463,
         "townhouse_avg_aed_yield_ref_num": 3449896.428250281,
         "yield_ref_lookback_days": "90",
         "price_index_chg_yoy": "N/A",
-        "price_period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026",
+        "price_period": "Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026",
         "price_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "market_split": {
-        "offplan_pct": "76",
-        "secondary_pct": "24",
+        "offplan_pct": "N/A",
+        "secondary_pct": "N/A",
         "offplan_chg_yoy": "N/A",
-        "dominant_segment": "Off-plan",
-        "split_period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026",
+        "dominant_segment": "N/A",
+        "split_period": "Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026",
         "note": "Off-plan is detected from Select Data Points = Oqood in your sales CSV."
       },
-      "top_areas": [
-        {
-          "area": "Wasl Gate",
-          "vol": "44",
-          "avg_psf": "1499",
-          "trend": "down",
-          "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026"
-        },
-        {
-          "area": "Dubai Investments Park",
-          "vol": "41",
-          "avg_psf": "1231",
-          "trend": "up",
-          "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026"
-        },
-        {
-          "area": "Dubai South",
-          "vol": "40",
-          "avg_psf": "1601",
-          "trend": "down",
-          "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026"
-        },
-        {
-          "area": "Dubai Islands",
-          "vol": "38",
-          "avg_psf": "3135",
-          "trend": "down",
-          "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026"
-        },
-        {
-          "area": "Jumeirah Village Circle",
-          "vol": "36",
-          "avg_psf": "1572",
-          "trend": "down",
-          "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026"
-        }
-      ],
+      "top_areas": [],
       "top_areas_mode": "area",
       "top_areas_empty_hint": null,
       "yields": {
@@ -1095,17 +1059,17 @@
         "supply_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "rental": {
-        "apt_1br_avg_aed": "61092",
-        "apt_2br_avg_aed": "83584",
-        "villa_3br_avg_aed": "150770",
+        "apt_1br_avg_aed": "58620",
+        "apt_2br_avg_aed": "77854",
+        "villa_3br_avg_aed": "145873",
         "rental_index_chg_yoy": "N/A",
         "ejari_registrations_weekly": "N/A",
         "vacancy_rate": "N/A",
         "landlord_vs_tenant": "balanced",
         "note": "Rental metrics use Annualised Rental Price (AED) only. Weekly count/value + new vs renewal (Rent Recurrence) + bed averages.",
         "rental_source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
-        "rental_period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026",
-        "studio_avg_aed": "41182",
+        "rental_period": "Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026",
+        "studio_avg_aed": "40565",
         "txn_by_building_bed": {
           "hub canal 1|1|apt": {
             "avg": 60156,
@@ -21134,17 +21098,17 @@
         "financing_conditions": "N/A",
         "mortgage_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
-      "owner_briefing": "Rolling 7 days through today (20 Apr 2026 – 26 Apr 2026, Dubai): 575 transactions in your CSV worth AED 2.12B. Prior 7 days (13 Apr 2026 – 19 Apr 2026): 2,503 deals. Off-plan share 76% (Oqood-tagged rows).",
+      "owner_briefing": "Rolling 7 days through today (21 Apr 2026 – 27 Apr 2026, Dubai): 0 transactions in your CSV worth AED N/A. Prior 7 days (14 Apr 2026 – 20 Apr 2026): 2,504 deals. Off-plan share N/A (Oqood-tagged rows).",
       "data_freshness": "Transactions through 20 Apr 2026 · snapshot build (7d)",
       "sources_used": [
         "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)",
         "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
       ],
       "sale_txn_avg_by_beds": {
-        "studio": 1192233,
-        "1br": 1588906,
-        "2br": 2413464,
-        "3br": 16123542
+        "studio": null,
+        "1br": null,
+        "2br": null,
+        "3br": null
       },
       "monthly": {
         "cur_label": "April 2026",
@@ -21216,7 +21180,7 @@
           "Studio": -1.8,
           "4+": 23.9
         },
-        "cur_days_elapsed": 26
+        "cur_days_elapsed": 27
       },
       "sale_txn_by_building_bed": {
         "tempo|1|apt": {
@@ -32685,43 +32649,43 @@
       "sale_hot_listings_lookback_days": "365",
       "sale_hot_listings_min_txn": "3",
       "property_type_activity": {
-        "period": "Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026",
+        "period": "Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026",
         "entries": {
           "apt": {
             "label": "Apartment",
-            "sale_vol": 500,
-            "sale_pct": 88,
-            "sale_wow": "-76.6%",
+            "sale_vol": 0,
+            "sale_pct": 0,
+            "sale_wow": "-100.0%",
             "sale_trend": "down",
-            "rent_vol": 2973,
-            "rent_pct": 95,
-            "rent_wow": "-54.8%",
+            "rent_vol": 696,
+            "rent_pct": 94,
+            "rent_wow": "-90.7%",
             "rent_trend": "down"
           },
           "villa": {
             "label": "Villa",
-            "sale_vol": 27,
-            "sale_pct": 5,
-            "sale_wow": "-81.3%",
+            "sale_vol": 0,
+            "sale_pct": 0,
+            "sale_wow": "-100.0%",
             "sale_trend": "down",
-            "rent_vol": 95,
+            "rent_vol": 25,
             "rent_pct": 3,
-            "rent_wow": "-53.4%",
+            "rent_wow": "-90.5%",
             "rent_trend": "down"
           },
           "townhouse": {
             "label": "Townhouse",
-            "sale_vol": 43,
-            "sale_pct": 8,
-            "sale_wow": "-77.9%",
+            "sale_vol": 0,
+            "sale_pct": 0,
+            "sale_wow": "-100.0%",
             "sale_trend": "down",
-            "rent_vol": 68,
-            "rent_pct": 2,
-            "rent_wow": "-56.7%",
+            "rent_vol": 21,
+            "rent_pct": 3,
+            "rent_wow": "-89.3%",
             "rent_trend": "down"
           }
         },
-        "hottest_sale": "apt",
+        "hottest_sale": null,
         "hottest_rent": "apt"
       },
       "area_options": [
@@ -54377,11 +54341,6 @@
       "rental_charts_30d": {
         "rent_volume": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 670
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
             "value": 769
@@ -54525,43 +54484,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 0
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 0
           }
         ],
         "rent_volume_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 670
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 720
+            "value": 769
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 592
+            "value": 553
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 700
+            "value": 710
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 777
+            "value": 804
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 1776
+            "value": 1997
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 1806
+            "value": 1995
           },
           {
             "date": "2026-04-03",
@@ -54677,14 +54636,14 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 484
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 448
           }
         ],
         "rent_avg_aed": [
-          {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 65984
-          },
           {
             "date": "2026-03-28",
             "label": "28 Mar",
@@ -54829,43 +54788,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 75925
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 75925
           }
         ],
         "rent_avg_aed_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 65984
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 65077
+            "value": 64170
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 79387
+            "value": 86089
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 75407
+            "value": 78548
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 73895
+            "value": 75873
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 77687
+            "value": 80027
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 71047
+            "value": 71891
           },
           {
             "date": "2026-04-03",
@@ -54981,14 +54940,14 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 77181
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 74896
           }
         ],
         "psf": [
-          {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 85
-          },
           {
             "date": "2026-03-28",
             "label": "28 Mar",
@@ -55133,43 +55092,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": null
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": null
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 85
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 86
+            "value": 87
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 93
+            "value": 97
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 92
+            "value": 95
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 92
+            "value": 94
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 94
+            "value": 96
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 92
+            "value": 94
           },
           {
             "date": "2026-04-03",
@@ -55285,56 +55244,61 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 83
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 82
           }
         ],
         "rent_volume_weekly": [
           {
-            "label": "27 Mar–3 Apr",
-            "value": 13103
+            "label": "28 Mar–4 Apr",
+            "value": 13622
           },
           {
-            "label": "3 Apr–10 Apr",
-            "value": 9495
+            "label": "4 Apr–11 Apr",
+            "value": 9415
           },
           {
-            "label": "10 Apr–17 Apr",
-            "value": 8960
+            "label": "11 Apr–18 Apr",
+            "value": 7541
           },
           {
-            "label": "17 Apr–24 Apr",
-            "value": 5092
+            "label": "18 Apr–25 Apr",
+            "value": 4227
           },
           {
-            "label": "19 Apr–25 Apr",
-            "value": 3389
+            "label": "20 Apr–26 Apr",
+            "value": 3136
           }
         ],
         "psf_weekly": [
           {
-            "label": "27 Mar–3 Apr",
+            "label": "28 Mar–4 Apr",
             "median": 91
           },
           {
-            "label": "3 Apr–10 Apr",
-            "median": 88
+            "label": "4 Apr–11 Apr",
+            "median": 89
           },
           {
-            "label": "10 Apr–17 Apr",
+            "label": "11 Apr–18 Apr",
             "median": 94
           },
           {
-            "label": "17 Apr–24 Apr",
-            "median": 86
+            "label": "18 Apr–25 Apr",
+            "median": 85
           },
           {
-            "label": "19 Apr–25 Apr",
-            "median": 85
+            "label": "20 Apr–26 Apr",
+            "median": 82
           }
         ],
-        "wow_volume_pct": -52.7,
-        "wow_rent_pct": 23.3,
-        "wow_psf_pct": -10.8,
-        "window_label": "2026-03-27 → 2026-04-25 (Dubai, 30 days)"
+        "wow_volume_pct": -54.8,
+        "wow_rent_pct": 14.3,
+        "wow_psf_pct": -11.4,
+        "window_label": "2026-03-28 → 2026-04-26 (Dubai, 30 days)"
       },
       "rental_monthly": {
         "cur_label": "April 2026",
@@ -55345,42 +55309,42 @@
         "cur_psf_avg": 92,
         "prev_psf_avg": 100,
         "mom_psf_pct": -8,
-        "cur_days_elapsed": 26
+        "cur_days_elapsed": 27
       },
       "rental_top_areas": [
         {
           "area": "Deira",
-          "vol": "920",
-          "avg_rent_aed": "30183",
-          "avg_rent_label": "30K",
-          "trend": "flat"
-        },
-        {
-          "area": "Bur Dubai",
-          "vol": "308",
-          "avg_rent_aed": "53330",
+          "vol": "77",
+          "avg_rent_aed": "52508",
           "avg_rent_label": "53K",
           "trend": "flat"
         },
         {
-          "area": "Al Nahda",
-          "vol": "124",
-          "avg_rent_aed": "51319",
-          "avg_rent_label": "51K",
+          "area": "Bur Dubai",
+          "vol": "61",
+          "avg_rent_aed": "63338",
+          "avg_rent_label": "63K",
           "trend": "flat"
         },
         {
           "area": "International City",
-          "vol": "99",
-          "avg_rent_aed": "46623",
-          "avg_rent_label": "47K",
+          "vol": "45",
+          "avg_rent_aed": "43844",
+          "avg_rent_label": "44K",
+          "trend": "flat"
+        },
+        {
+          "area": "Al Khail Gate",
+          "vol": "37",
+          "avg_rent_aed": "53747",
+          "avg_rent_label": "54K",
           "trend": "flat"
         },
         {
           "area": "Muhaisnah",
-          "vol": "98",
-          "avg_rent_aed": "87779",
-          "avg_rent_label": "88K",
+          "vol": "36",
+          "avg_rent_aed": "45913",
+          "avg_rent_label": "46K",
           "trend": "flat"
         }
       ],
@@ -55612,19 +55576,14 @@
           "recurrence": "Renewal"
         }
       ],
-      "rental_owner_briefing": "Rolling 7 days (Last 7 days (Dubai) — 20 Apr 2026 – 26 Apr 2026, Dubai): 3,136 rental registrations in your CSV, annualised value AED 208.58M. Prior 7 days: 6,940 registrations. New contracts 53.3% of split.",
+      "rental_owner_briefing": "Rolling 7 days (Last 7 days (Dubai) — 21 Apr 2026 – 27 Apr 2026, Dubai): 742 rental registrations in your CSV, annualised value AED 58.59M. Prior 7 days: 7,904 registrations. New contracts 26.1% of split.",
       "listings": {
         "total": 80832,
         "data_type": "rental",
-        "new_this_week": 5307,
-        "new_prev_7_days": 15221,
-        "wow_new_pct": -65.1,
+        "new_this_week": 2601,
+        "new_prev_7_days": 14774,
+        "wow_new_pct": -82.4,
         "listings_added_by_day": [
-          {
-            "date": "2026-04-20",
-            "label": "20 Apr",
-            "count": 2706
-          },
           {
             "date": "2026-04-21",
             "label": "21 Apr",
@@ -55654,14 +55613,14 @@
             "date": "2026-04-26",
             "label": "26 Apr",
             "count": 0
+          },
+          {
+            "date": "2026-04-27",
+            "label": "27 Apr",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-04-13",
-            "label": "13 Apr",
-            "count": 3153
-          },
           {
             "date": "2026-04-14",
             "label": "14 Apr",
@@ -55691,21 +55650,26 @@
             "date": "2026-04-19",
             "label": "19 Apr",
             "count": 313
-          }
-        ],
-        "listings_added_period": "20 Apr – 27 Apr 2026 (Dubai)",
-        "listings_added_period_prior": "13 Apr – 20 Apr 2026 (Dubai)",
-        "listings_flow": {
-          "avg_per_day_current": 758.1,
-          "avg_per_day_prior": 2174.4,
-          "pct_of_inventory_week": 6.6,
-          "peak_day_current": {
+          },
+          {
+            "date": "2026-04-20",
             "label": "20 Apr",
             "count": 2706
+          }
+        ],
+        "listings_added_period": "21 Apr – 28 Apr 2026 (Dubai)",
+        "listings_added_period_prior": "14 Apr – 21 Apr 2026 (Dubai)",
+        "listings_flow": {
+          "avg_per_day_current": 371.6,
+          "avg_per_day_prior": 2110.6,
+          "pct_of_inventory_week": 3.2,
+          "peak_day_current": {
+            "label": "21 Apr",
+            "count": 2542
           },
           "peak_day_prior": {
-            "label": "13 Apr",
-            "count": 3153
+            "label": "14 Apr",
+            "count": 2897
           }
         },
         "by_beds": {
@@ -55841,32 +55805,32 @@
         },
         "asking_vs_txn_by_beds": {
           "1": {
-            "delta_pct": 67.5,
+            "delta_pct": 74.5,
             "asking_avg": 102320,
-            "txn_avg": 61092,
+            "txn_avg": 58620,
             "asking_fmt": "AED 102,320",
-            "txn_fmt": "AED 61,092"
+            "txn_fmt": "AED 58,620"
           },
           "2": {
-            "delta_pct": 111.5,
+            "delta_pct": 127,
             "asking_avg": 176762,
-            "txn_avg": 83584,
+            "txn_avg": 77854,
             "asking_fmt": "AED 176,762",
-            "txn_fmt": "AED 83,584"
+            "txn_fmt": "AED 77,854"
           },
           "3": {
-            "delta_pct": 72.2,
+            "delta_pct": 77.9,
             "asking_avg": 259573,
-            "txn_avg": 150770,
+            "txn_avg": 145873,
             "asking_fmt": "AED 259,573",
-            "txn_fmt": "AED 150,770"
+            "txn_fmt": "AED 145,873"
           },
           "Studio": {
-            "delta_pct": 54.7,
+            "delta_pct": 57.1,
             "asking_avg": 63712,
-            "txn_avg": 41182,
+            "txn_avg": 40565,
             "asking_fmt": "AED 63,712",
-            "txn_fmt": "AED 41,182"
+            "txn_fmt": "AED 40,565"
           }
         },
         "source": "https://raw.githubusercontent.com/caruanakyle98/intel-data/main/listings.csv",
@@ -75128,19 +75092,6 @@
             },
             {
               "community": "Dubai Hills Estate",
-              "building": "Maple at Dubai Hills Estate 1",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 239,990",
-              "pct_drop": 86.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-dubai-hills-estate-maple-at-dubai-hills-estate-maple-at-dubai-hills-estate-1-69513082.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 1.79M",
-              "benchmark_n": 22,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Dubai Hills Estate",
               "building": "Maple at Dubai Hills Estate 2",
               "beds": "4+ Bed",
               "property_type": "Villa",
@@ -75424,6 +75375,19 @@
               "market_avg_fmt": "AED 1.95M",
               "benchmark_n": 6,
               "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 2 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 300,000",
+              "pct_drop": 84.6,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-77778164.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 1.95M",
+              "benchmark_n": 6,
+              "benchmark_source": "community_txn"
             }
           ],
           "townhouse": [
@@ -75526,19 +75490,6 @@
               "price_fmt": "AED 120,000",
               "pct_drop": 48.6,
               "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-78973518.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 233,333",
-              "benchmark_n": 3,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Camelia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 120,000",
-              "pct_drop": 48.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-69504284.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 233,333",
               "benchmark_n": 3,
@@ -75681,19 +75632,6 @@
               "property_type": "Townhouse",
               "price_fmt": "AED 130,000",
               "pct_drop": 44.3,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-69503823.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 233,333",
-              "benchmark_n": 3,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Camelia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 130,000",
-              "pct_drop": 44.3,
               "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-73753861.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 233,333",
@@ -75751,6 +75689,32 @@
               "market_avg_fmt": "AED 173,762",
               "benchmark_n": 8,
               "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Damac Hills 2",
+              "building": "Camelia",
+              "beds": "3 Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 99,999",
+              "pct_drop": 42.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-70692196.html",
+              "bed_label": "3 Bed",
+              "market_avg_fmt": "AED 173,762",
+              "benchmark_n": 8,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Damac Hills 2",
+              "building": "Camelia",
+              "beds": "3 Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 100,000",
+              "pct_drop": 42.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-73841548.html",
+              "bed_label": "3 Bed",
+              "market_avg_fmt": "AED 173,762",
+              "benchmark_n": 8,
+              "benchmark_source": "building_txn"
             }
           ]
         },
@@ -75770,15 +75734,10 @@
       "sales_listings": {
         "total": 96354,
         "data_type": "sales",
-        "new_this_week": 5271,
-        "new_prev_7_days": 14757,
-        "wow_new_pct": -64.3,
+        "new_this_week": 2735,
+        "new_prev_7_days": 14698,
+        "wow_new_pct": -81.4,
         "listings_added_by_day": [
-          {
-            "date": "2026-04-20",
-            "label": "20 Apr",
-            "count": 2536
-          },
           {
             "date": "2026-04-21",
             "label": "21 Apr",
@@ -75808,14 +75767,14 @@
             "date": "2026-04-26",
             "label": "26 Apr",
             "count": 0
+          },
+          {
+            "date": "2026-04-27",
+            "label": "27 Apr",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-04-13",
-            "label": "13 Apr",
-            "count": 2595
-          },
           {
             "date": "2026-04-14",
             "label": "14 Apr",
@@ -75845,14 +75804,19 @@
             "date": "2026-04-19",
             "label": "19 Apr",
             "count": 354
+          },
+          {
+            "date": "2026-04-20",
+            "label": "20 Apr",
+            "count": 2536
           }
         ],
-        "listings_added_period": "20 Apr – 27 Apr 2026 (Dubai)",
-        "listings_added_period_prior": "13 Apr – 20 Apr 2026 (Dubai)",
+        "listings_added_period": "21 Apr – 28 Apr 2026 (Dubai)",
+        "listings_added_period_prior": "14 Apr – 21 Apr 2026 (Dubai)",
         "listings_flow": {
-          "avg_per_day_current": 753,
-          "avg_per_day_prior": 2108.1,
-          "pct_of_inventory_week": 5.5,
+          "avg_per_day_current": 390.7,
+          "avg_per_day_prior": 2099.7,
+          "pct_of_inventory_week": 2.8,
           "peak_day_current": {
             "label": "21 Apr",
             "count": 2673
@@ -75993,36 +75957,7 @@
         "by_emirate": {
           "Dubai": 96354
         },
-        "asking_vs_txn_by_beds": {
-          "1": {
-            "delta_pct": 9.6,
-            "asking_avg": 1740730,
-            "txn_avg": 1588906,
-            "asking_fmt": "AED 1.74M",
-            "txn_fmt": "AED 1.59M"
-          },
-          "2": {
-            "delta_pct": 31.1,
-            "asking_avg": 3163354,
-            "txn_avg": 2413464,
-            "asking_fmt": "AED 3.16M",
-            "txn_fmt": "AED 2.41M"
-          },
-          "3": {
-            "delta_pct": -64.1,
-            "asking_avg": 5785203,
-            "txn_avg": 16123542,
-            "asking_fmt": "AED 5.79M",
-            "txn_fmt": "AED 16.12M"
-          },
-          "Studio": {
-            "delta_pct": -28.3,
-            "asking_avg": 855235,
-            "txn_avg": 1192233,
-            "asking_fmt": "AED 855,235",
-            "txn_fmt": "AED 1.19M"
-          }
-        },
+        "asking_vs_txn_by_beds": {},
         "source": "https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales_listings.csv",
         "filter_area": null,
         "filter_community": null,
@@ -97316,19 +97251,6 @@
           },
           {
             "community": "Jumeirah",
-            "building": "La Cote Building 2",
-            "beds": "2 Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 3.5M",
-            "pct_drop": 92.4,
-            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-cote-la-cote-building-2-69509394.html",
-            "bed_label": "2 Bed",
-            "market_avg_fmt": "AED 46.04M",
-            "benchmark_n": 5,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "Jumeirah",
             "building": "La Cote Building 1",
             "beds": "2 Bed",
             "property_type": "Apartment",
@@ -97586,6 +97508,19 @@
             "market_avg_fmt": "AED 11.94M",
             "benchmark_n": 9,
             "benchmark_source": "community_txn"
+          },
+          {
+            "community": "Jumeirah",
+            "building": "La Sirene Building 2",
+            "beds": "2 Bed",
+            "property_type": "Apartment",
+            "price_fmt": "AED 4.35M",
+            "pct_drop": 90.6,
+            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-78976027.html",
+            "bed_label": "2 Bed",
+            "market_avg_fmt": "AED 46.04M",
+            "benchmark_n": 5,
+            "benchmark_source": "community_txn"
           }
         ],
         "hot_listings_by_type": {
@@ -97637,19 +97572,6 @@
               "price_fmt": "AED 3.5M",
               "pct_drop": 92.4,
               "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-cote-la-cote-building-2-78970413.html",
-              "bed_label": "2 Bed",
-              "market_avg_fmt": "AED 46.04M",
-              "benchmark_n": 5,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Jumeirah",
-              "building": "La Cote Building 2",
-              "beds": "2 Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 3.5M",
-              "pct_drop": 92.4,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-cote-la-cote-building-2-69509394.html",
               "bed_label": "2 Bed",
               "market_avg_fmt": "AED 46.04M",
               "benchmark_n": 5,
@@ -97913,6 +97835,19 @@
               "bed_label": "Studio",
               "market_avg_fmt": "AED 11.94M",
               "benchmark_n": 9,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Jumeirah",
+              "building": "La Sirene Building 2",
+              "beds": "2 Bed",
+              "property_type": "Apartment",
+              "price_fmt": "AED 4.35M",
+              "pct_drop": 90.6,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-78976027.html",
+              "bed_label": "2 Bed",
+              "market_avg_fmt": "AED 46.04M",
+              "benchmark_n": 5,
               "benchmark_source": "community_txn"
             }
           ],
@@ -98537,19 +98472,6 @@
               "property_type": "Townhouse",
               "price_fmt": "AED 2.4M",
               "pct_drop": 32,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-lagoons-costa-brava-at-damac-lagoons-costa-brava-1-69503553.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3.53M",
-              "benchmark_n": 10,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Lagoons",
-              "building": "Costa Brava 1",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 2.4M",
-              "pct_drop": 32,
               "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-lagoons-costa-brava-at-damac-lagoons-costa-brava-1-76992520.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 3.53M",
@@ -98568,6 +98490,19 @@
               "market_avg_fmt": "AED 3.53M",
               "benchmark_n": 10,
               "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Tilal Al Ghaf",
+              "building": "Elan",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 4.4M",
+              "pct_drop": 31,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-tilal-al-ghaf-elan-73114339.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 6.38M",
+              "benchmark_n": 31,
+              "benchmark_source": "community_txn"
             }
           ]
         },
@@ -98590,11 +98525,6 @@
       "charts_30d": {
         "sale_volume": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 413
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
             "value": 9
@@ -98738,14 +98668,14 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 0
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 0
           }
         ],
         "psf": [
-          {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 2300
-          },
           {
             "date": "2026-03-28",
             "label": "28 Mar",
@@ -98890,43 +98820,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 2618
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 2618
           }
         ],
         "sale_volume_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 413
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 211
+            "value": 9
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 146
+            "value": 12.5
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 280.8
+            "value": 236.7
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 382.4
+            "value": 374.8
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 409.5
+            "value": 408.8
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 457.4
+            "value": 464.8
           },
           {
             "date": "2026-04-03",
@@ -99042,43 +98972,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 82.7
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 82.1
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 2300
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 2052
+            "value": 1804
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 2012
+            "value": 1868
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 2025.3
+            "value": 1933.7
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 2054
+            "value": 1992.5
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 2044
+            "value": 1992.8
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 2054.7
+            "value": 2013.8
           },
           {
             "date": "2026-04-03",
@@ -99194,13 +99124,18 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 2406.6
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 2618
           }
         ],
         "sale_volume_weekly": [
           {
             "date": "2026-03-23",
             "label": "Wk 23 Mar",
-            "value": 438
+            "value": 25
           },
           {
             "date": "2026-03-30",
@@ -99227,9 +99162,9 @@
           {
             "date": "2026-03-23",
             "label": "Wk 23 Mar",
-            "median": 2276,
-            "p25": 1554,
-            "p75": 2741.75
+            "median": 1886,
+            "p25": 1576,
+            "p75": 2153
           },
           {
             "date": "2026-03-30",
@@ -99262,7 +99197,7 @@
         ],
         "wow_volume_pct": -77,
         "wow_psf_pct": 32.1,
-        "window_label": "2026-03-27 → 2026-04-25 (Dubai, 30 days)"
+        "window_label": "2026-03-28 → 2026-04-26 (Dubai, 30 days)"
       },
       "recent_sales_transactions": [
         {
@@ -99543,118 +99478,118 @@
       ],
       "weekly": {
         "sale_volume": {
-          "value": "3078",
-          "chg_wow": "-51.6%",
+          "value": "2504",
+          "chg_wow": "-60.0%",
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026",
+          "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "sale_value_aed": {
-          "value": "AED 9.27B",
-          "chg_wow": "-53.2%",
+          "value": "AED 7.81B",
+          "chg_wow": "-59.6%",
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026",
+          "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "rent_volume": {
-          "value": "10076",
-          "chg_wow": "-52.5%",
+          "value": "8646",
+          "chg_wow": "-60.0%",
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026",
+          "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
         },
         "rent_value_aed": {
-          "value": "AED 668.10M",
-          "chg_wow": "-53.7%",
+          "value": "AED 619.59M",
+          "chg_wow": "-56.5%",
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026",
+          "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "note": "Sum of annualised rent (AED) for the week — contract rent not used."
         },
-        "period_label": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026",
+        "period_label": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026",
         "rent_new_vs_renewal": {
-          "new_count": "5907",
-          "renewal_count": "4158",
+          "new_count": "4607",
+          "renewal_count": "4028",
           "other_count": "11",
-          "new_pct": "58.6",
-          "renewal_pct": "41.3",
+          "new_pct": "53.3",
+          "renewal_pct": "46.6",
           "other_pct": "0.1",
-          "new_chg_wow": "-51.9%",
-          "renewal_chg_wow": "-53.4%",
-          "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026",
+          "new_chg_wow": "-64.0%",
+          "renewal_chg_wow": "-54.3%",
+          "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "column": "rent recurrence"
         }
       },
       "prices": {
-        "apt_psf_aed": "2174",
-        "villa_psf_aed": "2062",
-        "townhouse_psf_aed": "1329",
-        "apt_avg_aed": "AED 2.18M",
-        "villa_avg_aed": "AED 11.57M",
-        "townhouse_avg_aed": "AED 3.42M",
-        "apt_avg_aed_num": 2180753.6853464595,
-        "villa_avg_aed_num": 11566348.216374269,
-        "townhouse_avg_aed_num": 3415460.714285714,
+        "apt_psf_aed": "2208",
+        "villa_psf_aed": "2022",
+        "townhouse_psf_aed": "1353",
+        "apt_avg_aed": "AED 2.25M",
+        "villa_avg_aed": "AED 11.50M",
+        "townhouse_avg_aed": "AED 3.57M",
+        "apt_avg_aed_num": 2247289.668219944,
+        "villa_avg_aed_num": 11501879.251748253,
+        "townhouse_avg_aed_num": 3565890.687179487,
         "apt_avg_aed_yield_ref_num": 2125632.492477353,
         "villa_avg_aed_yield_ref_num": 11675591.76451463,
         "townhouse_avg_aed_yield_ref_num": 3449896.428250281,
         "yield_ref_lookback_days": "90",
         "price_index_chg_yoy": "N/A",
-        "price_period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026",
+        "price_period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026",
         "price_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "market_split": {
-        "offplan_pct": "77",
-        "secondary_pct": "23",
+        "offplan_pct": "76",
+        "secondary_pct": "24",
         "offplan_chg_yoy": "N/A",
         "dominant_segment": "Off-plan",
-        "split_period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026",
+        "split_period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026",
         "note": "Off-plan is detected from Select Data Points = Oqood in your sales CSV."
       },
       "top_areas": [
         {
           "area": "Dubai South",
-          "vol": "310",
-          "avg_psf": "1660",
+          "vol": "223",
+          "avg_psf": "1604",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026"
+          "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026"
         },
         {
           "area": "Dubai Islands",
-          "vol": "221",
-          "avg_psf": "3075",
-          "trend": "up",
-          "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026"
+          "vol": "199",
+          "avg_psf": "3062",
+          "trend": "down",
+          "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026"
         },
         {
           "area": "Jumeirah Village Circle",
-          "vol": "176",
-          "avg_psf": "1597",
+          "vol": "150",
+          "avg_psf": "1618",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026"
-        },
-        {
-          "area": "DAMAC Lagoons",
-          "vol": "144",
-          "avg_psf": "1740",
-          "trend": "down",
-          "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026"
+          "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026"
         },
         {
           "area": "Wasl Gate",
-          "vol": "135",
-          "avg_psf": "1472",
+          "vol": "128",
+          "avg_psf": "1479",
           "trend": "up",
-          "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026"
+          "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026"
+        },
+        {
+          "area": "DAMAC Lagoons",
+          "vol": "108",
+          "avg_psf": "1718",
+          "trend": "down",
+          "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026"
         }
       ],
       "top_areas_mode": "area",
@@ -99679,17 +99614,17 @@
         "supply_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "rental": {
-        "apt_1br_avg_aed": "61642",
-        "apt_2br_avg_aed": "84140",
-        "villa_3br_avg_aed": "151783",
+        "apt_1br_avg_aed": "61846",
+        "apt_2br_avg_aed": "84513",
+        "villa_3br_avg_aed": "151780",
         "rental_index_chg_yoy": "N/A",
         "ejari_registrations_weekly": "N/A",
         "vacancy_rate": "N/A",
         "landlord_vs_tenant": "balanced",
         "note": "Rental metrics use Annualised Rental Price (AED) only. Weekly count/value + new vs renewal (Rent Recurrence) + bed averages.",
         "rental_source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
-        "rental_period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026",
-        "studio_avg_aed": "37505",
+        "rental_period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026",
+        "studio_avg_aed": "39435",
         "txn_by_building_bed": {
           "hub canal 1|1|apt": {
             "avg": 60156,
@@ -119718,17 +119653,17 @@
         "financing_conditions": "N/A",
         "mortgage_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
-      "owner_briefing": "Rolling 14 days through today (13 Apr 2026 – 26 Apr 2026, Dubai): 3,078 transactions in your CSV worth AED 9.27B. Prior 14 days (30 Mar 2026 – 12 Apr 2026): 6,366 deals. Off-plan share 77% (Oqood-tagged rows).",
+      "owner_briefing": "Rolling 14 days through today (14 Apr 2026 – 27 Apr 2026, Dubai): 2,504 transactions in your CSV worth AED 7.81B. Prior 14 days (31 Mar 2026 – 13 Apr 2026): 6,255 deals. Off-plan share 76% (Oqood-tagged rows).",
       "data_freshness": "Transactions through 20 Apr 2026 · snapshot build (14d)",
       "sources_used": [
         "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)",
         "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
       ],
       "sale_txn_avg_by_beds": {
-        "studio": 873028,
-        "1br": 1581036,
-        "2br": 2597116,
-        "3br": 6209016
+        "studio": 899688,
+        "1br": 1586350,
+        "2br": 2592899,
+        "3br": 6630448
       },
       "monthly": {
         "cur_label": "April 2026",
@@ -119800,7 +119735,7 @@
           "Studio": -1.8,
           "4+": 23.9
         },
-        "cur_days_elapsed": 26
+        "cur_days_elapsed": 27
       },
       "sale_txn_by_building_bed": {
         "tempo|1|apt": {
@@ -131269,39 +131204,39 @@
       "sale_hot_listings_lookback_days": "365",
       "sale_hot_listings_min_txn": "3",
       "property_type_activity": {
-        "period": "Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026",
+        "period": "Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026",
         "entries": {
           "apt": {
             "label": "Apartment",
-            "sale_vol": 2641,
-            "sale_pct": 87,
-            "sale_wow": "-52.2%",
+            "sale_vol": 2146,
+            "sale_pct": 86,
+            "sale_wow": "-60.4%",
             "sale_trend": "down",
-            "rent_vol": 9552,
-            "rent_pct": 95,
-            "rent_wow": "-52.7%",
+            "rent_vol": 8142,
+            "rent_pct": 94,
+            "rent_wow": "-60.5%",
             "rent_trend": "down"
           },
           "villa": {
             "label": "Villa",
-            "sale_vol": 171,
+            "sale_vol": 143,
             "sale_pct": 6,
-            "sale_wow": "-44.5%",
+            "sale_wow": "-51.0%",
             "sale_trend": "down",
-            "rent_vol": 299,
+            "rent_vol": 287,
             "rent_pct": 3,
-            "rent_wow": "-53.1%",
+            "rent_wow": "-54.3%",
             "rent_trend": "down"
           },
           "townhouse": {
             "label": "Townhouse",
-            "sale_vol": 238,
+            "sale_vol": 195,
             "sale_pct": 8,
-            "sale_wow": "-50.1%",
+            "sale_wow": "-58.5%",
             "sale_trend": "down",
-            "rent_vol": 225,
-            "rent_pct": 2,
-            "rent_wow": "-43.8%",
+            "rent_vol": 217,
+            "rent_pct": 3,
+            "rent_wow": "-44.8%",
             "rent_trend": "down"
           }
         },
@@ -152961,11 +152896,6 @@
       "rental_charts_30d": {
         "rent_volume": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 670
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
             "value": 769
@@ -153109,43 +153039,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 0
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 0
           }
         ],
         "rent_volume_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 670
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 720
+            "value": 769
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 592
+            "value": 553
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 700
+            "value": 710
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 777
+            "value": 804
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 1776
+            "value": 1997
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 1806
+            "value": 1995
           },
           {
             "date": "2026-04-03",
@@ -153261,14 +153191,14 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 484
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 448
           }
         ],
         "rent_avg_aed": [
-          {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 65984
-          },
           {
             "date": "2026-03-28",
             "label": "28 Mar",
@@ -153413,43 +153343,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 75925
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 75925
           }
         ],
         "rent_avg_aed_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 65984
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 65077
+            "value": 64170
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 79387
+            "value": 86089
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 75407
+            "value": 78548
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 73895
+            "value": 75873
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 77687
+            "value": 80027
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 71047
+            "value": 71891
           },
           {
             "date": "2026-04-03",
@@ -153565,14 +153495,14 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 77181
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 74896
           }
         ],
         "psf": [
-          {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 85
-          },
           {
             "date": "2026-03-28",
             "label": "28 Mar",
@@ -153717,43 +153647,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": null
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": null
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 85
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 86
+            "value": 87
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 93
+            "value": 97
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 92
+            "value": 95
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 92
+            "value": 94
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 94
+            "value": 96
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 92
+            "value": 94
           },
           {
             "date": "2026-04-03",
@@ -153869,56 +153799,61 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 83
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 82
           }
         ],
         "rent_volume_weekly": [
           {
-            "label": "27 Mar–3 Apr",
-            "value": 13103
+            "label": "28 Mar–4 Apr",
+            "value": 13622
           },
           {
-            "label": "3 Apr–10 Apr",
-            "value": 9495
+            "label": "4 Apr–11 Apr",
+            "value": 9415
           },
           {
-            "label": "10 Apr–17 Apr",
-            "value": 8960
+            "label": "11 Apr–18 Apr",
+            "value": 7541
           },
           {
-            "label": "17 Apr–24 Apr",
-            "value": 5092
+            "label": "18 Apr–25 Apr",
+            "value": 4227
           },
           {
-            "label": "19 Apr–25 Apr",
-            "value": 3389
+            "label": "20 Apr–26 Apr",
+            "value": 3136
           }
         ],
         "psf_weekly": [
           {
-            "label": "27 Mar–3 Apr",
+            "label": "28 Mar–4 Apr",
             "median": 91
           },
           {
-            "label": "3 Apr–10 Apr",
-            "median": 88
+            "label": "4 Apr–11 Apr",
+            "median": 89
           },
           {
-            "label": "10 Apr–17 Apr",
+            "label": "11 Apr–18 Apr",
             "median": 94
           },
           {
-            "label": "17 Apr–24 Apr",
-            "median": 86
+            "label": "18 Apr–25 Apr",
+            "median": 85
           },
           {
-            "label": "19 Apr–25 Apr",
-            "median": 85
+            "label": "20 Apr–26 Apr",
+            "median": 82
           }
         ],
-        "wow_volume_pct": -52.7,
-        "wow_rent_pct": 23.3,
-        "wow_psf_pct": -10.8,
-        "window_label": "2026-03-27 → 2026-04-25 (Dubai, 30 days)"
+        "wow_volume_pct": -54.8,
+        "wow_rent_pct": 14.3,
+        "wow_psf_pct": -11.4,
+        "window_label": "2026-03-28 → 2026-04-26 (Dubai, 30 days)"
       },
       "rental_monthly": {
         "cur_label": "April 2026",
@@ -153929,42 +153864,42 @@
         "cur_psf_avg": 92,
         "prev_psf_avg": 100,
         "mom_psf_pct": -8,
-        "cur_days_elapsed": 26
+        "cur_days_elapsed": 27
       },
       "rental_top_areas": [
         {
           "area": "Deira",
-          "vol": "3121",
-          "avg_rent_aed": "28187",
-          "avg_rent_label": "28K",
+          "vol": "2453",
+          "avg_rent_aed": "30648",
+          "avg_rent_label": "31K",
           "trend": "flat"
         },
         {
           "area": "Bur Dubai",
-          "vol": "903",
-          "avg_rent_aed": "54277",
-          "avg_rent_label": "54K",
+          "vol": "798",
+          "avg_rent_aed": "57363",
+          "avg_rent_label": "57K",
           "trend": "flat"
         },
         {
           "area": "Al Nahda",
-          "vol": "372",
-          "avg_rent_aed": "47218",
-          "avg_rent_label": "47K",
-          "trend": "flat"
-        },
-        {
-          "area": "Al Barsha",
-          "vol": "305",
-          "avg_rent_aed": "58121",
-          "avg_rent_label": "58K",
+          "vol": "334",
+          "avg_rent_aed": "49746",
+          "avg_rent_label": "50K",
           "trend": "flat"
         },
         {
           "area": "Muhaisnah",
-          "vol": "293",
-          "avg_rent_aed": "51494",
-          "avg_rent_label": "51K",
+          "vol": "270",
+          "avg_rent_aed": "52317",
+          "avg_rent_label": "52K",
+          "trend": "flat"
+        },
+        {
+          "area": "International City",
+          "vol": "248",
+          "avg_rent_aed": "42610",
+          "avg_rent_label": "43K",
           "trend": "flat"
         }
       ],
@@ -154196,19 +154131,14 @@
           "recurrence": "Renewal"
         }
       ],
-      "rental_owner_briefing": "Rolling 7 days (Last 14 days (Dubai) — 13 Apr 2026 – 26 Apr 2026, Dubai): 10,076 rental registrations in your CSV, annualised value AED 668.10M. Prior 7 days: 21,214 registrations. New contracts 58.6% of split.",
+      "rental_owner_briefing": "Rolling 7 days (Last 14 days (Dubai) — 14 Apr 2026 – 27 Apr 2026, Dubai): 8,646 rental registrations in your CSV, annualised value AED 619.59M. Prior 7 days: 21,618 registrations. New contracts 53.3% of split.",
       "listings": {
         "total": 80832,
         "data_type": "rental",
-        "new_this_week": 5307,
-        "new_prev_7_days": 15221,
-        "wow_new_pct": -65.1,
+        "new_this_week": 2601,
+        "new_prev_7_days": 14774,
+        "wow_new_pct": -82.4,
         "listings_added_by_day": [
-          {
-            "date": "2026-04-20",
-            "label": "20 Apr",
-            "count": 2706
-          },
           {
             "date": "2026-04-21",
             "label": "21 Apr",
@@ -154238,14 +154168,14 @@
             "date": "2026-04-26",
             "label": "26 Apr",
             "count": 0
+          },
+          {
+            "date": "2026-04-27",
+            "label": "27 Apr",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-04-13",
-            "label": "13 Apr",
-            "count": 3153
-          },
           {
             "date": "2026-04-14",
             "label": "14 Apr",
@@ -154275,21 +154205,26 @@
             "date": "2026-04-19",
             "label": "19 Apr",
             "count": 313
-          }
-        ],
-        "listings_added_period": "20 Apr – 27 Apr 2026 (Dubai)",
-        "listings_added_period_prior": "13 Apr – 20 Apr 2026 (Dubai)",
-        "listings_flow": {
-          "avg_per_day_current": 758.1,
-          "avg_per_day_prior": 2174.4,
-          "pct_of_inventory_week": 6.6,
-          "peak_day_current": {
+          },
+          {
+            "date": "2026-04-20",
             "label": "20 Apr",
             "count": 2706
+          }
+        ],
+        "listings_added_period": "21 Apr – 28 Apr 2026 (Dubai)",
+        "listings_added_period_prior": "14 Apr – 21 Apr 2026 (Dubai)",
+        "listings_flow": {
+          "avg_per_day_current": 371.6,
+          "avg_per_day_prior": 2110.6,
+          "pct_of_inventory_week": 3.2,
+          "peak_day_current": {
+            "label": "21 Apr",
+            "count": 2542
           },
           "peak_day_prior": {
-            "label": "13 Apr",
-            "count": 3153
+            "label": "14 Apr",
+            "count": 2897
           }
         },
         "by_beds": {
@@ -154425,32 +154360,32 @@
         },
         "asking_vs_txn_by_beds": {
           "1": {
-            "delta_pct": 66,
+            "delta_pct": 65.4,
             "asking_avg": 102320,
-            "txn_avg": 61642,
+            "txn_avg": 61846,
             "asking_fmt": "AED 102,320",
-            "txn_fmt": "AED 61,642"
+            "txn_fmt": "AED 61,846"
           },
           "2": {
-            "delta_pct": 110.1,
+            "delta_pct": 109.2,
             "asking_avg": 176762,
-            "txn_avg": 84140,
+            "txn_avg": 84513,
             "asking_fmt": "AED 176,762",
-            "txn_fmt": "AED 84,140"
+            "txn_fmt": "AED 84,513"
           },
           "3": {
             "delta_pct": 71,
             "asking_avg": 259573,
-            "txn_avg": 151783,
+            "txn_avg": 151780,
             "asking_fmt": "AED 259,573",
-            "txn_fmt": "AED 151,783"
+            "txn_fmt": "AED 151,780"
           },
           "Studio": {
-            "delta_pct": 69.9,
+            "delta_pct": 61.6,
             "asking_avg": 63712,
-            "txn_avg": 37505,
+            "txn_avg": 39435,
             "asking_fmt": "AED 63,712",
-            "txn_fmt": "AED 37,505"
+            "txn_fmt": "AED 39,435"
           }
         },
         "source": "https://raw.githubusercontent.com/caruanakyle98/intel-data/main/listings.csv",
@@ -173712,19 +173647,6 @@
             },
             {
               "community": "Dubai Hills Estate",
-              "building": "Maple at Dubai Hills Estate 1",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 239,990",
-              "pct_drop": 86.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-dubai-hills-estate-maple-at-dubai-hills-estate-maple-at-dubai-hills-estate-1-69513082.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 1.79M",
-              "benchmark_n": 22,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Dubai Hills Estate",
               "building": "Maple at Dubai Hills Estate 2",
               "beds": "4+ Bed",
               "property_type": "Villa",
@@ -174008,6 +173930,19 @@
               "market_avg_fmt": "AED 1.95M",
               "benchmark_n": 6,
               "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 2 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 300,000",
+              "pct_drop": 84.6,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-77778164.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 1.95M",
+              "benchmark_n": 6,
+              "benchmark_source": "community_txn"
             }
           ],
           "townhouse": [
@@ -174110,19 +174045,6 @@
               "price_fmt": "AED 120,000",
               "pct_drop": 48.6,
               "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-78973518.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 233,333",
-              "benchmark_n": 3,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Camelia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 120,000",
-              "pct_drop": 48.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-69504284.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 233,333",
               "benchmark_n": 3,
@@ -174265,19 +174187,6 @@
               "property_type": "Townhouse",
               "price_fmt": "AED 130,000",
               "pct_drop": 44.3,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-69503823.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 233,333",
-              "benchmark_n": 3,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Camelia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 130,000",
-              "pct_drop": 44.3,
               "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-73753861.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 233,333",
@@ -174335,6 +174244,32 @@
               "market_avg_fmt": "AED 173,762",
               "benchmark_n": 8,
               "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Damac Hills 2",
+              "building": "Camelia",
+              "beds": "3 Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 99,999",
+              "pct_drop": 42.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-70692196.html",
+              "bed_label": "3 Bed",
+              "market_avg_fmt": "AED 173,762",
+              "benchmark_n": 8,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Damac Hills 2",
+              "building": "Camelia",
+              "beds": "3 Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 100,000",
+              "pct_drop": 42.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-73841548.html",
+              "bed_label": "3 Bed",
+              "market_avg_fmt": "AED 173,762",
+              "benchmark_n": 8,
+              "benchmark_source": "building_txn"
             }
           ]
         },
@@ -174354,15 +174289,10 @@
       "sales_listings": {
         "total": 96354,
         "data_type": "sales",
-        "new_this_week": 5271,
-        "new_prev_7_days": 14757,
-        "wow_new_pct": -64.3,
+        "new_this_week": 2735,
+        "new_prev_7_days": 14698,
+        "wow_new_pct": -81.4,
         "listings_added_by_day": [
-          {
-            "date": "2026-04-20",
-            "label": "20 Apr",
-            "count": 2536
-          },
           {
             "date": "2026-04-21",
             "label": "21 Apr",
@@ -174392,14 +174322,14 @@
             "date": "2026-04-26",
             "label": "26 Apr",
             "count": 0
+          },
+          {
+            "date": "2026-04-27",
+            "label": "27 Apr",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-04-13",
-            "label": "13 Apr",
-            "count": 2595
-          },
           {
             "date": "2026-04-14",
             "label": "14 Apr",
@@ -174429,14 +174359,19 @@
             "date": "2026-04-19",
             "label": "19 Apr",
             "count": 354
+          },
+          {
+            "date": "2026-04-20",
+            "label": "20 Apr",
+            "count": 2536
           }
         ],
-        "listings_added_period": "20 Apr – 27 Apr 2026 (Dubai)",
-        "listings_added_period_prior": "13 Apr – 20 Apr 2026 (Dubai)",
+        "listings_added_period": "21 Apr – 28 Apr 2026 (Dubai)",
+        "listings_added_period_prior": "14 Apr – 21 Apr 2026 (Dubai)",
         "listings_flow": {
-          "avg_per_day_current": 753,
-          "avg_per_day_prior": 2108.1,
-          "pct_of_inventory_week": 5.5,
+          "avg_per_day_current": 390.7,
+          "avg_per_day_prior": 2099.7,
+          "pct_of_inventory_week": 2.8,
           "peak_day_current": {
             "label": "21 Apr",
             "count": 2673
@@ -174579,32 +174514,32 @@
         },
         "asking_vs_txn_by_beds": {
           "1": {
-            "delta_pct": 10.1,
+            "delta_pct": 9.7,
             "asking_avg": 1740730,
-            "txn_avg": 1581036,
+            "txn_avg": 1586350,
             "asking_fmt": "AED 1.74M",
-            "txn_fmt": "AED 1.58M"
+            "txn_fmt": "AED 1.59M"
           },
           "2": {
-            "delta_pct": 21.8,
+            "delta_pct": 22,
             "asking_avg": 3163354,
-            "txn_avg": 2597116,
+            "txn_avg": 2592899,
             "asking_fmt": "AED 3.16M",
-            "txn_fmt": "AED 2.6M"
+            "txn_fmt": "AED 2.59M"
           },
           "3": {
-            "delta_pct": -6.8,
+            "delta_pct": -12.7,
             "asking_avg": 5785203,
-            "txn_avg": 6209016,
+            "txn_avg": 6630448,
             "asking_fmt": "AED 5.79M",
-            "txn_fmt": "AED 6.21M"
+            "txn_fmt": "AED 6.63M"
           },
           "Studio": {
-            "delta_pct": -2,
+            "delta_pct": -4.9,
             "asking_avg": 855235,
-            "txn_avg": 873028,
+            "txn_avg": 899688,
             "asking_fmt": "AED 855,235",
-            "txn_fmt": "AED 873,028"
+            "txn_fmt": "AED 899,688"
           }
         },
         "source": "https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales_listings.csv",
@@ -195900,19 +195835,6 @@
           },
           {
             "community": "Jumeirah",
-            "building": "La Cote Building 2",
-            "beds": "2 Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 3.5M",
-            "pct_drop": 92.4,
-            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-cote-la-cote-building-2-69509394.html",
-            "bed_label": "2 Bed",
-            "market_avg_fmt": "AED 46.04M",
-            "benchmark_n": 5,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "Jumeirah",
             "building": "La Cote Building 1",
             "beds": "2 Bed",
             "property_type": "Apartment",
@@ -196170,6 +196092,19 @@
             "market_avg_fmt": "AED 11.94M",
             "benchmark_n": 9,
             "benchmark_source": "community_txn"
+          },
+          {
+            "community": "Jumeirah",
+            "building": "La Sirene Building 2",
+            "beds": "2 Bed",
+            "property_type": "Apartment",
+            "price_fmt": "AED 4.35M",
+            "pct_drop": 90.6,
+            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-78976027.html",
+            "bed_label": "2 Bed",
+            "market_avg_fmt": "AED 46.04M",
+            "benchmark_n": 5,
+            "benchmark_source": "community_txn"
           }
         ],
         "hot_listings_by_type": {
@@ -196221,19 +196156,6 @@
               "price_fmt": "AED 3.5M",
               "pct_drop": 92.4,
               "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-cote-la-cote-building-2-78970413.html",
-              "bed_label": "2 Bed",
-              "market_avg_fmt": "AED 46.04M",
-              "benchmark_n": 5,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Jumeirah",
-              "building": "La Cote Building 2",
-              "beds": "2 Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 3.5M",
-              "pct_drop": 92.4,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-cote-la-cote-building-2-69509394.html",
               "bed_label": "2 Bed",
               "market_avg_fmt": "AED 46.04M",
               "benchmark_n": 5,
@@ -196497,6 +196419,19 @@
               "bed_label": "Studio",
               "market_avg_fmt": "AED 11.94M",
               "benchmark_n": 9,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Jumeirah",
+              "building": "La Sirene Building 2",
+              "beds": "2 Bed",
+              "property_type": "Apartment",
+              "price_fmt": "AED 4.35M",
+              "pct_drop": 90.6,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-78976027.html",
+              "bed_label": "2 Bed",
+              "market_avg_fmt": "AED 46.04M",
+              "benchmark_n": 5,
               "benchmark_source": "community_txn"
             }
           ],
@@ -197121,19 +197056,6 @@
               "property_type": "Townhouse",
               "price_fmt": "AED 2.4M",
               "pct_drop": 32,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-lagoons-costa-brava-at-damac-lagoons-costa-brava-1-69503553.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3.53M",
-              "benchmark_n": 10,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Lagoons",
-              "building": "Costa Brava 1",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 2.4M",
-              "pct_drop": 32,
               "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-lagoons-costa-brava-at-damac-lagoons-costa-brava-1-76992520.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 3.53M",
@@ -197152,6 +197074,19 @@
               "market_avg_fmt": "AED 3.53M",
               "benchmark_n": 10,
               "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Tilal Al Ghaf",
+              "building": "Elan",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 4.4M",
+              "pct_drop": 31,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-tilal-al-ghaf-elan-73114339.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 6.38M",
+              "benchmark_n": 31,
+              "benchmark_source": "community_txn"
             }
           ]
         },
@@ -197173,11 +197108,6 @@
       "ok": true,
       "charts_30d": {
         "sale_volume": [
-          {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 413
-          },
           {
             "date": "2026-03-28",
             "label": "28 Mar",
@@ -197322,14 +197252,14 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 0
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 0
           }
         ],
         "psf": [
-          {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 2300
-          },
           {
             "date": "2026-03-28",
             "label": "28 Mar",
@@ -197474,43 +197404,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 2618
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 2618
           }
         ],
         "sale_volume_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 413
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 211
+            "value": 9
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 146
+            "value": 12.5
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 280.8
+            "value": 236.7
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 382.4
+            "value": 374.8
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 409.5
+            "value": 408.8
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 457.4
+            "value": 464.8
           },
           {
             "date": "2026-04-03",
@@ -197626,43 +197556,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 82.7
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 82.1
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 2300
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 2052
+            "value": 1804
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 2012
+            "value": 1868
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 2025.3
+            "value": 1933.7
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 2054
+            "value": 1992.5
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 2044
+            "value": 1992.8
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 2054.7
+            "value": 2013.8
           },
           {
             "date": "2026-04-03",
@@ -197778,13 +197708,18 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 2406.6
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 2618
           }
         ],
         "sale_volume_weekly": [
           {
             "date": "2026-03-23",
             "label": "Wk 23 Mar",
-            "value": 438
+            "value": 25
           },
           {
             "date": "2026-03-30",
@@ -197811,9 +197746,9 @@
           {
             "date": "2026-03-23",
             "label": "Wk 23 Mar",
-            "median": 2276,
-            "p25": 1554,
-            "p75": 2741.75
+            "median": 1886,
+            "p25": 1576,
+            "p75": 2153
           },
           {
             "date": "2026-03-30",
@@ -197846,7 +197781,7 @@
         ],
         "wow_volume_pct": -77,
         "wow_psf_pct": 32.1,
-        "window_label": "2026-03-27 → 2026-04-25 (Dubai, 30 days)"
+        "window_label": "2026-03-28 → 2026-04-26 (Dubai, 30 days)"
       },
       "recent_sales_transactions": [
         {
@@ -198127,65 +198062,65 @@
       ],
       "weekly": {
         "sale_volume": {
-          "value": "9469",
-          "chg_wow": "-12.7%",
+          "value": "9460",
+          "chg_wow": "-5.9%",
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026",
+          "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "sale_value_aed": {
-          "value": "AED 29.13B",
-          "chg_wow": "-12.4%",
+          "value": "AED 29.11B",
+          "chg_wow": "-4.5%",
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026",
+          "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "rent_volume": {
-          "value": "32395",
-          "chg_wow": "-22.0%",
+          "value": "31626",
+          "chg_wow": "-25.2%",
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026",
+          "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
         },
         "rent_value_aed": {
-          "value": "AED 2195.91M",
-          "chg_wow": "-34.4%",
+          "value": "AED 2146.56M",
+          "chg_wow": "-36.9%",
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026",
+          "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "note": "Sum of annualised rent (AED) for the week — contract rent not used."
         },
-        "period_label": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026",
+        "period_label": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026",
         "rent_new_vs_renewal": {
-          "new_count": "18585",
-          "renewal_count": "13792",
+          "new_count": "18272",
+          "renewal_count": "13336",
           "other_count": "18",
-          "new_pct": "57.4",
-          "renewal_pct": "42.6",
+          "new_pct": "57.8",
+          "renewal_pct": "42.2",
           "other_pct": "0.1",
-          "new_chg_wow": "-5.4%",
-          "renewal_chg_wow": "-36.9%",
-          "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026",
+          "new_chg_wow": "-8.5%",
+          "renewal_chg_wow": "-40.2%",
+          "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "column": "rent recurrence"
         }
       },
       "prices": {
-        "apt_psf_aed": "2113",
+        "apt_psf_aed": "2114",
         "villa_psf_aed": "2245",
         "townhouse_psf_aed": "1320",
-        "apt_avg_aed": "AED 2.18M",
+        "apt_avg_aed": "AED 2.19M",
         "villa_avg_aed": "AED 14.57M",
         "townhouse_avg_aed": "AED 3.40M",
-        "apt_avg_aed_num": 2184519.0789248627,
+        "apt_avg_aed_num": 2185427.9485078277,
         "villa_avg_aed_num": 14566294.977083333,
         "townhouse_avg_aed_num": 3404741.8335664338,
         "apt_avg_aed_yield_ref_num": 2125632.492477353,
@@ -198193,7 +198128,7 @@
         "townhouse_avg_aed_yield_ref_num": 3449896.428250281,
         "yield_ref_lookback_days": "90",
         "price_index_chg_yoy": "N/A",
-        "price_period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026",
+        "price_period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026",
         "price_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "market_split": {
@@ -198201,7 +198136,7 @@
         "secondary_pct": "23",
         "offplan_chg_yoy": "N/A",
         "dominant_segment": "Off-plan",
-        "split_period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026",
+        "split_period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026",
         "note": "Off-plan is detected from Select Data Points = Oqood in your sales CSV."
       },
       "top_areas": [
@@ -198210,35 +198145,35 @@
           "vol": "946",
           "avg_psf": "1731",
           "trend": "up",
-          "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026"
+          "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026"
         },
         {
           "area": "Jumeirah Village Circle",
-          "vol": "581",
-          "avg_psf": "1620",
+          "vol": "577",
+          "avg_psf": "1621",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026"
+          "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026"
         },
         {
           "area": "Dubai Creek Harbour",
           "vol": "480",
           "avg_psf": "2717",
           "trend": "up",
-          "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026"
+          "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026"
         },
         {
           "area": "DAMAC Lagoons",
           "vol": "456",
           "avg_psf": "1747",
           "trend": "up",
-          "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026"
+          "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026"
         },
         {
           "area": "Dubai Islands",
-          "vol": "427",
+          "vol": "425",
           "avg_psf": "2868",
           "trend": "up",
-          "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026"
+          "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026"
         }
       ],
       "top_areas_mode": "area",
@@ -198263,17 +198198,17 @@
         "supply_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "rental": {
-        "apt_1br_avg_aed": "61040",
-        "apt_2br_avg_aed": "84390",
-        "villa_3br_avg_aed": "148673",
+        "apt_1br_avg_aed": "61057",
+        "apt_2br_avg_aed": "84365",
+        "villa_3br_avg_aed": "149221",
         "rental_index_chg_yoy": "N/A",
         "ejari_registrations_weekly": "N/A",
         "vacancy_rate": "N/A",
         "landlord_vs_tenant": "balanced",
         "note": "Rental metrics use Annualised Rental Price (AED) only. Weekly count/value + new vs renewal (Rent Recurrence) + bed averages.",
         "rental_source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
-        "rental_period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026",
-        "studio_avg_aed": "39373",
+        "rental_period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026",
+        "studio_avg_aed": "39297",
         "txn_by_building_bed": {
           "hub canal 1|1|apt": {
             "avg": 60156,
@@ -218302,16 +218237,16 @@
         "financing_conditions": "N/A",
         "mortgage_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
-      "owner_briefing": "Rolling 30 days through today (28 Mar 2026 – 26 Apr 2026, Dubai): 9,469 transactions in your CSV worth AED 29.13B. Prior 30 days (26 Feb 2026 – 27 Mar 2026): 10,847 deals. Off-plan share 77% (Oqood-tagged rows).",
+      "owner_briefing": "Rolling 30 days through today (29 Mar 2026 – 27 Apr 2026, Dubai): 9,460 transactions in your CSV worth AED 29.11B. Prior 30 days (27 Feb 2026 – 28 Mar 2026): 10,057 deals. Off-plan share 77% (Oqood-tagged rows).",
       "data_freshness": "Transactions through 20 Apr 2026 · snapshot build (30d)",
       "sources_used": [
         "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)",
         "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
       ],
       "sale_txn_avg_by_beds": {
-        "studio": 830960,
-        "1br": 1564577,
-        "2br": 2710741,
+        "studio": 831197,
+        "1br": 1565047,
+        "2br": 2710652,
         "3br": 5571409
       },
       "monthly": {
@@ -218384,7 +218319,7 @@
           "Studio": -1.8,
           "4+": 23.9
         },
-        "cur_days_elapsed": 26
+        "cur_days_elapsed": 27
       },
       "sale_txn_by_building_bed": {
         "tempo|1|apt": {
@@ -229853,39 +229788,39 @@
       "sale_hot_listings_lookback_days": "365",
       "sale_hot_listings_min_txn": "3",
       "property_type_activity": {
-        "period": "Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026",
+        "period": "Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026",
         "entries": {
           "apt": {
             "label": "Apartment",
-            "sale_vol": 8185,
+            "sale_vol": 8176,
             "sale_pct": 87,
-            "sale_wow": "-8.6%",
+            "sale_wow": "-1.7%",
             "sale_trend": "down",
-            "rent_vol": 30792,
+            "rent_vol": 30052,
             "rent_pct": 95,
-            "rent_wow": "-21.0%",
+            "rent_wow": "-24.3%",
             "rent_trend": "down"
           },
           "villa": {
             "label": "Villa",
             "sale_vol": 480,
             "sale_pct": 5,
-            "sale_wow": "-48.4%",
+            "sale_wow": "-45.8%",
             "sale_trend": "down",
-            "rent_vol": 959,
+            "rent_vol": 944,
             "rent_pct": 3,
-            "rent_wow": "-40.9%",
+            "rent_wow": "-42.4%",
             "rent_trend": "down"
           },
           "townhouse": {
             "label": "Townhouse",
             "sale_vol": 715,
             "sale_pct": 8,
-            "sale_wow": "-14.1%",
+            "sale_wow": "-6.0%",
             "sale_trend": "down",
-            "rent_vol": 644,
+            "rent_vol": 630,
             "rent_pct": 2,
-            "rent_wow": "-32.1%",
+            "rent_wow": "-34.6%",
             "rent_trend": "down"
           }
         },
@@ -251545,11 +251480,6 @@
       "rental_charts_30d": {
         "rent_volume": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 670
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
             "value": 769
@@ -251693,43 +251623,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 0
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 0
           }
         ],
         "rent_volume_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 670
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 720
+            "value": 769
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 592
+            "value": 553
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 700
+            "value": 710
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 777
+            "value": 804
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 1776
+            "value": 1997
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 1806
+            "value": 1995
           },
           {
             "date": "2026-04-03",
@@ -251845,14 +251775,14 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 484
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 448
           }
         ],
         "rent_avg_aed": [
-          {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 65984
-          },
           {
             "date": "2026-03-28",
             "label": "28 Mar",
@@ -251997,43 +251927,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 75925
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 75925
           }
         ],
         "rent_avg_aed_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 65984
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 65077
+            "value": 64170
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 79387
+            "value": 86089
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 75407
+            "value": 78548
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 73895
+            "value": 75873
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 77687
+            "value": 80027
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 71047
+            "value": 71891
           },
           {
             "date": "2026-04-03",
@@ -252149,14 +252079,14 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 77181
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 74896
           }
         ],
         "psf": [
-          {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 85
-          },
           {
             "date": "2026-03-28",
             "label": "28 Mar",
@@ -252301,43 +252231,43 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": null
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": null
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-03-27",
-            "label": "27 Mar",
-            "value": 85
-          },
-          {
             "date": "2026-03-28",
             "label": "28 Mar",
-            "value": 86
+            "value": 87
           },
           {
             "date": "2026-03-29",
             "label": "29 Mar",
-            "value": 93
+            "value": 97
           },
           {
             "date": "2026-03-30",
             "label": "30 Mar",
-            "value": 92
+            "value": 95
           },
           {
             "date": "2026-03-31",
             "label": "31 Mar",
-            "value": 92
+            "value": 94
           },
           {
             "date": "2026-04-01",
             "label": "1 Apr",
-            "value": 94
+            "value": 96
           },
           {
             "date": "2026-04-02",
             "label": "2 Apr",
-            "value": 92
+            "value": 94
           },
           {
             "date": "2026-04-03",
@@ -252453,56 +252383,61 @@
             "date": "2026-04-25",
             "label": "25 Apr",
             "value": 83
+          },
+          {
+            "date": "2026-04-26",
+            "label": "26 Apr",
+            "value": 82
           }
         ],
         "rent_volume_weekly": [
           {
-            "label": "27 Mar–3 Apr",
-            "value": 13103
+            "label": "28 Mar–4 Apr",
+            "value": 13622
           },
           {
-            "label": "3 Apr–10 Apr",
-            "value": 9495
+            "label": "4 Apr–11 Apr",
+            "value": 9415
           },
           {
-            "label": "10 Apr–17 Apr",
-            "value": 8960
+            "label": "11 Apr–18 Apr",
+            "value": 7541
           },
           {
-            "label": "17 Apr–24 Apr",
-            "value": 5092
+            "label": "18 Apr–25 Apr",
+            "value": 4227
           },
           {
-            "label": "19 Apr–25 Apr",
-            "value": 3389
+            "label": "20 Apr–26 Apr",
+            "value": 3136
           }
         ],
         "psf_weekly": [
           {
-            "label": "27 Mar–3 Apr",
+            "label": "28 Mar–4 Apr",
             "median": 91
           },
           {
-            "label": "3 Apr–10 Apr",
-            "median": 88
+            "label": "4 Apr–11 Apr",
+            "median": 89
           },
           {
-            "label": "10 Apr–17 Apr",
+            "label": "11 Apr–18 Apr",
             "median": 94
           },
           {
-            "label": "17 Apr–24 Apr",
-            "median": 86
+            "label": "18 Apr–25 Apr",
+            "median": 85
           },
           {
-            "label": "19 Apr–25 Apr",
-            "median": 85
+            "label": "20 Apr–26 Apr",
+            "median": 82
           }
         ],
-        "wow_volume_pct": -52.7,
-        "wow_rent_pct": 23.3,
-        "wow_psf_pct": -10.8,
-        "window_label": "2026-03-27 → 2026-04-25 (Dubai, 30 days)"
+        "wow_volume_pct": -54.8,
+        "wow_rent_pct": 14.3,
+        "wow_psf_pct": -11.4,
+        "window_label": "2026-03-28 → 2026-04-26 (Dubai, 30 days)"
       },
       "rental_monthly": {
         "cur_label": "April 2026",
@@ -252513,42 +252448,42 @@
         "cur_psf_avg": 92,
         "prev_psf_avg": 100,
         "mom_psf_pct": -8,
-        "cur_days_elapsed": 26
+        "cur_days_elapsed": 27
       },
       "rental_top_areas": [
         {
           "area": "Deira",
-          "vol": "10482",
-          "avg_rent_aed": "29483",
+          "vol": "10332",
+          "avg_rent_aed": "29447",
           "avg_rent_label": "29K",
           "trend": "flat"
         },
         {
           "area": "Bur Dubai",
-          "vol": "2628",
-          "avg_rent_aed": "57602",
-          "avg_rent_label": "58K",
+          "vol": "2575",
+          "avg_rent_aed": "57445",
+          "avg_rent_label": "57K",
           "trend": "flat"
         },
         {
           "area": "Al Barsha",
-          "vol": "1272",
-          "avg_rent_aed": "50545",
-          "avg_rent_label": "51K",
+          "vol": "1257",
+          "avg_rent_aed": "50227",
+          "avg_rent_label": "50K",
           "trend": "flat"
         },
         {
           "area": "Al Nahda",
-          "vol": "1257",
-          "avg_rent_aed": "47113",
+          "vol": "1230",
+          "avg_rent_aed": "46968",
           "avg_rent_label": "47K",
           "trend": "flat"
         },
         {
-          "area": "International City",
-          "vol": "836",
-          "avg_rent_aed": "42402",
-          "avg_rent_label": "42K",
+          "area": "Al Quoz",
+          "vol": "823",
+          "avg_rent_aed": "57919",
+          "avg_rent_label": "58K",
           "trend": "flat"
         }
       ],
@@ -252780,19 +252715,14 @@
           "recurrence": "Renewal"
         }
       ],
-      "rental_owner_briefing": "Rolling 7 days (Last 30 days (Dubai) — 28 Mar 2026 – 26 Apr 2026, Dubai): 32,395 rental registrations in your CSV, annualised value AED 2195.91M. Prior 7 days: 41,533 registrations. New contracts 57.4% of split.",
+      "rental_owner_briefing": "Rolling 7 days (Last 30 days (Dubai) — 29 Mar 2026 – 27 Apr 2026, Dubai): 31,626 rental registrations in your CSV, annualised value AED 2146.56M. Prior 7 days: 42,302 registrations. New contracts 57.8% of split.",
       "listings": {
         "total": 80832,
         "data_type": "rental",
-        "new_this_week": 5307,
-        "new_prev_7_days": 15221,
-        "wow_new_pct": -65.1,
+        "new_this_week": 2601,
+        "new_prev_7_days": 14774,
+        "wow_new_pct": -82.4,
         "listings_added_by_day": [
-          {
-            "date": "2026-04-20",
-            "label": "20 Apr",
-            "count": 2706
-          },
           {
             "date": "2026-04-21",
             "label": "21 Apr",
@@ -252822,14 +252752,14 @@
             "date": "2026-04-26",
             "label": "26 Apr",
             "count": 0
+          },
+          {
+            "date": "2026-04-27",
+            "label": "27 Apr",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-04-13",
-            "label": "13 Apr",
-            "count": 3153
-          },
           {
             "date": "2026-04-14",
             "label": "14 Apr",
@@ -252859,21 +252789,26 @@
             "date": "2026-04-19",
             "label": "19 Apr",
             "count": 313
-          }
-        ],
-        "listings_added_period": "20 Apr – 27 Apr 2026 (Dubai)",
-        "listings_added_period_prior": "13 Apr – 20 Apr 2026 (Dubai)",
-        "listings_flow": {
-          "avg_per_day_current": 758.1,
-          "avg_per_day_prior": 2174.4,
-          "pct_of_inventory_week": 6.6,
-          "peak_day_current": {
+          },
+          {
+            "date": "2026-04-20",
             "label": "20 Apr",
             "count": 2706
+          }
+        ],
+        "listings_added_period": "21 Apr – 28 Apr 2026 (Dubai)",
+        "listings_added_period_prior": "14 Apr – 21 Apr 2026 (Dubai)",
+        "listings_flow": {
+          "avg_per_day_current": 371.6,
+          "avg_per_day_prior": 2110.6,
+          "pct_of_inventory_week": 3.2,
+          "peak_day_current": {
+            "label": "21 Apr",
+            "count": 2542
           },
           "peak_day_prior": {
-            "label": "13 Apr",
-            "count": 3153
+            "label": "14 Apr",
+            "count": 2897
           }
         },
         "by_beds": {
@@ -253011,30 +252946,30 @@
           "1": {
             "delta_pct": 67.6,
             "asking_avg": 102320,
-            "txn_avg": 61040,
+            "txn_avg": 61057,
             "asking_fmt": "AED 102,320",
-            "txn_fmt": "AED 61,040"
+            "txn_fmt": "AED 61,057"
           },
           "2": {
             "delta_pct": 109.5,
             "asking_avg": 176762,
-            "txn_avg": 84390,
+            "txn_avg": 84365,
             "asking_fmt": "AED 176,762",
-            "txn_fmt": "AED 84,390"
+            "txn_fmt": "AED 84,365"
           },
           "3": {
-            "delta_pct": 74.6,
+            "delta_pct": 74,
             "asking_avg": 259573,
-            "txn_avg": 148673,
+            "txn_avg": 149221,
             "asking_fmt": "AED 259,573",
-            "txn_fmt": "AED 148,673"
+            "txn_fmt": "AED 149,221"
           },
           "Studio": {
-            "delta_pct": 61.8,
+            "delta_pct": 62.1,
             "asking_avg": 63712,
-            "txn_avg": 39373,
+            "txn_avg": 39297,
             "asking_fmt": "AED 63,712",
-            "txn_fmt": "AED 39,373"
+            "txn_fmt": "AED 39,297"
           }
         },
         "source": "https://raw.githubusercontent.com/caruanakyle98/intel-data/main/listings.csv",
@@ -272296,19 +272231,6 @@
             },
             {
               "community": "Dubai Hills Estate",
-              "building": "Maple at Dubai Hills Estate 1",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 239,990",
-              "pct_drop": 86.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-dubai-hills-estate-maple-at-dubai-hills-estate-maple-at-dubai-hills-estate-1-69513082.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 1.79M",
-              "benchmark_n": 22,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Dubai Hills Estate",
               "building": "Maple at Dubai Hills Estate 2",
               "beds": "4+ Bed",
               "property_type": "Villa",
@@ -272592,6 +272514,19 @@
               "market_avg_fmt": "AED 1.95M",
               "benchmark_n": 6,
               "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 2 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 300,000",
+              "pct_drop": 84.6,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-77778164.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 1.95M",
+              "benchmark_n": 6,
+              "benchmark_source": "community_txn"
             }
           ],
           "townhouse": [
@@ -272694,19 +272629,6 @@
               "price_fmt": "AED 120,000",
               "pct_drop": 48.6,
               "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-78973518.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 233,333",
-              "benchmark_n": 3,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Camelia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 120,000",
-              "pct_drop": 48.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-69504284.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 233,333",
               "benchmark_n": 3,
@@ -272849,19 +272771,6 @@
               "property_type": "Townhouse",
               "price_fmt": "AED 130,000",
               "pct_drop": 44.3,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-69503823.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 233,333",
-              "benchmark_n": 3,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Camelia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 130,000",
-              "pct_drop": 44.3,
               "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-73753861.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 233,333",
@@ -272919,6 +272828,32 @@
               "market_avg_fmt": "AED 173,762",
               "benchmark_n": 8,
               "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Damac Hills 2",
+              "building": "Camelia",
+              "beds": "3 Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 99,999",
+              "pct_drop": 42.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-70692196.html",
+              "bed_label": "3 Bed",
+              "market_avg_fmt": "AED 173,762",
+              "benchmark_n": 8,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Damac Hills 2",
+              "building": "Camelia",
+              "beds": "3 Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 100,000",
+              "pct_drop": 42.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-73841548.html",
+              "bed_label": "3 Bed",
+              "market_avg_fmt": "AED 173,762",
+              "benchmark_n": 8,
+              "benchmark_source": "building_txn"
             }
           ]
         },
@@ -272938,15 +272873,10 @@
       "sales_listings": {
         "total": 96354,
         "data_type": "sales",
-        "new_this_week": 5271,
-        "new_prev_7_days": 14757,
-        "wow_new_pct": -64.3,
+        "new_this_week": 2735,
+        "new_prev_7_days": 14698,
+        "wow_new_pct": -81.4,
         "listings_added_by_day": [
-          {
-            "date": "2026-04-20",
-            "label": "20 Apr",
-            "count": 2536
-          },
           {
             "date": "2026-04-21",
             "label": "21 Apr",
@@ -272976,14 +272906,14 @@
             "date": "2026-04-26",
             "label": "26 Apr",
             "count": 0
+          },
+          {
+            "date": "2026-04-27",
+            "label": "27 Apr",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-04-13",
-            "label": "13 Apr",
-            "count": 2595
-          },
           {
             "date": "2026-04-14",
             "label": "14 Apr",
@@ -273013,14 +272943,19 @@
             "date": "2026-04-19",
             "label": "19 Apr",
             "count": 354
+          },
+          {
+            "date": "2026-04-20",
+            "label": "20 Apr",
+            "count": 2536
           }
         ],
-        "listings_added_period": "20 Apr – 27 Apr 2026 (Dubai)",
-        "listings_added_period_prior": "13 Apr – 20 Apr 2026 (Dubai)",
+        "listings_added_period": "21 Apr – 28 Apr 2026 (Dubai)",
+        "listings_added_period_prior": "14 Apr – 21 Apr 2026 (Dubai)",
         "listings_flow": {
-          "avg_per_day_current": 753,
-          "avg_per_day_prior": 2108.1,
-          "pct_of_inventory_week": 5.5,
+          "avg_per_day_current": 390.7,
+          "avg_per_day_prior": 2099.7,
+          "pct_of_inventory_week": 2.8,
           "peak_day_current": {
             "label": "21 Apr",
             "count": 2673
@@ -273163,16 +273098,16 @@
         },
         "asking_vs_txn_by_beds": {
           "1": {
-            "delta_pct": 11.3,
+            "delta_pct": 11.2,
             "asking_avg": 1740730,
-            "txn_avg": 1564577,
+            "txn_avg": 1565047,
             "asking_fmt": "AED 1.74M",
-            "txn_fmt": "AED 1.56M"
+            "txn_fmt": "AED 1.57M"
           },
           "2": {
             "delta_pct": 16.7,
             "asking_avg": 3163354,
-            "txn_avg": 2710741,
+            "txn_avg": 2710652,
             "asking_fmt": "AED 3.16M",
             "txn_fmt": "AED 2.71M"
           },
@@ -273186,9 +273121,9 @@
           "Studio": {
             "delta_pct": 2.9,
             "asking_avg": 855235,
-            "txn_avg": 830960,
+            "txn_avg": 831197,
             "asking_fmt": "AED 855,235",
-            "txn_fmt": "AED 830,960"
+            "txn_fmt": "AED 831,197"
           }
         },
         "source": "https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales_listings.csv",
@@ -294484,19 +294419,6 @@
           },
           {
             "community": "Jumeirah",
-            "building": "La Cote Building 2",
-            "beds": "2 Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 3.5M",
-            "pct_drop": 92.4,
-            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-cote-la-cote-building-2-69509394.html",
-            "bed_label": "2 Bed",
-            "market_avg_fmt": "AED 46.04M",
-            "benchmark_n": 5,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "Jumeirah",
             "building": "La Cote Building 1",
             "beds": "2 Bed",
             "property_type": "Apartment",
@@ -294754,6 +294676,19 @@
             "market_avg_fmt": "AED 11.94M",
             "benchmark_n": 9,
             "benchmark_source": "community_txn"
+          },
+          {
+            "community": "Jumeirah",
+            "building": "La Sirene Building 2",
+            "beds": "2 Bed",
+            "property_type": "Apartment",
+            "price_fmt": "AED 4.35M",
+            "pct_drop": 90.6,
+            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-78976027.html",
+            "bed_label": "2 Bed",
+            "market_avg_fmt": "AED 46.04M",
+            "benchmark_n": 5,
+            "benchmark_source": "community_txn"
           }
         ],
         "hot_listings_by_type": {
@@ -294805,19 +294740,6 @@
               "price_fmt": "AED 3.5M",
               "pct_drop": 92.4,
               "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-cote-la-cote-building-2-78970413.html",
-              "bed_label": "2 Bed",
-              "market_avg_fmt": "AED 46.04M",
-              "benchmark_n": 5,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Jumeirah",
-              "building": "La Cote Building 2",
-              "beds": "2 Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 3.5M",
-              "pct_drop": 92.4,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-cote-la-cote-building-2-69509394.html",
               "bed_label": "2 Bed",
               "market_avg_fmt": "AED 46.04M",
               "benchmark_n": 5,
@@ -295081,6 +295003,19 @@
               "bed_label": "Studio",
               "market_avg_fmt": "AED 11.94M",
               "benchmark_n": 9,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Jumeirah",
+              "building": "La Sirene Building 2",
+              "beds": "2 Bed",
+              "property_type": "Apartment",
+              "price_fmt": "AED 4.35M",
+              "pct_drop": 90.6,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-78976027.html",
+              "bed_label": "2 Bed",
+              "market_avg_fmt": "AED 46.04M",
+              "benchmark_n": 5,
               "benchmark_source": "community_txn"
             }
           ],
@@ -295705,19 +295640,6 @@
               "property_type": "Townhouse",
               "price_fmt": "AED 2.4M",
               "pct_drop": 32,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-lagoons-costa-brava-at-damac-lagoons-costa-brava-1-69503553.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3.53M",
-              "benchmark_n": 10,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Lagoons",
-              "building": "Costa Brava 1",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 2.4M",
-              "pct_drop": 32,
               "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-lagoons-costa-brava-at-damac-lagoons-costa-brava-1-76992520.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 3.53M",
@@ -295736,6 +295658,19 @@
               "market_avg_fmt": "AED 3.53M",
               "benchmark_n": 10,
               "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Tilal Al Ghaf",
+              "building": "Elan",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 4.4M",
+              "pct_drop": 31,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-tilal-al-ghaf-elan-73114339.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 6.38M",
+              "benchmark_n": 31,
+              "benchmark_source": "community_txn"
             }
           ]
         },
@@ -295754,5 +295689,5 @@
       }
     }
   },
-  "generated_at": "2026-04-26T06:59:14.855Z"
+  "generated_at": "2026-04-27T07:33:16.087Z"
 }
