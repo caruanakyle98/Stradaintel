@@ -3085,7 +3085,7 @@ export function DashboardView() {
                         <div
                           role="img"
                           aria-label={`New ${type} listings per day. ${ariaDays}.`}
-                          style={{ display: 'flex', gap: 6, alignItems: 'flex-end', height: 100 }}
+                          style={{ display: 'flex', gap: 6, alignItems: 'flex-end', height: 130 }}
                         >
                           {added.map((d) => {
                             const barH = Math.max(Math.round((d.count / maxC) * 88), d.count > 0 ? 4 : 0);
