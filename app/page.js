@@ -107,6 +107,7 @@ const css = `
   @keyframes fade    { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
   @keyframes shimmer { 0%{background-position:-600px 0} 100%{background-position:600px 0} }
   @keyframes pillarCardIn { from{opacity:0;transform:translateX(14px)} to{opacity:1;transform:none} }
+  @keyframes si-ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
   /* ─── RESET ──────────────────────────────────────────────────── */
   *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -857,6 +858,39 @@ function BuildingSearch({ options, value, onSelect, onClear, placeholder, disabl
         )}
       </div>
     </label>
+  );
+}
+
+function Ticker({ rows }) {
+  const items = rows.concat(rows);
+  return (
+    <div style={{
+      overflow: 'hidden',
+      background: 'rgba(11,18,32,0.85)',
+      border: '1px solid rgba(201,168,76,0.16)',
+      borderRadius: 8, padding: '8px 0', position: 'relative',
+      marginBottom: 16,
+    }}>
+      <div style={{
+        display: 'flex', gap: 32,
+        animation: 'si-ticker 60s linear infinite',
+        whiteSpace: 'nowrap', willChange: 'transform',
+      }}>
+        {items.map((r, i) => {
+          const up = r.delta.startsWith('+');
+          const dn = r.delta.startsWith('−');
+          const c = up ? 'var(--gold)' : dn ? C.red : C.t2;
+          return (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6, fontFamily: 'monospace', fontSize: 11 }}>
+              <span style={{ color: C.tm, textTransform: 'uppercase', letterSpacing: '1px', fontSize: 9 }}>{r.label}</span>
+              <span style={{ color: C.t1, fontWeight: 700 }}>{r.value}</span>
+              <span style={{ color: c }}>{r.delta}</span>
+              <span style={{ color: 'rgba(201,168,76,0.30)' }}>·</span>
+            </span>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -2267,6 +2301,25 @@ export function DashboardView() {
                   <span>CRISIS</span><span>HIGH RISK</span><span>STABLE</span><span>STRONG</span><span>EXCELLENT</span>
                 </div>
               </>}
+            </div>
+          );
+        })()}
+
+        {/* ── Ticker tape: market data carousel ── */}
+        {prop && (()=>{
+          const rows = [
+            { label: 'Brent crude', value: prop?.s05?.rows?.[0]?.value || '—', delta: prop?.s05?.rows?.[0]?.delta || '' },
+            { label: 'EIBOR 3M', value: prop?.s05?.rows?.[1]?.value || '—', delta: prop?.s05?.rows?.[1]?.delta || '' },
+            { label: 'US 10Y', value: prop?.s05?.rows?.[2]?.value || '—', delta: prop?.s05?.rows?.[2]?.delta || '' },
+            { label: 'AED/USD', value: prop?.s05?.rows?.[3]?.value || '—', delta: prop?.s05?.rows?.[3]?.delta || '' },
+            { label: 'TASI', value: prop?.s05?.rows?.[4]?.value || '—', delta: prop?.s05?.rows?.[4]?.delta || '' },
+            { label: 'DFM', value: prop?.s05?.rows?.[5]?.value || '—', delta: prop?.s05?.rows?.[5]?.delta || '' },
+            { label: 'Emaar', value: prop?.s05?.rows?.[6]?.value || '—', delta: prop?.s05?.rows?.[6]?.delta || '' },
+            { label: 'DAMAC', value: prop?.s05?.rows?.[7]?.value || '—', delta: prop?.s05?.rows?.[7]?.delta || '' },
+          ];
+          return rows.filter(r => r.value !== '—').length > 0 && (
+            <div style={{ marginTop:24, marginBottom:32 }}>
+              <Ticker rows={rows} />
             </div>
           );
         })()}
