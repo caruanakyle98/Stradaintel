@@ -2877,12 +2877,14 @@ export function DashboardView() {
                       style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:240 }}
                     >
                       <option value="">All listings in {area}</option>
-                      {listingsForTab.listings_building_options.map(b => (
-                        <option key={b.name} value={b.name}>
-                          {b.name.length > 38 ? `${b.name.slice(0, 35)}…` : b.name}
-                          {b.sub_buildings?.length ? ` (${b.sub_buildings.length})` : ''}
-                        </option>
-                      ))}
+                      {listingsForTab.listings_building_options
+                        .filter(b => !area || b.area?.trim().toLowerCase() === area.trim().toLowerCase())
+                        .map(b => (
+                          <option key={b.name} value={b.name}>
+                            {b.name.length > 38 ? `${b.name.slice(0, 35)}…` : b.name}
+                            {b.sub_buildings?.length ? ` (${b.sub_buildings.length})` : ''}
+                          </option>
+                        ))}
                     </select>
                   </label>
                   {(() => {
