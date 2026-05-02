@@ -2306,18 +2306,40 @@ export function DashboardView() {
         })()}
 
         {/* ── Ticker tape: market data carousel ── */}
-        {prop && (()=>{
-          const rows = [
-            { label: 'Brent crude', value: prop?.s05?.rows?.[0]?.value || '—', delta: prop?.s05?.rows?.[0]?.delta || '' },
-            { label: 'EIBOR 3M', value: prop?.s05?.rows?.[1]?.value || '—', delta: prop?.s05?.rows?.[1]?.delta || '' },
-            { label: 'US 10Y', value: prop?.s05?.rows?.[2]?.value || '—', delta: prop?.s05?.rows?.[2]?.delta || '' },
-            { label: 'AED/USD', value: prop?.s05?.rows?.[3]?.value || '—', delta: prop?.s05?.rows?.[3]?.delta || '' },
-            { label: 'TASI', value: prop?.s05?.rows?.[4]?.value || '—', delta: prop?.s05?.rows?.[4]?.delta || '' },
-            { label: 'DFM', value: prop?.s05?.rows?.[5]?.value || '—', delta: prop?.s05?.rows?.[5]?.delta || '' },
-            { label: 'Emaar', value: prop?.s05?.rows?.[6]?.value || '—', delta: prop?.s05?.rows?.[6]?.delta || '' },
-            { label: 'DAMAC', value: prop?.s05?.rows?.[7]?.value || '—', delta: prop?.s05?.rows?.[7]?.delta || '' },
+        {mkt && (()=>{
+          const rows = [];
+          const fmtPrice = (key, m) => {
+            if (!m) return null;
+            if (key === 'eibor') {
+              if (m.rate_pct) return `${m.rate_pct}%`;
+              if (m.price && !m.price.includes('%')) return `${m.price}%`;
+              return null;
+            }
+            const v = m.price || m.value;
+            if (!v || v === 'N/A') return null;
+            if (key === 'brent') return v.startsWith('$') ? v : `$${v}`;
+            if (key === 'us10y') return v.endsWith('%') ? v : `${v}%`;
+            if (key === 'dfmgi' || key === 'emaar') return v.startsWith('AED') ? v : (v === 'N/A' ? null : `AED ${v}`);
+            return v;
+          };
+          const fmtDelt = (m) => {
+            if (!m) return '';
+            const p = m.pct || m.change_pct || m.delta_pct;
+            if (!p || p === '—' || p === 'N/A') return '';
+            return String(p);
+          };
+          const items = [
+            { key: 'brent', label: 'Brent crude', m: mkt.brent },
+            { key: 'eibor', label: 'EIBOR 3M', m: mkt.eibor },
+            { key: 'us10y', label: 'US 10Y', m: mkt.us10y },
+            { key: 'dfmgi', label: 'DFM', m: mkt.dfmgi },
+            { key: 'emaar', label: 'Emaar', m: mkt.emaar },
           ];
-          return rows.filter(r => r.value !== '—').length > 0 && (
+          for (const {key, label, m} of items) {
+            const value = fmtPrice(key, m);
+            if (value) rows.push({ label, value, delta: fmtDelt(m) || '' });
+          }
+          return rows.length > 0 && (
             <div style={{ marginTop:24, marginBottom:32 }}>
               <Ticker rows={rows} />
             </div>
