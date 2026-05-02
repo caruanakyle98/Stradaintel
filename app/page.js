@@ -2715,48 +2715,6 @@ export function DashboardView() {
                   loading={loadProp}
                 />
               </div>
-              <div className="print-keep-together" style={{ marginTop:12 }}>
-                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', margin:'16px 0 10px' }}>Weekly Pulse (30-Day Window · Dubai Mon–Sun)</div>
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap:12 }}>
-                {loadProp ? (
-                  <>
-                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}><Tag color={C.gm}>Weekly volume</Tag><Skel h={36} /></div>
-                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}><Tag color={C.gm}>Weekly PSF</Tag><Skel h={36} /></div>
-                  </>
-                ) : (
-                  <>
-                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
-                      <Tag color={C.gm}>Weekly volume</Tag>
-                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Total transactions Mon–Sun (Dubai)</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#f5f5f5', marginTop:8 }}>
-                        {prop?.charts_30d?.sale_volume_weekly && prop.charts_30d.sale_volume_weekly.length > 0
-                          ? `${prop.charts_30d.sale_volume_weekly[prop.charts_30d.sale_volume_weekly.length - 1].value}`
-                          : 'N/A'}
-                      </div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:12, fontWeight:600, color:(prop?.charts_30d?.wow_volume_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:6 }}>
-                        {prop?.charts_30d?.wow_volume_pct != null && Number.isFinite(prop.charts_30d.wow_volume_pct)
-                          ? `${prop.charts_30d.wow_volume_pct >= 0 ? '+' : ''}${prop.charts_30d.wow_volume_pct}% vs prior`
-                          : 'N/A'}
-                      </div>
-                    </div>
-                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
-                      <Tag color={C.gm}>Weekly PSF</Tag>
-                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Average price per sq ft by week</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#f5f5f5', marginTop:8 }}>
-                        {prop?.charts_30d?.psf_weekly && prop.charts_30d.psf_weekly.length > 0
-                          ? `AED ${prop.charts_30d.psf_weekly[prop.charts_30d.psf_weekly.length - 1].median?.toFixed(0) || 'N/A'}`
-                          : 'N/A'}
-                      </div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:12, fontWeight:600, color:(prop?.charts_30d?.wow_psf_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:6 }}>
-                        {prop?.charts_30d?.wow_psf_pct != null && Number.isFinite(prop.charts_30d.wow_psf_pct)
-                          ? `${prop.charts_30d.wow_psf_pct >= 0 ? '+' : ''}${prop.charts_30d.wow_psf_pct}% vs prior`
-                          : 'N/A'}
-                      </div>
-                    </div>
-                  </>
-                )}
-                </div>
-              </div>
             </div>
           )}
 
@@ -2789,48 +2747,6 @@ export function DashboardView() {
                   maColor="#e8a060"
                   loading={loadProp}
                 />
-              </div>
-              <div className="print-keep-together" style={{ marginTop:12 }}>
-                <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', margin:'16px 0 10px' }}>Weekly Rental Pulse (30-Day Window · Dubai Mon–Sun)</div>
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap:12 }}>
-                {loadProp ? (
-                  <>
-                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}><Tag color={C.gm}>Weekly volume</Tag><Skel h={36} /></div>
-                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}><Tag color={C.gm}>Weekly PSF</Tag><Skel h={36} /></div>
-                  </>
-                ) : (
-                  <>
-                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
-                      <Tag color={C.gm}>Weekly volume</Tag>
-                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>Total rental registrations Mon–Sun (Dubai)</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#f5f5f5', marginTop:8 }}>
-                        {prop?.rental_charts_30d?.rent_volume_weekly && prop.rental_charts_30d.rent_volume_weekly.length > 0
-                          ? `${prop.rental_charts_30d.rent_volume_weekly[prop.rental_charts_30d.rent_volume_weekly.length - 1].value}`
-                          : 'N/A'}
-                      </div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:12, fontWeight:600, color:(prop?.rental_charts_30d?.wow_volume_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:6 }}>
-                        {prop?.rental_charts_30d?.wow_volume_pct != null && Number.isFinite(prop.rental_charts_30d.wow_volume_pct)
-                          ? `${prop.rental_charts_30d.wow_volume_pct >= 0 ? '+' : ''}${prop.rental_charts_30d.wow_volume_pct}% vs prior`
-                          : 'N/A'}
-                      </div>
-                    </div>
-                    <div className="print-keep-together lp-card" style={{ padding:'16px 18px' }}>
-                      <Tag color={C.gm}>Weekly PSF</Tag>
-                      <div style={{ fontSize:10, color:'var(--muted)', marginTop:6 }}>PSF (AED/sq ft) — 7-day trend</div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:16, fontWeight:700, color:'#f5f5f5', marginTop:8 }}>
-                        {prop?.rental_charts_30d?.psf_weekly && prop.rental_charts_30d.psf_weekly.length > 0
-                          ? `AED ${prop.rental_charts_30d.psf_weekly[prop.rental_charts_30d.psf_weekly.length - 1].median?.toFixed(0) || 'N/A'}`
-                          : 'N/A'}
-                      </div>
-                      <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:12, fontWeight:600, color:(prop?.rental_charts_30d?.wow_psf_pct ?? 0) >= 0 ? C.ga : C.amL, marginTop:6 }}>
-                        {prop?.rental_charts_30d?.wow_psf_pct != null && Number.isFinite(prop.rental_charts_30d.wow_psf_pct)
-                          ? `${prop.rental_charts_30d.wow_psf_pct >= 0 ? '+' : ''}${prop.rental_charts_30d.wow_psf_pct}% vs prior`
-                          : 'N/A'}
-                      </div>
-                    </div>
-                  </>
-                )}
-                </div>
               </div>
             </div>
           )}
