@@ -814,6 +814,52 @@ function TxCard({ label, value, wowChg, yoyChg, trend, loading, period, source, 
   );
 }
 
+function BuildingSearch({ options, value, onSelect, onClear, placeholder, disabled, label, labelStyle }) {
+  const [query, setQuery] = useState(value || '');
+  const [show, setShow] = useState(false);
+
+  useEffect(() => { setQuery(value || ''); }, [value]);
+
+  const filtered = show && options?.length
+    ? options.filter(o => !query || o.toLowerCase().includes(query.toLowerCase())).slice(0, 15)
+    : [];
+
+  return (
+    <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+      <span style={labelStyle}>{label}</span>
+      <div style={{ position:'relative' }}>
+        <input
+          type="text"
+          value={query}
+          onChange={e => { setQuery(e.target.value); setShow(true); if (!e.target.value) onClear(); }}
+          onFocus={() => setShow(true)}
+          onBlur={() => setTimeout(() => setShow(false), 200)}
+          disabled={disabled}
+          placeholder={placeholder || 'Search…'}
+          style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, width:200 }}
+        />
+        {query && !disabled && (
+          <button onClick={() => { setQuery(''); setShow(false); onClear(); }}
+            style={{ position:'absolute', right:8, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', color:C.t2, cursor:'pointer', fontSize:12, lineHeight:1, padding:0 }}>×</button>
+        )}
+        {filtered.length > 0 && (
+          <div style={{ position:'absolute', top:'100%', left:0, right:0, marginTop:4, background:C.card, border:`1px solid ${C.border}`, borderRadius:8, maxHeight:200, overflowY:'auto', zIndex:100 }}>
+            {filtered.map((o, i) => (
+              <div key={o}
+                onMouseDown={() => { setQuery(o); setShow(false); onSelect(o); }}
+                style={{ padding:'9px 12px', cursor:'pointer', borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : 'none', color:C.t1, fontSize:12, transition:'background 120ms' }}
+                onMouseEnter={e => e.currentTarget.style.background = C.gd}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                {o}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </label>
+  );
+}
+
 function StatRow({ label, value, sub, highlight, last, source }) {
   return (
     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0', borderBottom:last?'none':'1px solid rgba(201,168,76,0.10)' }}>
@@ -2044,52 +2090,51 @@ export function DashboardView() {
                 </select>
               </label>
               {prop?.building_options?.length > 0 && area && (
-                <label style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Community / Building</span>
-                  <select
-                    value={community}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      setCommunity(v);
-                      setBuilding('');  // clear sub-building when community changes
-                      if (uploadedCsvTextRef.current) applyAreaClient(area, v, '', days);
-                      else refreshProp(undefined, undefined, v, '', undefined);
-                    }}
-                    disabled={loadProp}
-                    style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:220 }}
-                  >
-                    <option value="">All</option>
-                    {(prop.building_options)
-                      .filter(b => !area || b.area.trim().toLowerCase() === area.trim().toLowerCase())
-                      .map(b => (
-                        <option key={b.name} value={b.name}>{b.name.length > 38 ? `${b.name.slice(0, 35)}…` : b.name}</option>
-                      ))}
-                  </select>
-                </label>
+                <BuildingSearch
+                  label="Community / Building"
+                  labelStyle={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}
+                  options={prop.building_options
+                    .filter(b => !area || b.area.trim().toLowerCase() === area.trim().toLowerCase())
+                    .map(b => b.name)}
+                  value={community}
+                  onSelect={v => {
+                    setCommunity(v);
+                    setBuilding('');
+                    if (uploadedCsvTextRef.current) applyAreaClient(area, v, '', days);
+                    else refreshProp(undefined, undefined, v, '', undefined);
+                  }}
+                  onClear={() => {
+                    setCommunity('');
+                    setBuilding('');
+                    if (uploadedCsvTextRef.current) applyAreaClient(area, '', '', days);
+                    else refreshProp(undefined, undefined, '', '', undefined);
+                  }}
+                  disabled={loadProp}
+                  placeholder="Search community…"
+                />
               )}
 
               {(() => {
                 const selectedCommunityEntry = prop?.building_options?.find(b => b.name === community);
                 return community && selectedCommunityEntry?.sub_buildings?.length > 0 && (
-                  <label style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Building</span>
-                    <select
-                      value={building}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setBuilding(v);
-                        if (uploadedCsvTextRef.current) applyAreaClient(area, community, v, days);
-                        else refreshProp(undefined, undefined, community, v, undefined);
-                      }}
-                      disabled={loadProp}
-                      style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:220 }}
-                    >
-                      <option value="">All buildings in {community}</option>
-                      {selectedCommunityEntry.sub_buildings.map(b =>
-                        <option key={b} value={b}>{b.length > 38 ? `${b.slice(0, 35)}…` : b}</option>
-                      )}
-                    </select>
-                  </label>
+                  <BuildingSearch
+                    label="Building"
+                    labelStyle={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}
+                    options={selectedCommunityEntry.sub_buildings}
+                    value={building}
+                    onSelect={v => {
+                      setBuilding(v);
+                      if (uploadedCsvTextRef.current) applyAreaClient(area, community, v, days);
+                      else refreshProp(undefined, undefined, community, v, undefined);
+                    }}
+                    onClear={() => {
+                      setBuilding('');
+                      if (uploadedCsvTextRef.current) applyAreaClient(area, community, '', days);
+                      else refreshProp(undefined, undefined, community, '', undefined);
+                    }}
+                    disabled={loadProp}
+                    placeholder={`Search in ${community}…`}
+                  />
                 );
               })()}
               <label style={{ display:'flex', alignItems:'center', gap:8 }}>
@@ -2779,52 +2824,46 @@ export function DashboardView() {
               {/* Listings-only secondary filter (independent of main Community / Building) */}
               {area && listingsForTab?.listings_building_options?.length > 0 && (
                 <div className="no-print" style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center', marginBottom:12 }}>
-                  <label style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Listings Filter</span>
-                    <select
-                      value={listingsBuilding}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setListingsBuilding(v);
-                        setListingsSubBuilding('');
-                        refreshListingsOnly(v);
-                      }}
-                      disabled={listingsLoading || loadProp}
-                      style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:240 }}
-                    >
-                      <option value="">All listings in {area}</option>
-                      {listingsForTab.listings_building_options
-                        .filter(b => !area || b.area?.trim().toLowerCase() === area.trim().toLowerCase())
-                        .map(b => (
-                          <option key={b.name} value={b.name}>
-                            {b.name.length > 38 ? `${b.name.slice(0, 35)}…` : b.name}
-                            {b.sub_buildings?.length ? ` (${b.sub_buildings.length})` : ''}
-                          </option>
-                        ))}
-                    </select>
-                  </label>
+                  <BuildingSearch
+                    label="Listings Filter"
+                    labelStyle={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}
+                    options={listingsForTab.listings_building_options
+                      .filter(b => !area || b.area?.trim().toLowerCase() === area.trim().toLowerCase())
+                      .map(b => b.name)}
+                    value={listingsBuilding}
+                    onSelect={v => {
+                      setListingsBuilding(v);
+                      setListingsSubBuilding('');
+                      refreshListingsOnly(v);
+                    }}
+                    onClear={() => {
+                      setListingsBuilding('');
+                      setListingsSubBuilding('');
+                      refreshListingsOnly('');
+                    }}
+                    disabled={listingsLoading || loadProp}
+                    placeholder="Search listings…"
+                  />
                   {(() => {
                     const sel = listingsForTab.listings_building_options.find(b => b.name === listingsBuilding);
                     if (!sel?.sub_buildings?.length) return null;
                     return (
-                      <label style={{ display:'flex', alignItems:'center', gap:8 }}>
-                        <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Specific Tower</span>
-                        <select
-                          value={listingsSubBuilding}
-                          onChange={(e) => {
-                            const v = e.target.value;
-                            setListingsSubBuilding(v);
-                            refreshListingsOnly(v || listingsBuilding);
-                          }}
-                          disabled={listingsLoading || loadProp}
-                          style={{ padding:'7px 12px', background:'rgba(11,18,32,0.88)', border:'1px solid rgba(201,168,76,0.22)', borderRadius:8, color:'var(--white)', fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, maxWidth:240 }}
-                        >
-                          <option value="">All in {listingsBuilding}</option>
-                          {sel.sub_buildings.map(b => (
-                            <option key={b} value={b}>{b.length > 38 ? `${b.slice(0, 35)}…` : b}</option>
-                          ))}
-                        </select>
-                      </label>
+                      <BuildingSearch
+                        label="Specific Tower"
+                        labelStyle={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}
+                        options={sel.sub_buildings}
+                        value={listingsSubBuilding}
+                        onSelect={v => {
+                          setListingsSubBuilding(v);
+                          refreshListingsOnly(v || listingsBuilding);
+                        }}
+                        onClear={() => {
+                          setListingsSubBuilding('');
+                          refreshListingsOnly(listingsBuilding);
+                        }}
+                        disabled={listingsLoading || loadProp}
+                        placeholder={`Search in ${listingsBuilding}…`}
+                      />
                     );
                   })()}
                   {listingsLoading && <span style={{ fontSize:9, color:C.tm }}>Updating…</span>}
