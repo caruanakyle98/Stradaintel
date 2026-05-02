@@ -2657,6 +2657,34 @@ export function DashboardView() {
               </div>
             )}
 
+            {/* Property type mix — rentals tab */}
+            {propTab === 'rental' && (()=>{
+              const pta = prop?.property_type_activity;
+              const ORDER = [{key:'apt',town:'Apartment'},{key:'villa',town:'Villa'},{key:'townhouse',town:'Townhouse'}];
+              const rows = ORDER
+                .map(({ key, town }) => {
+                  const e = pta?.entries?.[key];
+                  const pct = Number(e?.rent_pct);
+                  if (!Number.isFinite(pct) || pct <= 0) return null;
+                  return { label: town, pct: +pct.toFixed(1) };
+                })
+                .filter(Boolean);
+              if (!rows.length) return null;
+              return (
+                <div className="reveal lp-card" style={{ marginBottom: 16, padding: 0, overflow: 'hidden' }}>
+                  <div style={{ padding: '12px 18px', borderBottom: `1px solid ${C.border}` }}>
+                    <div style={{ fontFamily: "var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)' }}>
+                      Property Mix · All Dubai · {pta?.period || 'Latest week'}
+                    </div>
+                    <div style={{ fontSize: 10, color: C.tm, marginTop: 3 }}>What kind of property is renting — share of weekly rental volume by type</div>
+                  </div>
+                  <div style={{ padding: '18px 22px' }}>
+                    <MixDonut rows={rows} />
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Off-plan vs resale — sales tab only */}
             {propTab === 'sales' && (
               <div className="print-keep-together lp-card" style={{ padding:'20px 22px' }}>
