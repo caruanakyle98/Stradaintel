@@ -107,7 +107,6 @@ const css = `
   @keyframes fade    { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
   @keyframes shimmer { 0%{background-position:-600px 0} 100%{background-position:600px 0} }
   @keyframes pillarCardIn { from{opacity:0;transform:translateX(14px)} to{opacity:1;transform:none} }
-  @keyframes si-ticker { 0%{transform:translateX(0)} 100%{transform:translateX(var(--si-ticker-distance, 0))} }
 
   /* ─── RESET ──────────────────────────────────────────────────── */
   *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -862,14 +861,27 @@ function BuildingSearch({ options, value, onSelect, onClear, placeholder, disabl
 }
 
 function Ticker({ rows }) {
-  const items = rows.concat(rows);
+  const items = rows.concat(rows, rows);
   const containerRef = useRef(null);
-  const [trackingStyle, setTrackingStyle] = useState({ '--si-ticker-distance': '0px' });
+  const [offset, setOffset] = useState(0);
+  const animationRef = useRef(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
-    const measured = containerRef.current.scrollWidth / 2;
-    setTrackingStyle({ '--si-ticker-distance': `-${measured}px` });
+    let startTime = Date.now();
+    const distance = containerRef.current.scrollWidth / 3;
+    const duration = 25000;
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = (elapsed % duration) / duration;
+      const newOffset = -(distance * progress);
+      setOffset(newOffset);
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationRef.current);
   }, [rows]);
 
   return (
@@ -882,9 +894,8 @@ function Ticker({ rows }) {
     }}>
       <div ref={containerRef} style={{
         display: 'flex', gap: 64,
-        animation: 'si-ticker 25s linear infinite',
         whiteSpace: 'nowrap', willChange: 'transform',
-        ...trackingStyle,
+        transform: `translateX(${offset}px)`,
       }}>
         {items.map((r, i) => {
           const up = r.delta.startsWith('+');
