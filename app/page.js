@@ -872,8 +872,8 @@ function Ticker({ rows }) {
       marginBottom: 16,
     }}>
       <div style={{
-        display: 'flex', gap: 32,
-        animation: 'si-ticker 60s linear infinite',
+        display: 'flex', gap: 64,
+        animation: 'si-ticker 20s linear infinite',
         whiteSpace: 'nowrap', willChange: 'transform',
       }}>
         {items.map((r, i) => {
