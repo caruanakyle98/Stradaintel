@@ -107,7 +107,7 @@ const css = `
   @keyframes fade    { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
   @keyframes shimmer { 0%{background-position:-600px 0} 100%{background-position:600px 0} }
   @keyframes pillarCardIn { from{opacity:0;transform:translateX(14px)} to{opacity:1;transform:none} }
-  @keyframes si-ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  @keyframes si-ticker { 0%{transform:translateX(0)} 100%{transform:translateX(var(--si-ticker-distance, 0))} }
 
   /* ─── RESET ──────────────────────────────────────────────────── */
   *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -863,6 +863,15 @@ function BuildingSearch({ options, value, onSelect, onClear, placeholder, disabl
 
 function Ticker({ rows }) {
   const items = rows.concat(rows);
+  const containerRef = useRef(null);
+  const [trackingStyle, setTrackingStyle] = useState({ '--si-ticker-distance': '0px' });
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const measured = containerRef.current.scrollWidth / 2;
+    setTrackingStyle({ '--si-ticker-distance': `-${measured}px` });
+  }, [rows]);
+
   return (
     <div style={{
       overflow: 'hidden',
@@ -871,17 +880,18 @@ function Ticker({ rows }) {
       borderRadius: 8, padding: '8px 0', position: 'relative',
       marginBottom: 16,
     }}>
-      <div style={{
+      <div ref={containerRef} style={{
         display: 'flex', gap: 64,
-        animation: 'si-ticker 20s linear infinite',
+        animation: 'si-ticker 25s linear infinite',
         whiteSpace: 'nowrap', willChange: 'transform',
+        ...trackingStyle,
       }}>
         {items.map((r, i) => {
           const up = r.delta.startsWith('+');
           const dn = r.delta.startsWith('−');
           const c = up ? 'var(--gold)' : dn ? C.red : C.t2;
           return (
-            <span key={i} style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6, fontFamily: 'monospace', fontSize: 11 }}>
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6, fontFamily: 'monospace', fontSize: 11, flexShrink: 0 }}>
               <span style={{ color: C.tm, textTransform: 'uppercase', letterSpacing: '1px', fontSize: 9 }}>{r.label}</span>
               <span style={{ color: C.t1, fontWeight: 700 }}>{r.value}</span>
               <span style={{ color: c }}>{r.delta}</span>
