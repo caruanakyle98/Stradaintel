@@ -2222,6 +2222,36 @@ export function DashboardView() {
                   ))}
                 </div>
               </label>
+
+              {(area || community) && (
+                <button
+                  onClick={() => {
+                    const p = new URLSearchParams();
+                    if (area) p.set('area', area);
+                    if (community) p.set('community', community);
+                    if (building) p.set('building', building);
+                    window.open(`/report?${p.toString()}`, '_blank', 'noopener,noreferrer');
+                  }}
+                  title="Generate the 13-page Strada client report for the selected community"
+                  style={{
+                    padding: '7px 14px',
+                    background: 'linear-gradient(135deg, #c9a84c, #e8c96d)',
+                    color: '#06070a',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontFamily: "var(--font-montserrat,'Montserrat',Georgia,serif)",
+                    fontSize: 9,
+                    fontWeight: 700,
+                    letterSpacing: '2px',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 4px 14px rgba(201,168,76,0.25)',
+                  }}
+                >
+                  Generate Report
+                </button>
+              )}
             </div>
 
             {!isClientView && (
