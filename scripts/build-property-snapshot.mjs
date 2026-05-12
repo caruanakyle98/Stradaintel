@@ -59,7 +59,7 @@ async function fetchText(url, { timeoutMs = 50000 } = {}) {
 
 const salesRaw = await fetchText(salesUrl);
 
-/** Build snapshots for 7, 14, and 30-day windows */
+/** Build snapshots for 7, 30, and 90-day windows */
 async function buildSnapshot(days) {
   const built = buildPayloadFromCsvText(salesRaw, salesUrl, { days });
   if (!built.ok) {
@@ -138,7 +138,7 @@ async function buildSnapshot(days) {
 
 // Build all three snapshots and output them
 const snapshots = {};
-for (const days of [7, 14, 30]) {
+for (const days of [7, 30, 90]) {
   try {
     snapshots[days] = await buildSnapshot(days);
   } catch (e) {

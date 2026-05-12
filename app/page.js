@@ -2853,15 +2853,15 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* 30-day trends: daily + 7d MA + weekly */}
-          {/* ── Sales tab: 30-day sales charts ── */}
+          {/* N-day trends: daily + 7d MA + weekly */}
+          {/* ── Sales tab: N-day sales charts ── */}
           {propTab === 'sales' && (prop?.charts_30d || loadProp) && (
             <div className="reveal print-keep-together" style={{ marginBottom:16 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:8 }}>
-                Market Trend (Dubai) · {prop?.charts_30d?.window_label || '30 days'}
+                Market Trend (Dubai) · {prop?.charts_30d?.window_label || `${days} days`}
               </div>
               <div style={{ fontSize:12, color:'var(--muted)', marginBottom:14, maxWidth:720, lineHeight:1.55 }}>
-                Daily lines are noisy (weekends & batch uploads). <strong style={{ color:C.t2 }}>7-day moving average</strong> highlights direction over the same 30-day window.
+                Daily lines are noisy (weekends & batch uploads). <strong style={{ color:C.t2 }}>7-day moving average</strong> highlights direction over the same {prop?.charts_30d?.window_days || days}-day window.
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap:12 }}>
                 <TrendDualChart
@@ -2887,11 +2887,11 @@ export function DashboardView() {
             </div>
           )}
 
-          {/* ── Rental tab: 30-day rental charts ── */}
+          {/* ── Rental tab: N-day rental charts ── */}
           {propTab === 'rental' && (prop?.rental_charts_30d || loadProp) && (
             <div className="reveal print-keep-together" style={{ marginBottom:16 }}>
               <div style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold)', marginBottom:8 }}>
-                Rental Trend (Dubai) · {prop?.rental_charts_30d?.window_label || '30 days'}
+                Rental Trend (Dubai) · {prop?.rental_charts_30d?.window_label || `${days} days`}
               </div>
               <div style={{ fontSize:12, color:'var(--muted)', marginBottom:14, maxWidth:720, lineHeight:1.55 }}>
                 Daily registration counts can be noisy. <strong style={{ color:C.t2 }}>7-day moving average</strong> shows the underlying rental activity trend.
