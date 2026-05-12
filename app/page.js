@@ -2195,7 +2195,7 @@ export function DashboardView() {
               <label style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Range</span>
                 <div style={{ display:'flex', gap:0, borderRadius:8, overflow:'hidden', border:'1px solid rgba(201,168,76,0.22)' }}>
-                  {[7, 14, 30].map(d => (
+                  {[7, 30, 90].map(d => (
                     <button
                       key={d}
                       onClick={() => {
@@ -2210,7 +2210,7 @@ export function DashboardView() {
                         background: days === d ? 'rgba(201,168,76,0.18)' : 'rgba(11,18,32,0.88)',
                         color: days === d ? 'var(--gold)' : 'var(--white)',
                         border:'none',
-                        borderRight: d !== 30 ? '1px solid rgba(201,168,76,0.22)' : 'none',
+                        borderRight: d !== 90 ? '1px solid rgba(201,168,76,0.22)' : 'none',
                         fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)",
                         fontSize:9,
                         fontWeight: days === d ? 700 : 400,
