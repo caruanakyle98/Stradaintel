@@ -20,7 +20,7 @@ export const SI_DATA = {
       'Dubai Hills Estate',
       'Arabian Ranches',
     ],
-    ranges: ['7d', '14d', '30d'],
+    ranges: ['7d', '30d', '90d'],
     statusBanner: 'Client view · area filter active · refresh is admin-only',
     exportNote: 'Load intelligence before export for full report',
   },
