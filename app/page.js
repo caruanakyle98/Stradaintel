@@ -1471,7 +1471,19 @@ export function DashboardView() {
       const daysVal = overrideDays !== undefined ? overrideDays : days;
 
       // Client view with no custom path/area/community/building: read pre-built snapshot (instant).
+      // Primary: Action-built metrics JSON (/api/property → days=7 snapshot, kept fresh on every CSV push).
+      // Fallback: last-known-good Vercel Blob (/api/property-read). Then fall through to live build.
       if (isClientView && !customPath && !a && !c && !b && daysVal === 7) {
+        try {
+          const pr = await fetch('/api/property');
+          const pd = await pr.json().catch(() => ({}));
+          if (pr.ok && pd?.ok) {
+            setProp(pd);
+            return;
+          }
+        } catch {
+          // metrics JSON unavailable — try the blob fallback
+        }
         try {
           const sr = await fetch('/api/property-read', { cache: 'no-store' });
           const sd = await sr.json().catch(() => ({}));

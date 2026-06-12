@@ -26,6 +26,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+      PROP_SNAPSHOT_BLOB_PATH: ${{ secrets.PROP_SNAPSHOT_BLOB_PATH }}
     steps:
       - uses: actions/checkout@v4
 
@@ -60,3 +63,8 @@ jobs:
             git pull --rebase -X theirs origin main
             git push
           fi
+
+      # Keep the client-default fallback (Vercel Blob) fresh so no admin click is needed.
+      - name: Push 7-day snapshot to Vercel Blob
+        if: ${{ env.BLOB_READ_WRITE_TOKEN != '' }}
+        run: node scripts/push-snapshot-to-blob.mjs data/property/property_metrics.json
