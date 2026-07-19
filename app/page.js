@@ -372,12 +372,15 @@ const css = `
     .dash-nav-inner {
       flex-wrap:wrap !important;
       align-items:center !important;
-      padding:8px 16px 0 !important;
+      padding:8px 16px 10px !important;
       gap:0 !important;
     }
+    /* Header scrolls away on mobile rather than holding a sticky band of
+       chrome over the statistics. */
+    .dash-nav { position:static !important; }
     /* Brand shrinks on mobile — it is an identity mark here, not a headline,
        so it yields height to the data below it. */
-    .dash-brand { width:100% !important; gap:8px !important; }
+    .dash-brand { flex:1 1 auto !important; min-width:0 !important; gap:8px !important; }
     .dash-brand-dot { width:7px !important; height:7px !important; }
     .dash-brand-name { font-size:13px !important; }
     .dash-brand-sub { font-size:8px !important; letter-spacing:0.15em !important; margin-top:1px !important; }
@@ -421,12 +424,21 @@ const css = `
       width:100% !important;
       min-width:0 !important;
     }
-    /* Field labels are wayfinding, not content — smaller, with the wide
-       tracking kept so they still read as the brand's caps style. */
+    /* Field labels come off the screen on mobile — the select shows the area
+       name, the searches have placeholders and 7d/14d/30d speaks for itself.
+       Hidden visually rather than removed, so screen readers still announce
+       each control. */
     .dash-nav-row2 > label > span {
-      font-size:8px !important;
-      letter-spacing:1.4px !important;
-      line-height:1.2 !important;
+      position:absolute !important;
+      width:1px !important;
+      height:1px !important;
+      padding:0 !important;
+      margin:-1px !important;
+      overflow:hidden !important;
+      clip:rect(0 0 0 0) !important;
+      clip-path:inset(50%) !important;
+      white-space:nowrap !important;
+      border:0 !important;
     }
     /* Controls keep 16px text — below that iOS Safari auto-zooms the viewport
        on focus — and buy back the height through tighter padding instead. */
@@ -450,19 +462,26 @@ const css = `
       font-size:11px !important;
       letter-spacing:0.06em !important;
     }
-    /* Meta row: direct child of nav-inner with width:100% forces its own row */
+    /* Timestamp rides top-right on the brand line instead of taking a band of
+       its own below the filters. The client-view note is chrome the client
+       does not need, so it goes. */
     .dash-nav-meta {
-      width:100% !important;
-      flex-direction:row !important;
-      align-items:center !important;
-      justify-content:space-between !important;
-      flex-wrap:wrap !important;
-      gap:1px 10px !important;
-      padding:4px 0 6px !important;
-      margin-top:4px !important;
-      border-top:1px solid rgba(201,168,76,0.1) !important;
+      order:2 !important;
+      width:auto !important;
+      max-width:52% !important;
+      flex:0 1 auto !important;
+      flex-direction:column !important;
+      align-items:flex-end !important;
+      justify-content:center !important;
+      text-align:right !important;
+      gap:0 !important;
+      padding:0 !important;
+      margin-top:0 !important;
+      border-top:none !important;
     }
-    .dash-nav-meta > div { font-size:9px !important; line-height:1.35 !important; }
+    .dash-nav-meta > div { font-size:9px !important; line-height:1.3 !important; white-space:nowrap !important; }
+    .dash-nav-note { display:none !important; }
+    .dash-nav-actions { order:3 !important; }
   }
 
   /* ─── PRINT ──────────────────────────────────────────────────── */
@@ -2332,7 +2351,7 @@ export function DashboardView() {
               {ts ? `Last updated · ${ts} GST` : isClientView ? 'Waiting for intelligence snapshot' : 'Press "Get Latest Intelligence" to begin'}
             </div>
             {isClientView && (
-              <div style={{ fontSize:9, color:'rgba(201,168,76,0.35)' }}>
+              <div className="dash-nav-note" style={{ fontSize:9, color:'rgba(201,168,76,0.35)' }}>
                 Client view · area filter active · refresh is admin-only
               </div>
             )}
