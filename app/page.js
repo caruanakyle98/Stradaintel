@@ -364,43 +364,68 @@ const css = `
     .dash-header-actions button { max-width:100%; }
     .dash-header-actions label { display:flex; flex-wrap:wrap; gap:8px; max-width:100%; }
 
-    /* ── Mobile header: brand-left / area-right on row 1, meta full-width row 2 ── */
+    /* ── Mobile header: brand row, then a full-width filter panel ──
+       The desktop arrangement right-aligns the filters into a narrow column,
+       which strands the brand in dead space and crams the controls. On mobile
+       each region takes its own full-width row and the labels sit above their
+       controls, so every field gets the whole measure. */
     .dash-nav-inner {
       flex-wrap:wrap !important;
       align-items:center !important;
-      padding:10px 16px 0 !important;
-      gap:0 8px !important;
+      padding:12px 16px 0 !important;
+      gap:0 !important;
     }
-    /* Actions (area selector only on client view): stay right, no wrapping */
+    .dash-brand { width:100% !important; }
     .dash-nav-actions {
-      flex-direction:row !important;
-      flex-wrap:nowrap !important;
-      align-items:center !important;
-      justify-content:flex-end !important;
-      gap:6px !important;
-    }
-    /* Area row: compact line beside the brand, but must be able to shrink and
-       wrap once the community / building searches appear (otherwise the fixed
-       200px search inputs push the whole header off-screen). */
-    .dash-nav-actions { min-width:0 !important; }
-    .dash-nav-row2 {
-      width:auto !important;
-      min-width:0 !important;
-      max-width:100% !important;
-      flex-wrap:wrap !important;
-      gap:6px !important;
-    }
-    /* Cap select so brand(192) + gap(8) + AREA-label(~40) + gap(8) + select(≤110) ≤ 358px content width */
-    .dash-nav-row2 select { max-width:110px !important; min-width:0 !important; }
-    /* Search filters get their own full-width line rather than overflowing */
-    .dash-nav-row2 .dash-search {
       width:100% !important;
       min-width:0 !important;
+      flex:1 1 100% !important;
+      flex-direction:row !important;
       flex-wrap:wrap !important;
-      gap:4px 8px !important;
+      align-items:stretch !important;
+      justify-content:flex-start !important;
+      gap:8px !important;
+      margin-top:13px !important;
     }
-    .dash-nav-row2 .dash-search-field { flex:1 1 160px; min-width:0; }
-    .dash-nav-row2 .dash-search-input { width:100% !important; min-width:0 !important; }
+    .dash-nav-row2 {
+      width:100% !important;
+      min-width:0 !important;
+      max-width:100% !important;
+      display:grid !important;
+      grid-template-columns:1fr !important;
+      gap:11px !important;
+    }
+    /* Label stacks above its control instead of sitting inline beside it */
+    .dash-nav-row2 > label {
+      display:flex !important;
+      flex-direction:column !important;
+      flex-wrap:nowrap !important;
+      align-items:stretch !important;
+      justify-content:flex-start !important;
+      gap:5px !important;
+      width:100% !important;
+      min-width:0 !important;
+    }
+    /* Controls span the full measure. 16px text is deliberate: iOS Safari
+       auto-zooms the viewport on focus for anything smaller. */
+    .dash-nav-row2 .dash-area-select,
+    .dash-nav-row2 .dash-search-input {
+      width:100% !important;
+      max-width:100% !important;
+      min-width:0 !important;
+      padding:10px 12px !important;
+      font-size:16px !important;
+    }
+    .dash-nav-row2 .dash-search { width:100% !important; min-width:0 !important; }
+    .dash-nav-row2 .dash-search-field { width:100% !important; min-width:0 !important; flex:none !important; }
+    /* Range reads as a proper segmented control: equal thirds, full width */
+    .dash-nav-row2 .dash-range-seg { width:100% !important; }
+    .dash-nav-row2 .dash-range-seg button {
+      flex:1 1 0 !important;
+      padding:10px 0 !important;
+      font-size:12px !important;
+      letter-spacing:0.08em !important;
+    }
     /* Meta row: direct child of nav-inner with width:100% forces its own row */
     .dash-nav-meta {
       width:100% !important;
@@ -2151,6 +2176,7 @@ export function DashboardView() {
               <label style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Area</span>
                 <select
+                  className="dash-area-select"
                   value={area}
                   onChange={(e) => {
                     const v = e.target.value;
@@ -2219,9 +2245,9 @@ export function DashboardView() {
                   />
                 );
               })()}
-              <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+              <label className="dash-range" style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Range</span>
-                <div style={{ display:'flex', gap:0, borderRadius:8, overflow:'hidden', border:'1px solid rgba(201,168,76,0.22)' }}>
+                <div className="dash-range-seg" style={{ display:'flex', gap:0, borderRadius:8, overflow:'hidden', border:'1px solid rgba(201,168,76,0.22)' }}>
                   {[7, 14, 30].map(d => (
                     <button
                       key={d}
