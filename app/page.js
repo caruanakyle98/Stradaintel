@@ -372,10 +372,15 @@ const css = `
     .dash-nav-inner {
       flex-wrap:wrap !important;
       align-items:center !important;
-      padding:10px 16px 0 !important;
+      padding:8px 16px 0 !important;
       gap:0 !important;
     }
-    .dash-brand { width:100% !important; }
+    /* Brand shrinks on mobile — it is an identity mark here, not a headline,
+       so it yields height to the data below it. */
+    .dash-brand { width:100% !important; gap:8px !important; }
+    .dash-brand-dot { width:7px !important; height:7px !important; }
+    .dash-brand-name { font-size:13px !important; }
+    .dash-brand-sub { font-size:8px !important; letter-spacing:0.15em !important; margin-top:1px !important; }
     .dash-nav-actions {
       width:100% !important;
       min-width:0 !important;
@@ -385,7 +390,7 @@ const css = `
       align-items:stretch !important;
       justify-content:flex-start !important;
       gap:8px !important;
-      margin-top:9px !important;
+      margin-top:7px !important;
     }
     /* Two columns so the compact controls (area + range) share a row; the
        search fields span the full width because their values run long.
@@ -396,7 +401,7 @@ const css = `
       max-width:100% !important;
       display:grid !important;
       grid-template-columns:1.55fr 1fr !important;
-      gap:8px 10px !important;
+      gap:6px 10px !important;
       align-items:end !important;
     }
     .dash-nav-row2 > .dash-area  { order:1 !important; }
@@ -412,9 +417,16 @@ const css = `
       flex-wrap:nowrap !important;
       align-items:stretch !important;
       justify-content:flex-start !important;
-      gap:3px !important;
+      gap:2px !important;
       width:100% !important;
       min-width:0 !important;
+    }
+    /* Field labels are wayfinding, not content — smaller, with the wide
+       tracking kept so they still read as the brand's caps style. */
+    .dash-nav-row2 > label > span {
+      font-size:8px !important;
+      letter-spacing:1.4px !important;
+      line-height:1.2 !important;
     }
     /* Controls keep 16px text — below that iOS Safari auto-zooms the viewport
        on focus — and buy back the height through tighter padding instead. */
@@ -423,9 +435,9 @@ const css = `
       width:100% !important;
       max-width:100% !important;
       min-width:0 !important;
-      padding:6px 10px !important;
+      padding:4px 10px !important;
       font-size:16px !important;
-      line-height:1.25 !important;
+      line-height:1.2 !important;
       text-overflow:ellipsis !important;
     }
     .dash-nav-row2 .dash-search { min-width:0 !important; }
@@ -434,7 +446,7 @@ const css = `
     .dash-nav-row2 .dash-range-seg { width:100% !important; }
     .dash-nav-row2 .dash-range-seg button {
       flex:1 1 0 !important;
-      padding:7px 0 !important;
+      padding:5px 0 !important;
       font-size:11px !important;
       letter-spacing:0.06em !important;
     }
@@ -445,11 +457,12 @@ const css = `
       align-items:center !important;
       justify-content:space-between !important;
       flex-wrap:wrap !important;
-      gap:2px 10px !important;
-      padding:5px 0 8px !important;
-      margin-top:5px !important;
+      gap:1px 10px !important;
+      padding:4px 0 6px !important;
+      margin-top:4px !important;
       border-top:1px solid rgba(201,168,76,0.1) !important;
     }
+    .dash-nav-meta > div { font-size:9px !important; line-height:1.35 !important; }
   }
 
   /* ─── PRINT ──────────────────────────────────────────────────── */
