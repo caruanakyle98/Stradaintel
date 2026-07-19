@@ -372,7 +372,7 @@ const css = `
     .dash-nav-inner {
       flex-wrap:wrap !important;
       align-items:center !important;
-      padding:12px 16px 0 !important;
+      padding:10px 16px 0 !important;
       gap:0 !important;
     }
     .dash-brand { width:100% !important; }
@@ -385,15 +385,25 @@ const css = `
       align-items:stretch !important;
       justify-content:flex-start !important;
       gap:8px !important;
-      margin-top:13px !important;
+      margin-top:9px !important;
     }
+    /* Two columns so the compact controls (area + range) share a row; the
+       search fields span the full width because their values run long.
+       The order property keeps area/range adjacent regardless of DOM order. */
     .dash-nav-row2 {
       width:100% !important;
       min-width:0 !important;
       max-width:100% !important;
       display:grid !important;
-      grid-template-columns:1fr !important;
-      gap:11px !important;
+      grid-template-columns:1.55fr 1fr !important;
+      gap:8px 10px !important;
+      align-items:end !important;
+    }
+    .dash-nav-row2 > .dash-area  { order:1 !important; }
+    .dash-nav-row2 > .dash-range { order:2 !important; }
+    .dash-nav-row2 > .dash-search {
+      order:3 !important;
+      grid-column:1 / -1 !important;
     }
     /* Label stacks above its control instead of sitting inline beside it */
     .dash-nav-row2 > label {
@@ -402,29 +412,31 @@ const css = `
       flex-wrap:nowrap !important;
       align-items:stretch !important;
       justify-content:flex-start !important;
-      gap:5px !important;
+      gap:3px !important;
       width:100% !important;
       min-width:0 !important;
     }
-    /* Controls span the full measure. 16px text is deliberate: iOS Safari
-       auto-zooms the viewport on focus for anything smaller. */
+    /* Controls keep 16px text — below that iOS Safari auto-zooms the viewport
+       on focus — and buy back the height through tighter padding instead. */
     .dash-nav-row2 .dash-area-select,
     .dash-nav-row2 .dash-search-input {
       width:100% !important;
       max-width:100% !important;
       min-width:0 !important;
-      padding:10px 12px !important;
+      padding:6px 10px !important;
       font-size:16px !important;
+      line-height:1.25 !important;
+      text-overflow:ellipsis !important;
     }
-    .dash-nav-row2 .dash-search { width:100% !important; min-width:0 !important; }
+    .dash-nav-row2 .dash-search { min-width:0 !important; }
     .dash-nav-row2 .dash-search-field { width:100% !important; min-width:0 !important; flex:none !important; }
     /* Range reads as a proper segmented control: equal thirds, full width */
     .dash-nav-row2 .dash-range-seg { width:100% !important; }
     .dash-nav-row2 .dash-range-seg button {
       flex:1 1 0 !important;
-      padding:10px 0 !important;
-      font-size:12px !important;
-      letter-spacing:0.08em !important;
+      padding:7px 0 !important;
+      font-size:11px !important;
+      letter-spacing:0.06em !important;
     }
     /* Meta row: direct child of nav-inner with width:100% forces its own row */
     .dash-nav-meta {
@@ -434,8 +446,8 @@ const css = `
       justify-content:space-between !important;
       flex-wrap:wrap !important;
       gap:2px 10px !important;
-      padding:6px 0 10px !important;
-      margin-top:6px !important;
+      padding:5px 0 8px !important;
+      margin-top:5px !important;
       border-top:1px solid rgba(201,168,76,0.1) !important;
     }
   }
@@ -2173,7 +2185,7 @@ export function DashboardView() {
                   {loadProp ? '…' : 'Property Data'}
                 </button>
               )}
-              <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+              <label className="dash-area" style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <span style={{ fontFamily:"var(--font-montserrat,'Montserrat',Georgia,serif)", fontSize:9, fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold)' }}>Area</span>
                 <select
                   className="dash-area-select"
