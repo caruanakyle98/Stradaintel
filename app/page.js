@@ -379,14 +379,28 @@ const css = `
       justify-content:flex-end !important;
       gap:6px !important;
     }
-    /* Area row: keep label + select on one compact line */
+    /* Area row: compact line beside the brand, but must be able to shrink and
+       wrap once the community / building searches appear (otherwise the fixed
+       200px search inputs push the whole header off-screen). */
+    .dash-nav-actions { min-width:0 !important; }
     .dash-nav-row2 {
       width:auto !important;
-      flex-wrap:nowrap !important;
+      min-width:0 !important;
+      max-width:100% !important;
+      flex-wrap:wrap !important;
       gap:6px !important;
     }
     /* Cap select so brand(192) + gap(8) + AREA-label(~40) + gap(8) + select(≤110) ≤ 358px content width */
     .dash-nav-row2 select { max-width:110px !important; min-width:0 !important; }
+    /* Search filters get their own full-width line rather than overflowing */
+    .dash-nav-row2 .dash-search {
+      width:100% !important;
+      min-width:0 !important;
+      flex-wrap:wrap !important;
+      gap:4px 8px !important;
+    }
+    .dash-nav-row2 .dash-search-field { flex:1 1 160px; min-width:0; }
+    .dash-nav-row2 .dash-search-input { width:100% !important; min-width:0 !important; }
     /* Meta row: direct child of nav-inner with width:100% forces its own row */
     .dash-nav-meta {
       width:100% !important;
@@ -825,11 +839,12 @@ function BuildingSearch({ options, value, onSelect, onClear, placeholder, disabl
     : [];
 
   return (
-    <label style={{ display:'flex', alignItems:'center', gap:8 }}>
+    <label className="dash-search" style={{ display:'flex', alignItems:'center', gap:8 }}>
       <span style={labelStyle}>{label}</span>
-      <div style={{ position:'relative' }}>
+      <div className="dash-search-field" style={{ position:'relative' }}>
         <input
           type="text"
+          className="dash-search-input"
           value={query}
           onChange={e => { setQuery(e.target.value); setShow(true); if (!e.target.value) onClear(); }}
           onFocus={() => setShow(true)}
