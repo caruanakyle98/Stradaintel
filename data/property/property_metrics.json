@@ -6,11 +6,6 @@
       "charts_30d": {
         "sale_volume": [
           {
-            "date": "2026-08-04",
-            "label": "4 Aug",
-            "value": 0
-          },
-          {
             "date": "2026-08-05",
             "label": "5 Aug",
             "value": 0
@@ -38,16 +33,16 @@
           {
             "date": "2026-08-10",
             "label": "10 Aug",
+            "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
             "value": 0
           }
         ],
         "psf": [
           {
-            "date": "2026-08-04",
-            "label": "4 Aug",
-            "value": null
-          },
-          {
             "date": "2026-08-05",
             "label": "5 Aug",
             "value": null
@@ -75,16 +70,16 @@
           {
             "date": "2026-08-10",
             "label": "10 Aug",
+            "value": null
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
             "value": null
           }
         ],
         "sale_volume_ma7": [
           {
-            "date": "2026-08-04",
-            "label": "4 Aug",
-            "value": 0
-          },
-          {
             "date": "2026-08-05",
             "label": "5 Aug",
             "value": 0
@@ -112,16 +107,16 @@
           {
             "date": "2026-08-10",
             "label": "10 Aug",
+            "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
             "value": 0
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-08-04",
-            "label": "4 Aug",
-            "value": null
-          },
-          {
             "date": "2026-08-05",
             "label": "5 Aug",
             "value": null
@@ -149,6 +144,11 @@
           {
             "date": "2026-08-10",
             "label": "10 Aug",
+            "value": null
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
             "value": null
           }
         ],
@@ -156,7 +156,7 @@
         "psf_weekly": [],
         "wow_volume_pct": null,
         "wow_psf_pct": null,
-        "window_label": "2026-08-04 → 2026-08-10 (Dubai, 7 days)",
+        "window_label": "2026-08-05 → 2026-08-11 (Dubai, 7 days)",
         "window_days": 7
       },
       "recent_sales_transactions": [
@@ -439,20 +439,20 @@
       "weekly": {
         "sale_volume": {
           "value": "0",
-          "chg_wow": "-100.0%",
+          "chg_wow": "N/A",
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
-          "trend": "down",
-          "period": "Last 7 days (Dubai) — 5 Aug 2026 – 11 Aug 2026",
+          "trend": "flat",
+          "period": "Last 7 days (Dubai) — 6 Aug 2026 – 12 Aug 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "sale_value_aed": {
           "value": "AED N/A",
-          "chg_wow": "-100.0%",
+          "chg_wow": "N/A",
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
-          "trend": "down",
-          "period": "Last 7 days (Dubai) — 5 Aug 2026 – 11 Aug 2026",
+          "trend": "flat",
+          "period": "Last 7 days (Dubai) — 6 Aug 2026 – 12 Aug 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "rent_volume": {
@@ -461,7 +461,7 @@
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 7 days (Dubai) — 5 Aug 2026 – 11 Aug 2026",
+          "period": "Last 7 days (Dubai) — 6 Aug 2026 – 12 Aug 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
         },
         "rent_value_aed": {
@@ -470,11 +470,11 @@
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 7 days (Dubai) — 5 Aug 2026 – 11 Aug 2026",
+          "period": "Last 7 days (Dubai) — 6 Aug 2026 – 12 Aug 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "note": "Sum of annualised rent (AED) for the week — contract rent not used."
         },
-        "period_label": "Last 7 days (Dubai) — 5 Aug 2026 – 11 Aug 2026"
+        "period_label": "Last 7 days (Dubai) — 6 Aug 2026 – 12 Aug 2026"
       },
       "prices": {
         "apt_psf_aed": "N/A",
@@ -486,12 +486,12 @@
         "apt_avg_aed_num": null,
         "villa_avg_aed_num": null,
         "townhouse_avg_aed_num": null,
-        "apt_avg_aed_yield_ref_num": 1570142.4097863848,
-        "villa_avg_aed_yield_ref_num": 9217776.30592992,
-        "townhouse_avg_aed_yield_ref_num": 3341294.219193021,
+        "apt_avg_aed_yield_ref_num": 1568982.0563251288,
+        "villa_avg_aed_yield_ref_num": 9130779.987671234,
+        "townhouse_avg_aed_yield_ref_num": 3321772.003895381,
         "yield_ref_lookback_days": "90",
         "price_index_chg_yoy": "N/A",
-        "price_period": "Last 7 days (Dubai) — 5 Aug 2026 – 11 Aug 2026",
+        "price_period": "Last 7 days (Dubai) — 6 Aug 2026 – 12 Aug 2026",
         "price_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "market_split": {
@@ -499,7 +499,7 @@
         "secondary_pct": "N/A",
         "offplan_chg_yoy": "N/A",
         "dominant_segment": "N/A",
-        "split_period": "Last 7 days (Dubai) — 5 Aug 2026 – 11 Aug 2026",
+        "split_period": "Last 7 days (Dubai) — 6 Aug 2026 – 12 Aug 2026",
         "note": "Off-plan is detected from Select Data Points = Oqood in your sales CSV."
       },
       "top_areas": [],
@@ -508,7 +508,7 @@
       "yields": {
         "apt_gross_yield": "4.9",
         "villa_gross_yield": "1.7",
-        "townhouse_gross_yield": "4.6",
+        "townhouse_gross_yield": "4.7",
         "best_yield_area": "N/A",
         "best_yield_pct": "N/A",
         "yield_vs_mortgage": "N/A",
@@ -534,7 +534,7 @@
         "landlord_vs_tenant": "balanced",
         "note": "Rental metrics use Annualised Rental Price (AED) only. Weekly count/value + new vs renewal (Rent Recurrence) + bed averages.",
         "rental_source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
-        "rental_period": "Last 7 days (Dubai) — 5 Aug 2026 – 11 Aug 2026",
+        "rental_period": "Last 7 days (Dubai) — 6 Aug 2026 – 12 Aug 2026",
         "txn_by_building_bed": {
           "hub canal 1|1|apt": {
             "avg": 60138,
@@ -633,8 +633,8 @@
             "n": 3
           },
           "dec towers|Studio|apt": {
-            "avg": 59131,
-            "n": 68
+            "avg": 58650,
+            "n": 66
           },
           "city walk building 3a|1|apt": {
             "avg": 155965,
@@ -1129,8 +1129,8 @@
             "n": 158
           },
           "sparkle towers|1|apt": {
-            "avg": 111604,
-            "n": 79
+            "avg": 111432,
+            "n": 78
           },
           "syann park 1|1|apt": {
             "avg": 60322,
@@ -1625,8 +1625,8 @@
             "n": 17
           },
           "torch|1|apt": {
-            "avg": 87905,
-            "n": 103
+            "avg": 87995,
+            "n": 102
           },
           "al khair 3 building|2|apt": {
             "avg": 105000,
@@ -1677,8 +1677,8 @@
             "n": 38
           },
           "park island|2|apt": {
-            "avg": 153809,
-            "n": 124
+            "avg": 153778,
+            "n": 123
           },
           "chaimaa premiere|Studio|apt": {
             "avg": 43833,
@@ -3073,8 +3073,8 @@
             "n": 73
           },
           "52 42 towers|2|apt": {
-            "avg": 186833,
-            "n": 122
+            "avg": 186651,
+            "n": 121
           },
           "jumeirah garden building 4|1|apt": {
             "avg": 80000,
@@ -3377,8 +3377,8 @@
             "n": 25
           },
           "dec towers|2|apt": {
-            "avg": 118703,
-            "n": 64
+            "avg": 118665,
+            "n": 63
           },
           "al khail gate 1-26|1|apt": {
             "avg": 42664,
@@ -3989,8 +3989,8 @@
             "n": 3
           },
           "marina diamonds|1|apt": {
-            "avg": 72728,
-            "n": 292
+            "avg": 72789,
+            "n": 291
           },
           "building x-08|Studio|apt": {
             "avg": 30000,
@@ -4989,8 +4989,8 @@
             "n": 19
           },
           "dream towers|1|apt": {
-            "avg": 67854,
-            "n": 183
+            "avg": 67886,
+            "n": 181
           },
           "amargo|3|townhouse": {
             "avg": 80953,
@@ -6661,8 +6661,8 @@
             "n": 9
           },
           "marina promenade|2|apt": {
-            "avg": 167024,
-            "n": 156
+            "avg": 167044,
+            "n": 155
           },
           "canal front residences cf2|2|apt": {
             "avg": 212500,
@@ -7901,8 +7901,8 @@
             "n": 32
           },
           "marina diamonds|Studio|apt": {
-            "avg": 56142,
-            "n": 162
+            "avg": 56088,
+            "n": 160
           },
           "jewelz by danube|1|apt": {
             "avg": 68588,
@@ -10105,8 +10105,8 @@
             "n": 7
           },
           "dec towers|1|apt": {
-            "avg": 78230,
-            "n": 72
+            "avg": 78205,
+            "n": 71
           },
           "building 42|Studio|apt": {
             "avg": 32461,
@@ -12949,8 +12949,8 @@
             "n": 9
           },
           "damac heights|3|apt": {
-            "avg": 243705,
-            "n": 33
+            "avg": 243508,
+            "n": 32
           },
           "al helal al zahby 2|1|apt": {
             "avg": 47604,
@@ -14009,8 +14009,8 @@
             "n": 6
           },
           "silverene|1|apt": {
-            "avg": 105944,
-            "n": 146
+            "avg": 105916,
+            "n": 145
           },
           "imperial residence|Studio|apt": {
             "avg": 43388,
@@ -14250,7 +14250,7 @@
           },
           "emaar 6 towers|3|apt": {
             "avg": 259961,
-            "n": 133
+            "n": 132
           },
           "al quoz 4|Studio|apt": {
             "avg": 28626,
@@ -16669,8 +16669,8 @@
             "n": 3
           },
           "sunrise bay tower 1|2|apt": {
-            "avg": 204474,
-            "n": 25
+            "avg": 202539,
+            "n": 24
           },
           "golf horizon b|1|apt": {
             "avg": 65000,
@@ -17461,8 +17461,8 @@
             "n": 5
           },
           "23 marina|3|apt": {
-            "avg": 216970,
-            "n": 51
+            "avg": 217918,
+            "n": 50
           },
           "zaya hameni|2|apt": {
             "avg": 119778,
@@ -18261,8 +18261,8 @@
             "n": 47
           },
           "liv marina tower|1|apt": {
-            "avg": 157417,
-            "n": 51
+            "avg": 157065,
+            "n": 50
           },
           "sb building|1|apt": {
             "avg": 64789,
@@ -20089,8 +20089,8 @@
             "n": 15
           },
           "time place tower|1|apt": {
-            "avg": 83217,
-            "n": 80
+            "avg": 82990,
+            "n": 79
           },
           "saif bin sharaf building|1|apt": {
             "avg": 44882,
@@ -22485,8 +22485,8 @@
             "n": 9
           },
           "grand bleu tower 1|3|apt": {
-            "avg": 522793,
-            "n": 14
+            "avg": 530315,
+            "n": 13
           },
           "sapphire|1|apt": {
             "avg": 163270,
@@ -24741,8 +24741,8 @@
             "n": 45
           },
           "stella maris|2|apt": {
-            "avg": 230762,
-            "n": 45
+            "avg": 229643,
+            "n": 44
           },
           "building b04|1|apt": {
             "avg": 57895,
@@ -24977,8 +24977,8 @@
             "n": 11
           },
           "jw marriott hotel marina|Studio|apt": {
-            "avg": 133771,
-            "n": 26
+            "avg": 131522,
+            "n": 25
           },
           "building 104|Studio|apt": {
             "avg": 43875,
@@ -26429,8 +26429,8 @@
             "n": 3
           },
           "marina residence|2|apt": {
-            "avg": 120055,
-            "n": 17
+            "avg": 119746,
+            "n": 16
           },
           "al manali building|1|apt": {
             "avg": 67875,
@@ -29029,8 +29029,8 @@
             "n": 9
           },
           "marina view|Studio|apt": {
-            "avg": 63211,
-            "n": 56
+            "avg": 63124,
+            "n": 55
           },
           "azizi riviera 67|1|apt": {
             "avg": 54000,
@@ -32213,8 +32213,8 @@
             "n": 4
           },
           "beach vista tower 1|1|apt": {
-            "avg": 143799,
-            "n": 23
+            "avg": 144250,
+            "n": 22
           },
           "gmm tower 1|2|apt": {
             "avg": 78283,
@@ -33721,8 +33721,8 @@
             "n": 6
           },
           "marina terrace|3|apt": {
-            "avg": 184789,
-            "n": 19
+            "avg": 186000,
+            "n": 18
           },
           "arbor view|1|apt": {
             "avg": 94821,
@@ -36132,18 +36132,6 @@
             "avg": 155675,
             "n": 38
           },
-          "ariyana tower|1|apt": {
-            "avg": 56894,
-            "n": 11
-          },
-          "ocean heights|3|apt": {
-            "avg": 186361,
-            "n": 21
-          },
-          "trident waterfront|4+|apt": {
-            "avg": 390000,
-            "n": 3
-          },
           "marina pearl|Studio|apt": {
             "avg": 58313,
             "n": 13
@@ -36168,9 +36156,17 @@
             "avg": 164406,
             "n": 12
           },
+          "ariyana tower|1|apt": {
+            "avg": 55983,
+            "n": 10
+          },
           "marina arcade tower|3|apt": {
             "avg": 212503,
             "n": 11
+          },
+          "ocean heights|3|apt": {
+            "avg": 186680,
+            "n": 20
           },
           "residences at marina gate|4+|apt": {
             "avg": 863750,
@@ -37151,8 +37147,8 @@
             "n": 249
           },
           "dubai marina|Studio|apt": {
-            "avg": 68741,
-            "n": 953
+            "avg": 68618,
+            "n": 947
           },
           "business bay|2|apt": {
             "avg": 134396,
@@ -37311,8 +37307,8 @@
             "n": 349
           },
           "dubai marina|2|apt": {
-            "avg": 150835,
-            "n": 4319
+            "avg": 150800,
+            "n": 4313
           },
           "downtown dubai|1|apt": {
             "avg": 115204,
@@ -37415,8 +37411,8 @@
             "n": 99
           },
           "dubai marina|1|apt": {
-            "avg": 98330,
-            "n": 5686
+            "avg": 98341,
+            "n": 5676
           },
           "arjan|1|apt": {
             "avg": 65970,
@@ -37971,8 +37967,8 @@
             "n": 127
           },
           "dubai marina|3|apt": {
-            "avg": 233392,
-            "n": 1206
+            "avg": 233641,
+            "n": 1199
           },
           "remraam|1|apt": {
             "avg": 56240,
@@ -38027,8 +38023,8 @@
             "n": 11
           },
           "dubai marina|4+|apt": {
-            "avg": 346861,
-            "n": 229
+            "avg": 345970,
+            "n": 228
           },
           "city walk|2|apt": {
             "avg": 231719,
@@ -38315,8 +38311,8 @@
             "n": 37
           },
           "dubai harbour|2|apt": {
-            "avg": 232502,
-            "n": 465
+            "avg": 232462,
+            "n": 464
           },
           "dubai sports city|4+|townhouse": {
             "avg": 346031,
@@ -38555,8 +38551,8 @@
             "n": 43
           },
           "dubai harbour|1|apt": {
-            "avg": 143594,
-            "n": 531
+            "avg": 143612,
+            "n": 530
           },
           "al badaa|4+|villa": {
             "avg": 281667,
@@ -38847,8 +38843,8 @@
             "n": 3
           },
           "dubai harbour|3|apt": {
-            "avg": 385076,
-            "n": 133
+            "avg": 384773,
+            "n": 132
           },
           "al marmoom|Studio|apt": {
             "avg": 54643,
@@ -39791,7 +39787,7 @@
         "financing_conditions": "N/A",
         "mortgage_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
-      "owner_briefing": "Rolling 7 days through today (5 Aug 2026 – 11 Aug 2026, Dubai): 0 transactions in your CSV worth AED N/A. Prior 7 days (29 Jul 2026 – 4 Aug 2026): 438 deals. Off-plan share N/A (Oqood-tagged rows).",
+      "owner_briefing": "Rolling 7 days through today (6 Aug 2026 – 12 Aug 2026, Dubai): 0 transactions in your CSV worth AED N/A. Prior 7 days (30 Jul 2026 – 5 Aug 2026): 0 deals. Off-plan share N/A (Oqood-tagged rows).",
       "data_freshness": "Transactions through 29 Jul 2026 · snapshot build (7d)",
       "sources_used": [
         "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)",
@@ -39841,7 +39837,7 @@
           }
         },
         "mom_avg_by_beds_pct": {},
-        "cur_days_elapsed": 11
+        "cur_days_elapsed": 12
       },
       "sale_txn_by_building_bed": {
         "tempo|1|apt": {
@@ -43685,8 +43681,8 @@
           "n": 6
         },
         "vida residences at creek beach|2|apt": {
-          "avg": 3045625,
-          "n": 16
+          "avg": 3042000,
+          "n": 15
         },
         "icon tower 2|2|apt": {
           "avg": 1387120,
@@ -45349,8 +45345,8 @@
           "n": 6
         },
         "creek crescent|2|apt": {
-          "avg": 2658214,
-          "n": 14
+          "avg": 2655769,
+          "n": 13
         },
         "breez by danube|2|apt": {
           "avg": 4179774,
@@ -50341,8 +50337,8 @@
           "n": 7
         },
         "cove building 6|2|apt": {
-          "avg": 2450413,
-          "n": 7
+          "avg": 2417148,
+          "n": 6
         },
         "damac towers by paramount a|1|apt": {
           "avg": 1403102,
@@ -52429,8 +52425,8 @@
           "n": 5
         },
         "creek waters 2|2|apt": {
-          "avg": 2680790,
-          "n": 22
+          "avg": 2684637,
+          "n": 21
         },
         "executive towers j|1|apt": {
           "avg": 1636440,
@@ -53041,8 +53037,8 @@
           "n": 3
         },
         "creekside 18 b|2|apt": {
-          "avg": 2662222,
-          "n": 9
+          "avg": 2682500,
+          "n": 8
         },
         "laya mansion|Studio|apt": {
           "avg": 538333,
@@ -53441,8 +53437,8 @@
           "n": 3
         },
         "17 icon bay building 1|2|apt": {
-          "avg": 2376766,
-          "n": 12
+          "avg": 2367835,
+          "n": 11
         },
         "riva residence|3|apt": {
           "avg": 5629333,
@@ -59107,8 +59103,8 @@
           "n": 402
         },
         "dubai creek harbour|2|apt": {
-          "avg": 3152463,
-          "n": 1678
+          "avg": 3154197,
+          "n": 1672
         },
         "al furjan|Studio|apt": {
           "avg": 562809,
@@ -61546,14 +61542,14 @@
       "sale_hot_listings_lookback_days": "365",
       "sale_hot_listings_min_txn": "3",
       "property_type_activity": {
-        "period": "Last 7 days (Dubai) — 5 Aug 2026 – 11 Aug 2026",
+        "period": "Last 7 days (Dubai) — 6 Aug 2026 – 12 Aug 2026",
         "entries": {
           "apt": {
             "label": "Apartment",
             "sale_vol": 0,
             "sale_pct": 0,
-            "sale_wow": "-100.0%",
-            "sale_trend": "down",
+            "sale_wow": null,
+            "sale_trend": null,
             "rent_vol": 0,
             "rent_pct": 0,
             "rent_wow": "-100.0%",
@@ -61563,8 +61559,8 @@
             "label": "Villa",
             "sale_vol": 0,
             "sale_pct": 0,
-            "sale_wow": "-100.0%",
-            "sale_trend": "down",
+            "sale_wow": null,
+            "sale_trend": null,
             "rent_vol": 0,
             "rent_pct": 0,
             "rent_wow": "-100.0%",
@@ -61574,8 +61570,8 @@
             "label": "Townhouse",
             "sale_vol": 0,
             "sale_pct": 0,
-            "sale_wow": "-100.0%",
-            "sale_trend": "down",
+            "sale_wow": null,
+            "sale_trend": null,
             "rent_vol": 0,
             "rent_pct": 0,
             "rent_wow": "-100.0%",
@@ -89077,11 +89073,6 @@
       "rental_charts_30d": {
         "rent_volume": [
           {
-            "date": "2026-08-04",
-            "label": "4 Aug",
-            "value": 0
-          },
-          {
             "date": "2026-08-05",
             "label": "5 Aug",
             "value": 0
@@ -89109,16 +89100,16 @@
           {
             "date": "2026-08-10",
             "label": "10 Aug",
+            "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
             "value": 0
           }
         ],
         "rent_volume_ma7": [
           {
-            "date": "2026-08-04",
-            "label": "4 Aug",
-            "value": 0
-          },
-          {
             "date": "2026-08-05",
             "label": "5 Aug",
             "value": 0
@@ -89146,16 +89137,16 @@
           {
             "date": "2026-08-10",
             "label": "10 Aug",
+            "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
             "value": 0
           }
         ],
         "rent_avg_aed": [
           {
-            "date": "2026-08-04",
-            "label": "4 Aug",
-            "value": null
-          },
-          {
             "date": "2026-08-05",
             "label": "5 Aug",
             "value": null
@@ -89183,16 +89174,16 @@
           {
             "date": "2026-08-10",
             "label": "10 Aug",
+            "value": null
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
             "value": null
           }
         ],
         "rent_avg_aed_ma7": [
           {
-            "date": "2026-08-04",
-            "label": "4 Aug",
-            "value": null
-          },
-          {
             "date": "2026-08-05",
             "label": "5 Aug",
             "value": null
@@ -89220,16 +89211,16 @@
           {
             "date": "2026-08-10",
             "label": "10 Aug",
+            "value": null
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
             "value": null
           }
         ],
         "psf": [
           {
-            "date": "2026-08-04",
-            "label": "4 Aug",
-            "value": null
-          },
-          {
             "date": "2026-08-05",
             "label": "5 Aug",
             "value": null
@@ -89257,16 +89248,16 @@
           {
             "date": "2026-08-10",
             "label": "10 Aug",
+            "value": null
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
             "value": null
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-08-04",
-            "label": "4 Aug",
-            "value": null
-          },
-          {
             "date": "2026-08-05",
             "label": "5 Aug",
             "value": null
@@ -89295,24 +89286,29 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": null
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": null
           }
         ],
         "rent_volume_weekly": [
           {
-            "label": "4 Aug–10 Aug",
+            "label": "5 Aug–11 Aug",
             "value": 0
           }
         ],
         "psf_weekly": [
           {
-            "label": "4 Aug–10 Aug",
+            "label": "5 Aug–11 Aug",
             "median": null
           }
         ],
         "wow_volume_pct": null,
         "wow_rent_pct": null,
         "wow_psf_pct": null,
-        "window_label": "2026-08-04 → 2026-08-10 (Dubai, 7 days)",
+        "window_label": "2026-08-05 → 2026-08-11 (Dubai, 7 days)",
         "window_days": 7
       },
       "rental_monthly": {
@@ -89324,7 +89320,7 @@
         "cur_psf_avg": null,
         "prev_psf_avg": 98,
         "mom_psf_pct": null,
-        "cur_days_elapsed": 11
+        "cur_days_elapsed": 12
       },
       "rental_top_areas": [],
       "rental_top_areas_mode": "area",
@@ -89555,19 +89551,14 @@
           "recurrence": "New"
         }
       ],
-      "rental_owner_briefing": "Rolling 7 days (Last 7 days (Dubai) — 5 Aug 2026 – 11 Aug 2026, Dubai): 0 rental registrations in your CSV, annualised value AED N/A. Prior 7 days: 957 registrations.",
+      "rental_owner_briefing": "Rolling 7 days (Last 7 days (Dubai) — 6 Aug 2026 – 12 Aug 2026, Dubai): 0 rental registrations in your CSV, annualised value AED N/A. Prior 7 days: 522 registrations.",
       "listings": {
         "total": 308320,
         "data_type": "rental",
         "new_this_week": 0,
-        "new_prev_7_days": 3500,
+        "new_prev_7_days": 68,
         "wow_new_pct": -100,
         "listings_added_by_day": [
-          {
-            "date": "2026-08-05",
-            "label": "5 Aug",
-            "count": 0
-          },
           {
             "date": "2026-08-06",
             "label": "6 Aug",
@@ -89597,14 +89588,14 @@
             "date": "2026-08-11",
             "label": "11 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-12",
+            "label": "12 Aug",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-07-29",
-            "label": "29 Jul",
-            "count": 3432
-          },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
@@ -89634,21 +89625,26 @@
             "date": "2026-08-04",
             "label": "4 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-05",
+            "label": "5 Aug",
+            "count": 0
           }
         ],
-        "listings_added_period": "5 Aug – 11 Aug 2026 (Dubai)",
-        "listings_added_period_prior": "29 Jul – 4 Aug 2026 (Dubai)",
+        "listings_added_period": "6 Aug – 12 Aug 2026 (Dubai)",
+        "listings_added_period_prior": "30 Jul – 5 Aug 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
-          "avg_per_day_prior": 500,
+          "avg_per_day_prior": 9.7,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "5 Aug",
+            "label": "6 Aug",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "29 Jul",
-            "count": 3432
+            "label": "30 Jul",
+            "count": 68
           }
         },
         "by_beds": {
@@ -115664,24 +115660,11 @@
             "beds": "3 Bed",
             "property_type": "Apartment",
             "price_fmt": "AED 170,000",
-            "pct_drop": 55.9,
+            "pct_drop": 55.8,
             "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-dubai-harbour-damac-bay-damac-bay-tower-b-122938071.html",
             "bed_label": "3 Bed",
-            "market_avg_fmt": "AED 385,076",
-            "benchmark_n": 133,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "DIFC",
-            "building": "Park Tower A",
-            "beds": "2 Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 115,000",
-            "pct_drop": 55.6,
-            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-difc-park-towers-park-tower-a-115463542.html",
-            "bed_label": "2 Bed",
-            "market_avg_fmt": "AED 259,056",
-            "benchmark_n": 13,
+            "market_avg_fmt": "AED 384,773",
+            "benchmark_n": 132,
             "benchmark_source": "community_txn"
           },
           {
@@ -115705,19 +115688,6 @@
             "price_fmt": "AED 300,000",
             "pct_drop": 53.6,
             "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-121556799.html",
-            "bed_label": "4+ Bed",
-            "market_avg_fmt": "AED 647,070",
-            "benchmark_n": 24,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "Business Bay",
-            "building": "Escape Tower",
-            "beds": "4+ Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 300,000",
-            "pct_drop": 53.6,
-            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-115462175.html",
             "bed_label": "4+ Bed",
             "market_avg_fmt": "AED 647,070",
             "benchmark_n": 24,
@@ -115813,6 +115783,32 @@
             "market_avg_fmt": "AED 148,952",
             "benchmark_n": 235,
             "benchmark_source": "community_txn"
+          },
+          {
+            "community": "Jumeirah Village Circle",
+            "building": "Park Vista",
+            "beds": "Studio",
+            "property_type": "Apartment",
+            "price_fmt": "AED 30,000",
+            "pct_drop": 51.7,
+            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-121976104.html",
+            "bed_label": "Studio",
+            "market_avg_fmt": "AED 62,060",
+            "benchmark_n": 5,
+            "benchmark_source": "building_txn"
+          },
+          {
+            "community": "Jumeirah Village Circle",
+            "building": "Park Vista",
+            "beds": "Studio",
+            "property_type": "Apartment",
+            "price_fmt": "AED 30,000",
+            "pct_drop": 51.7,
+            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-119726234.html",
+            "bed_label": "Studio",
+            "market_avg_fmt": "AED 62,060",
+            "benchmark_n": 5,
+            "benchmark_source": "building_txn"
           }
         ],
         "hot_listings_by_type": {
@@ -115992,24 +115988,11 @@
               "beds": "3 Bed",
               "property_type": "Apartment",
               "price_fmt": "AED 170,000",
-              "pct_drop": 55.9,
+              "pct_drop": 55.8,
               "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-dubai-harbour-damac-bay-damac-bay-tower-b-122938071.html",
               "bed_label": "3 Bed",
-              "market_avg_fmt": "AED 385,076",
-              "benchmark_n": 133,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "DIFC",
-              "building": "Park Tower A",
-              "beds": "2 Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 115,000",
-              "pct_drop": 55.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-difc-park-towers-park-tower-a-115463542.html",
-              "bed_label": "2 Bed",
-              "market_avg_fmt": "AED 259,056",
-              "benchmark_n": 13,
+              "market_avg_fmt": "AED 384,773",
+              "benchmark_n": 132,
               "benchmark_source": "community_txn"
             },
             {
@@ -116033,19 +116016,6 @@
               "price_fmt": "AED 300,000",
               "pct_drop": 53.6,
               "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-121556799.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 647,070",
-              "benchmark_n": 24,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Business Bay",
-              "building": "Escape Tower",
-              "beds": "4+ Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 300,000",
-              "pct_drop": 53.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-115462175.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 647,070",
               "benchmark_n": 24,
@@ -116141,6 +116111,32 @@
               "market_avg_fmt": "AED 148,952",
               "benchmark_n": 235,
               "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Jumeirah Village Circle",
+              "building": "Park Vista",
+              "beds": "Studio",
+              "property_type": "Apartment",
+              "price_fmt": "AED 30,000",
+              "pct_drop": 51.7,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-121976104.html",
+              "bed_label": "Studio",
+              "market_avg_fmt": "AED 62,060",
+              "benchmark_n": 5,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Jumeirah Village Circle",
+              "building": "Park Vista",
+              "beds": "Studio",
+              "property_type": "Apartment",
+              "price_fmt": "AED 30,000",
+              "pct_drop": 51.7,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-119726234.html",
+              "bed_label": "Studio",
+              "market_avg_fmt": "AED 62,060",
+              "benchmark_n": 5,
+              "benchmark_source": "building_txn"
             }
           ],
           "villa": [
@@ -116211,32 +116207,6 @@
             },
             {
               "community": "Umm Suqeim",
-              "building": "Umm Suqeim 1 Villas",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 280,000",
-              "pct_drop": 90,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115498715.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.79M",
-              "benchmark_n": 12,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Umm Suqeim",
-              "building": "Umm Suqeim 1 Villas",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 290,000",
-              "pct_drop": 89.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115468886.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.79M",
-              "benchmark_n": 12,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Umm Suqeim",
               "building": "Umm Suqeim 3 Villas",
               "beds": "4+ Bed",
               "property_type": "Villa",
@@ -116256,19 +116226,6 @@
               "price_fmt": "AED 300,000",
               "pct_drop": 89.3,
               "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115908339.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.79M",
-              "benchmark_n": 12,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Umm Suqeim",
-              "building": "Umm Suqeim 1 Villas",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 300,000",
-              "pct_drop": 89.3,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115477737.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 2.79M",
               "benchmark_n": 12,
@@ -116464,6 +116421,45 @@
               "price_fmt": "AED 320,000",
               "pct_drop": 88.5,
               "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-115933351.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 2.79M",
+              "benchmark_n": 12,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 2 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 320,000",
+              "pct_drop": 88.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-115945439.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 2.79M",
+              "benchmark_n": 12,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 1 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 320,000",
+              "pct_drop": 88.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-118571373.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 2.79M",
+              "benchmark_n": 12,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 2 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 320,000",
+              "pct_drop": 88.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-117252421.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 2.79M",
               "benchmark_n": 12,
@@ -116686,19 +116682,6 @@
               "property_type": "Townhouse",
               "price_fmt": "AED 110,000",
               "pct_drop": 45.7,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-115462887.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 202,546",
-              "benchmark_n": 20,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Camelia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 110,000",
-              "pct_drop": 45.7,
               "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-119735222.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 202,546",
@@ -116795,6 +116778,19 @@
               "market_avg_fmt": "AED 202,546",
               "benchmark_n": 20,
               "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Damac Hills 2",
+              "building": "Camelia",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 115,000",
+              "pct_drop": 43.2,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-116803658.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 202,546",
+              "benchmark_n": 20,
+              "benchmark_source": "building_txn"
             }
           ]
         },
@@ -116815,14 +116811,9 @@
         "total": 295437,
         "data_type": "sales",
         "new_this_week": 0,
-        "new_prev_7_days": 2474,
+        "new_prev_7_days": 44,
         "wow_new_pct": -100,
         "listings_added_by_day": [
-          {
-            "date": "2026-08-05",
-            "label": "5 Aug",
-            "count": 0
-          },
           {
             "date": "2026-08-06",
             "label": "6 Aug",
@@ -116852,14 +116843,14 @@
             "date": "2026-08-11",
             "label": "11 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-12",
+            "label": "12 Aug",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-07-29",
-            "label": "29 Jul",
-            "count": 2430
-          },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
@@ -116889,21 +116880,26 @@
             "date": "2026-08-04",
             "label": "4 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-05",
+            "label": "5 Aug",
+            "count": 0
           }
         ],
-        "listings_added_period": "5 Aug – 11 Aug 2026 (Dubai)",
-        "listings_added_period_prior": "29 Jul – 4 Aug 2026 (Dubai)",
+        "listings_added_period": "6 Aug – 12 Aug 2026 (Dubai)",
+        "listings_added_period_prior": "30 Jul – 5 Aug 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
-          "avg_per_day_prior": 353.4,
+          "avg_per_day_prior": 6.3,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "5 Aug",
+            "label": "6 Aug",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "29 Jul",
-            "count": 2430
+            "label": "30 Jul",
+            "count": 44
           }
         },
         "by_beds": {
@@ -143908,19 +143904,6 @@
           },
           {
             "community": "Jumeirah",
-            "building": "La Rive Building 2",
-            "beds": "2 Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 3.38M",
-            "pct_drop": 90.1,
-            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-2-115481894.html",
-            "bed_label": "2 Bed",
-            "market_avg_fmt": "AED 34.22M",
-            "benchmark_n": 13,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "Jumeirah",
             "building": "La Cote Building 2",
             "beds": "2 Bed",
             "property_type": "Apartment",
@@ -144181,15 +144164,28 @@
           },
           {
             "community": "Jumeirah",
-            "building": "La Sirene Building 2",
+            "building": "La Rive Building 4",
             "beds": "2 Bed",
             "property_type": "Apartment",
             "price_fmt": "AED 4.2M",
             "pct_drop": 87.7,
-            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-115483210.html",
+            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-4-116386882.html",
             "bed_label": "2 Bed",
             "market_avg_fmt": "AED 34.22M",
             "benchmark_n": 13,
+            "benchmark_source": "community_txn"
+          },
+          {
+            "community": "Business Bay",
+            "building": "Elite Business Bay Residence",
+            "beds": "4+ Bed",
+            "property_type": "Apartment",
+            "price_fmt": "AED 3.2M",
+            "pct_drop": 87.1,
+            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-business-bay-elite-business-bay-residence-116834172.html",
+            "bed_label": "4+ Bed",
+            "market_avg_fmt": "AED 24.79M",
+            "benchmark_n": 25,
             "benchmark_source": "community_txn"
           }
         ],
@@ -144229,19 +144225,6 @@
               "price_fmt": "AED 3.3M",
               "pct_drop": 90.4,
               "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-2-117249364.html",
-              "bed_label": "2 Bed",
-              "market_avg_fmt": "AED 34.22M",
-              "benchmark_n": 13,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Jumeirah",
-              "building": "La Rive Building 2",
-              "beds": "2 Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 3.38M",
-              "pct_drop": 90.1,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-2-115481894.html",
               "bed_label": "2 Bed",
               "market_avg_fmt": "AED 34.22M",
               "benchmark_n": 13,
@@ -144509,15 +144492,28 @@
             },
             {
               "community": "Jumeirah",
-              "building": "La Sirene Building 2",
+              "building": "La Rive Building 4",
               "beds": "2 Bed",
               "property_type": "Apartment",
               "price_fmt": "AED 4.2M",
               "pct_drop": 87.7,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-115483210.html",
+              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-4-116386882.html",
               "bed_label": "2 Bed",
               "market_avg_fmt": "AED 34.22M",
               "benchmark_n": 13,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Business Bay",
+              "building": "Elite Business Bay Residence",
+              "beds": "4+ Bed",
+              "property_type": "Apartment",
+              "price_fmt": "AED 3.2M",
+              "pct_drop": 87.1,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-business-bay-elite-business-bay-residence-116834172.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 24.79M",
+              "benchmark_n": 25,
               "benchmark_source": "community_txn"
             }
           ],
@@ -144771,19 +144767,6 @@
             },
             {
               "community": "Mohammed Bin Rashid City",
-              "building": "Senses at the Fields",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 4M",
-              "pct_drop": 78.6,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/villa-for-sale-dubai-mohammed-bin-rashid-city-district-11-the-fields-senses-at-the-fields-115491908.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 18.68M",
-              "benchmark_n": 45,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Mohammed Bin Rashid City",
               "building": "District 11",
               "beds": "4+ Bed",
               "property_type": "Villa",
@@ -144846,6 +144829,19 @@
               "market_avg_fmt": "AED 18.68M",
               "benchmark_n": 45,
               "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Dubai Hills Estate",
+              "building": "Maple at Dubai Hills Estate",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 5.8M",
+              "pct_drop": 77.7,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/villa-for-sale-dubai-dubai-hills-estate-maple-at-dubai-hills-estate-maple-at-dubai-hills-estate-1-117261254.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 26.05M",
+              "benchmark_n": 110,
+              "benchmark_source": "community_txn"
             }
           ],
           "townhouse": [
@@ -144883,19 +144879,6 @@
               "price_fmt": "AED 1.3M",
               "pct_drop": 42.2,
               "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-hills-2-victoria-118150568.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.25M",
-              "benchmark_n": 94,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Avencia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 1.3M",
-              "pct_drop": 42.2,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-hills-2-avencia-115494432.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 2.25M",
               "benchmark_n": 94,
@@ -145045,19 +145028,6 @@
               "benchmark_source": "community_txn"
             },
             {
-              "community": "DAMAC Islands",
-              "building": "FIJI at Damac Islands",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 1.98M",
-              "pct_drop": 34.2,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-fiji-at-damac-islands-115463307.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3M",
-              "benchmark_n": 115,
-              "benchmark_source": "community_txn"
-            },
-            {
               "community": "Dubai Sports City",
               "building": "Marbella Village",
               "beds": "4+ Bed",
@@ -145084,19 +145054,6 @@
               "benchmark_source": "building_txn"
             },
             {
-              "community": "DAMAC Islands",
-              "building": "Bora Bora 3",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 2.25M",
-              "pct_drop": 32.3,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-bora-bora-bora-bora-3-115467160.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3.33M",
-              "benchmark_n": 4,
-              "benchmark_source": "building_txn"
-            },
-            {
               "community": "Mohammed Bin Rashid City",
               "building": "District 11",
               "beds": "4+ Bed",
@@ -145107,19 +145064,6 @@
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 4.97M",
               "benchmark_n": 21,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "DAMAC Islands",
-              "building": "Bali at Damac Islands",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 2.05M",
-              "pct_drop": 31.6,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-bali-at-damac-islands-115492800.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3M",
-              "benchmark_n": 115,
               "benchmark_source": "community_txn"
             },
             {
@@ -145162,13 +145106,65 @@
               "benchmark_source": "community_txn"
             },
             {
+              "community": "DAMAC Islands",
+              "building": "Fiji 2",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 2.17M",
+              "pct_drop": 30.9,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-fiji-2-121986323.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 3.13M",
+              "benchmark_n": 18,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Jumeirah Golf Estates",
+              "building": "Terra Golf Collection",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 9.45M",
+              "pct_drop": 30.7,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-jumeirah-golf-estates-terra-golf-collection-120663847.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 13.63M",
+              "benchmark_n": 8,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Mohammed Bin Rashid City",
+              "building": "District 11",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 3.45M",
+              "pct_drop": 30.6,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-mohammed-bin-rashid-city-district-11-elie-saab-vie-townhouses-118574158.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 4.97M",
+              "benchmark_n": 21,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Jumeirah Village Circle",
+              "building": "District 12",
+              "beds": "2 Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 2.1M",
+              "pct_drop": 30.3,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-jumeirah-village-circle-district-12-nakheel-townhouses-121984504.html",
+              "bed_label": "2 Bed",
+              "market_avg_fmt": "AED 3.01M",
+              "benchmark_n": 6,
+              "benchmark_source": "community_txn"
+            },
+            {
               "community": "Tilal Al Ghaf",
               "building": "Elan",
               "beds": "4+ Bed",
               "property_type": "Townhouse",
-              "price_fmt": "AED 4.25M",
-              "pct_drop": 31,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-tilal-al-ghaf-elan-115463222.html",
+              "price_fmt": "AED 4.3M",
+              "pct_drop": 30.2,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-tilal-al-ghaf-elan-120163819.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 6.16M",
               "benchmark_n": 59,
@@ -145194,11 +145190,6 @@
       "ok": true,
       "charts_30d": {
         "sale_volume": [
-          {
-            "date": "2026-07-28",
-            "label": "28 Jul",
-            "value": 577
-          },
           {
             "date": "2026-07-29",
             "label": "29 Jul",
@@ -145263,14 +145254,14 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 0
           }
         ],
         "psf": [
-          {
-            "date": "2026-07-28",
-            "label": "28 Jul",
-            "value": 1917
-          },
           {
             "date": "2026-07-29",
             "label": "29 Jul",
@@ -145335,43 +145326,43 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 1746
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 1746
           }
         ],
         "sale_volume_ma7": [
           {
-            "date": "2026-07-28",
-            "label": "28 Jul",
-            "value": 577
-          },
-          {
             "date": "2026-07-29",
             "label": "29 Jul",
-            "value": 507.5
+            "value": 438
           },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
-            "value": 338.3
+            "value": 219
           },
           {
             "date": "2026-07-31",
             "label": "31 Jul",
-            "value": 253.8
+            "value": 146
           },
           {
             "date": "2026-08-01",
             "label": "1 Aug",
-            "value": 203
+            "value": 109.5
           },
           {
             "date": "2026-08-02",
             "label": "2 Aug",
-            "value": 169.2
+            "value": 87.6
           },
           {
             "date": "2026-08-03",
             "label": "3 Aug",
-            "value": 145
+            "value": 73
           },
           {
             "date": "2026-08-04",
@@ -145407,43 +145398,43 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 0
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-07-28",
-            "label": "28 Jul",
-            "value": 1917
-          },
-          {
             "date": "2026-07-29",
             "label": "29 Jul",
-            "value": 1831.5
+            "value": 1746
           },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
-            "value": 1803
+            "value": 1746
           },
           {
             "date": "2026-07-31",
             "label": "31 Jul",
-            "value": 1788.8
+            "value": 1746
           },
           {
             "date": "2026-08-01",
             "label": "1 Aug",
-            "value": 1780.2
+            "value": 1746
           },
           {
             "date": "2026-08-02",
             "label": "2 Aug",
-            "value": 1774.5
+            "value": 1746
           },
           {
             "date": "2026-08-03",
             "label": "3 Aug",
-            "value": 1770.4
+            "value": 1746
           },
           {
             "date": "2026-08-04",
@@ -145479,27 +145470,32 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 1746
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 1746
           }
         ],
         "sale_volume_weekly": [
           {
             "date": "2026-07-27",
             "label": "Wk 27 Jul",
-            "value": 1015
+            "value": 438
           }
         ],
         "psf_weekly": [
           {
             "date": "2026-07-27",
             "label": "Wk 27 Jul",
-            "median": 1843,
-            "p25": 1295,
-            "p75": 2010
+            "median": 1746,
+            "p25": 1279.5,
+            "p75": 1914.75
           }
         ],
         "wow_volume_pct": null,
         "wow_psf_pct": null,
-        "window_label": "2026-07-28 → 2026-08-10 (Dubai, 14 days)",
+        "window_label": "2026-07-29 → 2026-08-11 (Dubai, 14 days)",
         "window_days": 14
       },
       "recent_sales_transactions": [
@@ -145781,126 +145777,90 @@
       ],
       "weekly": {
         "sale_volume": {
-          "value": "438",
-          "chg_wow": "-92.4%",
+          "value": "0",
+          "chg_wow": "-100.0%",
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026",
+          "period": "Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "sale_value_aed": {
-          "value": "AED 838.88M",
-          "chg_wow": "-93.1%",
+          "value": "AED N/A",
+          "chg_wow": "-100.0%",
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026",
+          "period": "Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "rent_volume": {
-          "value": "957",
-          "chg_wow": "-95.1%",
+          "value": "522",
+          "chg_wow": "-96.7%",
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026",
+          "period": "Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
         },
         "rent_value_aed": {
-          "value": "AED 77.67M",
-          "chg_wow": "-94.9%",
+          "value": "AED 43.82M",
+          "chg_wow": "-96.2%",
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026",
+          "period": "Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "note": "Sum of annualised rent (AED) for the week — contract rent not used."
         },
-        "period_label": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026",
+        "period_label": "Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026",
         "rent_new_vs_renewal": {
-          "new_count": "376",
-          "renewal_count": "581",
+          "new_count": "232",
+          "renewal_count": "290",
           "other_count": "0",
-          "new_pct": "39.3",
-          "renewal_pct": "60.7",
+          "new_pct": "44.4",
+          "renewal_pct": "55.6",
           "other_pct": null,
-          "new_chg_wow": "-96.8%",
-          "renewal_chg_wow": "-92.4%",
-          "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026",
+          "new_chg_wow": "-97.7%",
+          "renewal_chg_wow": "-95.2%",
+          "period": "Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "column": "rent recurrence"
         }
       },
       "prices": {
-        "apt_psf_aed": "1764",
-        "villa_psf_aed": "1848",
-        "townhouse_psf_aed": "1454",
-        "apt_avg_aed": "AED 1.61M",
-        "villa_avg_aed": "AED 10.27M",
-        "townhouse_avg_aed": "AED 4.03M",
-        "apt_avg_aed_num": 1607671.6923076923,
-        "villa_avg_aed_num": 10269125,
-        "townhouse_avg_aed_num": 4030919.5185185187,
-        "apt_avg_aed_yield_ref_num": 1570142.4097863848,
-        "villa_avg_aed_yield_ref_num": 9217776.30592992,
-        "townhouse_avg_aed_yield_ref_num": 3341294.219193021,
+        "apt_psf_aed": "N/A",
+        "villa_psf_aed": "N/A",
+        "townhouse_psf_aed": "N/A",
+        "apt_avg_aed": "AED N/A",
+        "villa_avg_aed": "AED N/A",
+        "townhouse_avg_aed": "AED N/A",
+        "apt_avg_aed_num": null,
+        "villa_avg_aed_num": null,
+        "townhouse_avg_aed_num": null,
+        "apt_avg_aed_yield_ref_num": 1568982.0563251288,
+        "villa_avg_aed_yield_ref_num": 9130779.987671234,
+        "townhouse_avg_aed_yield_ref_num": 3321772.003895381,
         "yield_ref_lookback_days": "90",
         "price_index_chg_yoy": "N/A",
-        "price_period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026",
+        "price_period": "Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026",
         "price_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "market_split": {
-        "offplan_pct": "64",
-        "secondary_pct": "36",
+        "offplan_pct": "N/A",
+        "secondary_pct": "N/A",
         "offplan_chg_yoy": "N/A",
-        "dominant_segment": "Off-plan",
-        "split_period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026",
+        "dominant_segment": "N/A",
+        "split_period": "Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026",
         "note": "Off-plan is detected from Select Data Points = Oqood in your sales CSV."
       },
-      "top_areas": [
-        {
-          "area": "Downtown Jebel Ali",
-          "vol": "80",
-          "avg_psf": "1734",
-          "trend": "down",
-          "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026"
-        },
-        {
-          "area": "Jumeirah Village Circle",
-          "vol": "67",
-          "avg_psf": "1119",
-          "trend": "down",
-          "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026"
-        },
-        {
-          "area": "Dubai South",
-          "vol": "21",
-          "avg_psf": "1619",
-          "trend": "down",
-          "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026"
-        },
-        {
-          "area": "Dubai Residence Complex",
-          "vol": "18",
-          "avg_psf": "1288",
-          "trend": "down",
-          "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026"
-        },
-        {
-          "area": "Wasl Gate",
-          "vol": "13",
-          "avg_psf": "1714",
-          "trend": "down",
-          "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026"
-        }
-      ],
+      "top_areas": [],
       "top_areas_mode": "area",
       "top_areas_empty_hint": null,
       "yields": {
         "apt_gross_yield": "4.9",
         "villa_gross_yield": "1.7",
-        "townhouse_gross_yield": "4.6",
+        "townhouse_gross_yield": "4.7",
         "best_yield_area": "N/A",
         "best_yield_pct": "N/A",
         "yield_vs_mortgage": "N/A",
@@ -145917,17 +145877,17 @@
         "supply_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "rental": {
-        "apt_1br_avg_aed": "60043",
-        "apt_2br_avg_aed": "86315",
-        "villa_3br_avg_aed": "129886",
+        "apt_1br_avg_aed": "60967",
+        "apt_2br_avg_aed": "87745",
+        "villa_3br_avg_aed": "133850",
         "rental_index_chg_yoy": "N/A",
         "ejari_registrations_weekly": "N/A",
         "vacancy_rate": "N/A",
         "landlord_vs_tenant": "balanced",
         "note": "Rental metrics use Annualised Rental Price (AED) only. Weekly count/value + new vs renewal (Rent Recurrence) + bed averages.",
         "rental_source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
-        "rental_period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026",
-        "studio_avg_aed": "41367",
+        "rental_period": "Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026",
+        "studio_avg_aed": "42265",
         "txn_by_building_bed": {
           "hub canal 1|1|apt": {
             "avg": 60138,
@@ -146026,8 +145986,8 @@
             "n": 3
           },
           "dec towers|Studio|apt": {
-            "avg": 59131,
-            "n": 68
+            "avg": 58650,
+            "n": 66
           },
           "city walk building 3a|1|apt": {
             "avg": 155965,
@@ -146522,8 +146482,8 @@
             "n": 158
           },
           "sparkle towers|1|apt": {
-            "avg": 111604,
-            "n": 79
+            "avg": 111432,
+            "n": 78
           },
           "syann park 1|1|apt": {
             "avg": 60322,
@@ -147018,8 +146978,8 @@
             "n": 17
           },
           "torch|1|apt": {
-            "avg": 87905,
-            "n": 103
+            "avg": 87995,
+            "n": 102
           },
           "al khair 3 building|2|apt": {
             "avg": 105000,
@@ -147070,8 +147030,8 @@
             "n": 38
           },
           "park island|2|apt": {
-            "avg": 153809,
-            "n": 124
+            "avg": 153778,
+            "n": 123
           },
           "chaimaa premiere|Studio|apt": {
             "avg": 43833,
@@ -148466,8 +148426,8 @@
             "n": 73
           },
           "52 42 towers|2|apt": {
-            "avg": 186833,
-            "n": 122
+            "avg": 186651,
+            "n": 121
           },
           "jumeirah garden building 4|1|apt": {
             "avg": 80000,
@@ -148770,8 +148730,8 @@
             "n": 25
           },
           "dec towers|2|apt": {
-            "avg": 118703,
-            "n": 64
+            "avg": 118665,
+            "n": 63
           },
           "al khail gate 1-26|1|apt": {
             "avg": 42664,
@@ -149382,8 +149342,8 @@
             "n": 3
           },
           "marina diamonds|1|apt": {
-            "avg": 72728,
-            "n": 292
+            "avg": 72789,
+            "n": 291
           },
           "building x-08|Studio|apt": {
             "avg": 30000,
@@ -150382,8 +150342,8 @@
             "n": 19
           },
           "dream towers|1|apt": {
-            "avg": 67854,
-            "n": 183
+            "avg": 67886,
+            "n": 181
           },
           "amargo|3|townhouse": {
             "avg": 80953,
@@ -152054,8 +152014,8 @@
             "n": 9
           },
           "marina promenade|2|apt": {
-            "avg": 167024,
-            "n": 156
+            "avg": 167044,
+            "n": 155
           },
           "canal front residences cf2|2|apt": {
             "avg": 212500,
@@ -153294,8 +153254,8 @@
             "n": 32
           },
           "marina diamonds|Studio|apt": {
-            "avg": 56142,
-            "n": 162
+            "avg": 56088,
+            "n": 160
           },
           "jewelz by danube|1|apt": {
             "avg": 68588,
@@ -155498,8 +155458,8 @@
             "n": 7
           },
           "dec towers|1|apt": {
-            "avg": 78230,
-            "n": 72
+            "avg": 78205,
+            "n": 71
           },
           "building 42|Studio|apt": {
             "avg": 32461,
@@ -158342,8 +158302,8 @@
             "n": 9
           },
           "damac heights|3|apt": {
-            "avg": 243705,
-            "n": 33
+            "avg": 243508,
+            "n": 32
           },
           "al helal al zahby 2|1|apt": {
             "avg": 47604,
@@ -159402,8 +159362,8 @@
             "n": 6
           },
           "silverene|1|apt": {
-            "avg": 105944,
-            "n": 146
+            "avg": 105916,
+            "n": 145
           },
           "imperial residence|Studio|apt": {
             "avg": 43388,
@@ -159643,7 +159603,7 @@
           },
           "emaar 6 towers|3|apt": {
             "avg": 259961,
-            "n": 133
+            "n": 132
           },
           "al quoz 4|Studio|apt": {
             "avg": 28626,
@@ -162062,8 +162022,8 @@
             "n": 3
           },
           "sunrise bay tower 1|2|apt": {
-            "avg": 204474,
-            "n": 25
+            "avg": 202539,
+            "n": 24
           },
           "golf horizon b|1|apt": {
             "avg": 65000,
@@ -162854,8 +162814,8 @@
             "n": 5
           },
           "23 marina|3|apt": {
-            "avg": 216970,
-            "n": 51
+            "avg": 217918,
+            "n": 50
           },
           "zaya hameni|2|apt": {
             "avg": 119778,
@@ -163654,8 +163614,8 @@
             "n": 47
           },
           "liv marina tower|1|apt": {
-            "avg": 157417,
-            "n": 51
+            "avg": 157065,
+            "n": 50
           },
           "sb building|1|apt": {
             "avg": 64789,
@@ -165482,8 +165442,8 @@
             "n": 15
           },
           "time place tower|1|apt": {
-            "avg": 83217,
-            "n": 80
+            "avg": 82990,
+            "n": 79
           },
           "saif bin sharaf building|1|apt": {
             "avg": 44882,
@@ -167878,8 +167838,8 @@
             "n": 9
           },
           "grand bleu tower 1|3|apt": {
-            "avg": 522793,
-            "n": 14
+            "avg": 530315,
+            "n": 13
           },
           "sapphire|1|apt": {
             "avg": 163270,
@@ -170134,8 +170094,8 @@
             "n": 45
           },
           "stella maris|2|apt": {
-            "avg": 230762,
-            "n": 45
+            "avg": 229643,
+            "n": 44
           },
           "building b04|1|apt": {
             "avg": 57895,
@@ -170370,8 +170330,8 @@
             "n": 11
           },
           "jw marriott hotel marina|Studio|apt": {
-            "avg": 133771,
-            "n": 26
+            "avg": 131522,
+            "n": 25
           },
           "building 104|Studio|apt": {
             "avg": 43875,
@@ -171822,8 +171782,8 @@
             "n": 3
           },
           "marina residence|2|apt": {
-            "avg": 120055,
-            "n": 17
+            "avg": 119746,
+            "n": 16
           },
           "al manali building|1|apt": {
             "avg": 67875,
@@ -174422,8 +174382,8 @@
             "n": 9
           },
           "marina view|Studio|apt": {
-            "avg": 63211,
-            "n": 56
+            "avg": 63124,
+            "n": 55
           },
           "azizi riviera 67|1|apt": {
             "avg": 54000,
@@ -177606,8 +177566,8 @@
             "n": 4
           },
           "beach vista tower 1|1|apt": {
-            "avg": 143799,
-            "n": 23
+            "avg": 144250,
+            "n": 22
           },
           "gmm tower 1|2|apt": {
             "avg": 78283,
@@ -179114,8 +179074,8 @@
             "n": 6
           },
           "marina terrace|3|apt": {
-            "avg": 184789,
-            "n": 19
+            "avg": 186000,
+            "n": 18
           },
           "arbor view|1|apt": {
             "avg": 94821,
@@ -181525,18 +181485,6 @@
             "avg": 155675,
             "n": 38
           },
-          "ariyana tower|1|apt": {
-            "avg": 56894,
-            "n": 11
-          },
-          "ocean heights|3|apt": {
-            "avg": 186361,
-            "n": 21
-          },
-          "trident waterfront|4+|apt": {
-            "avg": 390000,
-            "n": 3
-          },
           "marina pearl|Studio|apt": {
             "avg": 58313,
             "n": 13
@@ -181561,9 +181509,17 @@
             "avg": 164406,
             "n": 12
           },
+          "ariyana tower|1|apt": {
+            "avg": 55983,
+            "n": 10
+          },
           "marina arcade tower|3|apt": {
             "avg": 212503,
             "n": 11
+          },
+          "ocean heights|3|apt": {
+            "avg": 186680,
+            "n": 20
           },
           "residences at marina gate|4+|apt": {
             "avg": 863750,
@@ -182544,8 +182500,8 @@
             "n": 249
           },
           "dubai marina|Studio|apt": {
-            "avg": 68741,
-            "n": 953
+            "avg": 68618,
+            "n": 947
           },
           "business bay|2|apt": {
             "avg": 134396,
@@ -182704,8 +182660,8 @@
             "n": 349
           },
           "dubai marina|2|apt": {
-            "avg": 150835,
-            "n": 4319
+            "avg": 150800,
+            "n": 4313
           },
           "downtown dubai|1|apt": {
             "avg": 115204,
@@ -182808,8 +182764,8 @@
             "n": 99
           },
           "dubai marina|1|apt": {
-            "avg": 98330,
-            "n": 5686
+            "avg": 98341,
+            "n": 5676
           },
           "arjan|1|apt": {
             "avg": 65970,
@@ -183364,8 +183320,8 @@
             "n": 127
           },
           "dubai marina|3|apt": {
-            "avg": 233392,
-            "n": 1206
+            "avg": 233641,
+            "n": 1199
           },
           "remraam|1|apt": {
             "avg": 56240,
@@ -183420,8 +183376,8 @@
             "n": 11
           },
           "dubai marina|4+|apt": {
-            "avg": 346861,
-            "n": 229
+            "avg": 345970,
+            "n": 228
           },
           "city walk|2|apt": {
             "avg": 231719,
@@ -183708,8 +183664,8 @@
             "n": 37
           },
           "dubai harbour|2|apt": {
-            "avg": 232502,
-            "n": 465
+            "avg": 232462,
+            "n": 464
           },
           "dubai sports city|4+|townhouse": {
             "avg": 346031,
@@ -183948,8 +183904,8 @@
             "n": 43
           },
           "dubai harbour|1|apt": {
-            "avg": 143594,
-            "n": 531
+            "avg": 143612,
+            "n": 530
           },
           "al badaa|4+|villa": {
             "avg": 281667,
@@ -184240,8 +184196,8 @@
             "n": 3
           },
           "dubai harbour|3|apt": {
-            "avg": 385076,
-            "n": 133
+            "avg": 384773,
+            "n": 132
           },
           "al marmoom|Studio|apt": {
             "avg": 54643,
@@ -185184,17 +185140,17 @@
         "financing_conditions": "N/A",
         "mortgage_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
-      "owner_briefing": "Rolling 14 days through today (29 Jul 2026 – 11 Aug 2026, Dubai): 438 transactions in your CSV worth AED 838.88M. Prior 14 days (15 Jul 2026 – 28 Jul 2026): 5,775 deals. Off-plan share 64% (Oqood-tagged rows).",
+      "owner_briefing": "Rolling 14 days through today (30 Jul 2026 – 12 Aug 2026, Dubai): 0 transactions in your CSV worth AED N/A. Prior 14 days (16 Jul 2026 – 29 Jul 2026): 5,611 deals. Off-plan share N/A (Oqood-tagged rows).",
       "data_freshness": "Transactions through 29 Jul 2026 · snapshot build (14d)",
       "sources_used": [
         "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)",
         "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
       ],
       "sale_txn_avg_by_beds": {
-        "studio": 711430,
-        "1br": 1339643,
-        "2br": 2625223,
-        "3br": 4334198
+        "studio": null,
+        "1br": null,
+        "2br": null,
+        "3br": null
       },
       "monthly": {
         "cur_label": "August 2026",
@@ -185234,7 +185190,7 @@
           }
         },
         "mom_avg_by_beds_pct": {},
-        "cur_days_elapsed": 11
+        "cur_days_elapsed": 12
       },
       "sale_txn_by_building_bed": {
         "tempo|1|apt": {
@@ -189078,8 +189034,8 @@
           "n": 6
         },
         "vida residences at creek beach|2|apt": {
-          "avg": 3045625,
-          "n": 16
+          "avg": 3042000,
+          "n": 15
         },
         "icon tower 2|2|apt": {
           "avg": 1387120,
@@ -190742,8 +190698,8 @@
           "n": 6
         },
         "creek crescent|2|apt": {
-          "avg": 2658214,
-          "n": 14
+          "avg": 2655769,
+          "n": 13
         },
         "breez by danube|2|apt": {
           "avg": 4179774,
@@ -195734,8 +195690,8 @@
           "n": 7
         },
         "cove building 6|2|apt": {
-          "avg": 2450413,
-          "n": 7
+          "avg": 2417148,
+          "n": 6
         },
         "damac towers by paramount a|1|apt": {
           "avg": 1403102,
@@ -197822,8 +197778,8 @@
           "n": 5
         },
         "creek waters 2|2|apt": {
-          "avg": 2680790,
-          "n": 22
+          "avg": 2684637,
+          "n": 21
         },
         "executive towers j|1|apt": {
           "avg": 1636440,
@@ -198434,8 +198390,8 @@
           "n": 3
         },
         "creekside 18 b|2|apt": {
-          "avg": 2662222,
-          "n": 9
+          "avg": 2682500,
+          "n": 8
         },
         "laya mansion|Studio|apt": {
           "avg": 538333,
@@ -198834,8 +198790,8 @@
           "n": 3
         },
         "17 icon bay building 1|2|apt": {
-          "avg": 2376766,
-          "n": 12
+          "avg": 2367835,
+          "n": 11
         },
         "riva residence|3|apt": {
           "avg": 5629333,
@@ -204500,8 +204456,8 @@
           "n": 402
         },
         "dubai creek harbour|2|apt": {
-          "avg": 3152463,
-          "n": 1678
+          "avg": 3154197,
+          "n": 1672
         },
         "al furjan|Studio|apt": {
           "avg": 562809,
@@ -206939,43 +206895,43 @@
       "sale_hot_listings_lookback_days": "365",
       "sale_hot_listings_min_txn": "3",
       "property_type_activity": {
-        "period": "Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026",
+        "period": "Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026",
         "entries": {
           "apt": {
             "label": "Apartment",
-            "sale_vol": 403,
-            "sale_pct": 92,
-            "sale_wow": "-92.2%",
+            "sale_vol": 0,
+            "sale_pct": 0,
+            "sale_wow": "-100.0%",
             "sale_trend": "down",
-            "rent_vol": 885,
+            "rent_vol": 478,
             "rent_pct": 92,
-            "rent_wow": "-95.1%",
+            "rent_wow": "-96.8%",
             "rent_trend": "down"
           },
           "villa": {
             "label": "Villa",
-            "sale_vol": 8,
-            "sale_pct": 2,
-            "sale_wow": "-94.9%",
+            "sale_vol": 0,
+            "sale_pct": 0,
+            "sale_wow": "-100.0%",
             "sale_trend": "down",
-            "rent_vol": 40,
-            "rent_pct": 4,
-            "rent_wow": "-95.0%",
+            "rent_vol": 25,
+            "rent_pct": 5,
+            "rent_wow": "-95.6%",
             "rent_trend": "down"
           },
           "townhouse": {
             "label": "Townhouse",
-            "sale_vol": 27,
-            "sale_pct": 6,
-            "sale_wow": "-93.1%",
+            "sale_vol": 0,
+            "sale_pct": 0,
+            "sale_wow": "-100.0%",
             "sale_trend": "down",
-            "rent_vol": 32,
-            "rent_pct": 3,
-            "rent_wow": "-95.6%",
+            "rent_vol": 19,
+            "rent_pct": 4,
+            "rent_wow": "-96.3%",
             "rent_trend": "down"
           }
         },
-        "hottest_sale": "apt",
+        "hottest_sale": null,
         "hottest_rent": "apt"
       },
       "area_options": [
@@ -234470,11 +234426,6 @@
       "rental_charts_30d": {
         "rent_volume": [
           {
-            "date": "2026-07-28",
-            "label": "28 Jul",
-            "value": 826
-          },
-          {
             "date": "2026-07-29",
             "label": "29 Jul",
             "value": 435
@@ -234538,43 +234489,43 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 0
           }
         ],
         "rent_volume_ma7": [
           {
-            "date": "2026-07-28",
-            "label": "28 Jul",
-            "value": 826
-          },
-          {
             "date": "2026-07-29",
             "label": "29 Jul",
-            "value": 631
+            "value": 435
           },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
-            "value": 594
+            "value": 479
           },
           {
             "date": "2026-07-31",
             "label": "31 Jul",
-            "value": 446
+            "value": 319
           },
           {
             "date": "2026-08-01",
             "label": "1 Aug",
-            "value": 357
+            "value": 239
           },
           {
             "date": "2026-08-02",
             "label": "2 Aug",
-            "value": 297
+            "value": 191
           },
           {
             "date": "2026-08-03",
             "label": "3 Aug",
-            "value": 255
+            "value": 160
           },
           {
             "date": "2026-08-04",
@@ -234610,14 +234561,14 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 0
           }
         ],
         "rent_avg_aed": [
-          {
-            "date": "2026-07-28",
-            "label": "28 Jul",
-            "value": 67372
-          },
           {
             "date": "2026-07-29",
             "label": "29 Jul",
@@ -234682,43 +234633,43 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 83949
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 83949
           }
         ],
         "rent_avg_aed_ma7": [
           {
-            "date": "2026-07-28",
-            "label": "28 Jul",
-            "value": 67372
-          },
-          {
             "date": "2026-07-29",
             "label": "29 Jul",
-            "value": 72592
+            "value": 77812
           },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
-            "value": 76378
+            "value": 80881
           },
           {
             "date": "2026-07-31",
             "label": "31 Jul",
-            "value": 78271
+            "value": 81903
           },
           {
             "date": "2026-08-01",
             "label": "1 Aug",
-            "value": 79406
+            "value": 82415
           },
           {
             "date": "2026-08-02",
             "label": "2 Aug",
-            "value": 80163
+            "value": 82722
           },
           {
             "date": "2026-08-03",
             "label": "3 Aug",
-            "value": 80704
+            "value": 82926
           },
           {
             "date": "2026-08-04",
@@ -234754,14 +234705,14 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 83949
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 83949
           }
         ],
         "psf": [
-          {
-            "date": "2026-07-28",
-            "label": "28 Jul",
-            "value": 90
-          },
           {
             "date": "2026-07-29",
             "label": "29 Jul",
@@ -234826,23 +234777,23 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": null
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": null
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-07-28",
-            "label": "28 Jul",
-            "value": 90
-          },
-          {
             "date": "2026-07-29",
             "label": "29 Jul",
-            "value": 90
+            "value": 89
           },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
-            "value": 90
+            "value": 91
           },
           {
             "date": "2026-07-31",
@@ -234862,7 +234813,7 @@
           {
             "date": "2026-08-03",
             "label": "3 Aug",
-            "value": 91
+            "value": 92
           },
           {
             "date": "2026-08-04",
@@ -234898,32 +234849,37 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 92
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 92
           }
         ],
         "rent_volume_weekly": [
           {
-            "label": "28 Jul–3 Aug",
-            "value": 1783
+            "label": "29 Jul–4 Aug",
+            "value": 957
           },
           {
-            "label": "4 Aug–10 Aug",
+            "label": "5 Aug–11 Aug",
             "value": 0
           }
         ],
         "psf_weekly": [
           {
-            "label": "28 Jul–3 Aug",
-            "median": 90
+            "label": "29 Jul–4 Aug",
+            "median": 92
           },
           {
-            "label": "4 Aug–10 Aug",
+            "label": "5 Aug–11 Aug",
             "median": null
           }
         ],
         "wow_volume_pct": -100,
-        "wow_rent_pct": 4,
-        "wow_psf_pct": 0.8,
-        "window_label": "2026-07-28 → 2026-08-10 (Dubai, 14 days)",
+        "wow_rent_pct": 1.1,
+        "wow_psf_pct": 0.5,
+        "window_label": "2026-07-29 → 2026-08-11 (Dubai, 14 days)",
         "window_days": 14
       },
       "rental_monthly": {
@@ -234935,42 +234891,42 @@
         "cur_psf_avg": null,
         "prev_psf_avg": 98,
         "mom_psf_pct": null,
-        "cur_days_elapsed": 11
+        "cur_days_elapsed": 12
       },
       "rental_top_areas": [
         {
           "area": "Deira",
-          "vol": "84",
-          "avg_rent_aed": "61427",
-          "avg_rent_label": "61K",
-          "trend": "flat"
-        },
-        {
-          "area": "Al Khail Gate",
-          "vol": "65",
-          "avg_rent_aed": "49399",
-          "avg_rent_label": "49K",
+          "vol": "58",
+          "avg_rent_aed": "65463",
+          "avg_rent_label": "65K",
           "trend": "flat"
         },
         {
           "area": "Bur Dubai",
-          "vol": "56",
-          "avg_rent_aed": "76740",
-          "avg_rent_label": "77K",
+          "vol": "31",
+          "avg_rent_aed": "80760",
+          "avg_rent_label": "81K",
+          "trend": "flat"
+        },
+        {
+          "area": "Jumeirah Village Circle",
+          "vol": "25",
+          "avg_rent_aed": "58226",
+          "avg_rent_label": "58K",
           "trend": "flat"
         },
         {
           "area": "Muhaisnah",
-          "vol": "41",
-          "avg_rent_aed": "43035",
-          "avg_rent_label": "43K",
+          "vol": "21",
+          "avg_rent_aed": "41177",
+          "avg_rent_label": "41K",
           "trend": "flat"
         },
         {
-          "area": "Business Bay",
-          "vol": "41",
-          "avg_rent_aed": "103551",
-          "avg_rent_label": "104K",
+          "area": "Al Khail Gate",
+          "vol": "21",
+          "avg_rent_aed": "57579",
+          "avg_rent_label": "58K",
           "trend": "flat"
         }
       ],
@@ -235202,19 +235158,14 @@
           "recurrence": "New"
         }
       ],
-      "rental_owner_briefing": "Rolling 14 days (Last 14 days (Dubai) — 29 Jul 2026 – 11 Aug 2026, Dubai): 957 rental registrations in your CSV, annualised value AED 77.67M. Prior 14 days: 19,527 registrations. New contracts 39.3% of split.",
+      "rental_owner_briefing": "Rolling 14 days (Last 14 days (Dubai) — 30 Jul 2026 – 12 Aug 2026, Dubai): 522 rental registrations in your CSV, annualised value AED 43.82M. Prior 14 days: 15,930 registrations. New contracts 44.4% of split.",
       "listings": {
         "total": 308320,
         "data_type": "rental",
         "new_this_week": 0,
-        "new_prev_7_days": 3500,
+        "new_prev_7_days": 68,
         "wow_new_pct": -100,
         "listings_added_by_day": [
-          {
-            "date": "2026-08-05",
-            "label": "5 Aug",
-            "count": 0
-          },
           {
             "date": "2026-08-06",
             "label": "6 Aug",
@@ -235244,14 +235195,14 @@
             "date": "2026-08-11",
             "label": "11 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-12",
+            "label": "12 Aug",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-07-29",
-            "label": "29 Jul",
-            "count": 3432
-          },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
@@ -235281,21 +235232,26 @@
             "date": "2026-08-04",
             "label": "4 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-05",
+            "label": "5 Aug",
+            "count": 0
           }
         ],
-        "listings_added_period": "5 Aug – 11 Aug 2026 (Dubai)",
-        "listings_added_period_prior": "29 Jul – 4 Aug 2026 (Dubai)",
+        "listings_added_period": "6 Aug – 12 Aug 2026 (Dubai)",
+        "listings_added_period_prior": "30 Jul – 5 Aug 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
-          "avg_per_day_prior": 500,
+          "avg_per_day_prior": 9.7,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "5 Aug",
+            "label": "6 Aug",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "29 Jul",
-            "count": 3432
+            "label": "30 Jul",
+            "count": 68
           }
         },
         "by_beds": {
@@ -235431,32 +235387,32 @@
         },
         "asking_vs_txn_by_beds": {
           "1": {
-            "delta_pct": 60.8,
+            "delta_pct": 58.4,
             "asking_avg": 96561,
-            "txn_avg": 60043,
+            "txn_avg": 60967,
             "asking_fmt": "AED 96,561",
-            "txn_fmt": "AED 60,043"
+            "txn_fmt": "AED 60,967"
           },
           "2": {
-            "delta_pct": 92.6,
+            "delta_pct": 89.5,
             "asking_avg": 166262,
-            "txn_avg": 86315,
+            "txn_avg": 87745,
             "asking_fmt": "AED 166,262",
-            "txn_fmt": "AED 86,315"
+            "txn_fmt": "AED 87,745"
           },
           "3": {
-            "delta_pct": 90.5,
+            "delta_pct": 84.8,
             "asking_avg": 247409,
-            "txn_avg": 129886,
+            "txn_avg": 133850,
             "asking_fmt": "AED 247,409",
-            "txn_fmt": "AED 129,886"
+            "txn_fmt": "AED 133,850"
           },
           "Studio": {
-            "delta_pct": 40.8,
+            "delta_pct": 37.8,
             "asking_avg": 58241,
-            "txn_avg": 41367,
+            "txn_avg": 42265,
             "asking_fmt": "AED 58,241",
-            "txn_fmt": "AED 41,367"
+            "txn_fmt": "AED 42,265"
           }
         },
         "source": "https://raw.githubusercontent.com/caruanakyle98/intel-data/main/listings.csv",
@@ -261340,24 +261296,11 @@
             "beds": "3 Bed",
             "property_type": "Apartment",
             "price_fmt": "AED 170,000",
-            "pct_drop": 55.9,
+            "pct_drop": 55.8,
             "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-dubai-harbour-damac-bay-damac-bay-tower-b-122938071.html",
             "bed_label": "3 Bed",
-            "market_avg_fmt": "AED 385,076",
-            "benchmark_n": 133,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "DIFC",
-            "building": "Park Tower A",
-            "beds": "2 Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 115,000",
-            "pct_drop": 55.6,
-            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-difc-park-towers-park-tower-a-115463542.html",
-            "bed_label": "2 Bed",
-            "market_avg_fmt": "AED 259,056",
-            "benchmark_n": 13,
+            "market_avg_fmt": "AED 384,773",
+            "benchmark_n": 132,
             "benchmark_source": "community_txn"
           },
           {
@@ -261381,19 +261324,6 @@
             "price_fmt": "AED 300,000",
             "pct_drop": 53.6,
             "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-121556799.html",
-            "bed_label": "4+ Bed",
-            "market_avg_fmt": "AED 647,070",
-            "benchmark_n": 24,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "Business Bay",
-            "building": "Escape Tower",
-            "beds": "4+ Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 300,000",
-            "pct_drop": 53.6,
-            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-115462175.html",
             "bed_label": "4+ Bed",
             "market_avg_fmt": "AED 647,070",
             "benchmark_n": 24,
@@ -261489,6 +261419,32 @@
             "market_avg_fmt": "AED 148,952",
             "benchmark_n": 235,
             "benchmark_source": "community_txn"
+          },
+          {
+            "community": "Jumeirah Village Circle",
+            "building": "Park Vista",
+            "beds": "Studio",
+            "property_type": "Apartment",
+            "price_fmt": "AED 30,000",
+            "pct_drop": 51.7,
+            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-121976104.html",
+            "bed_label": "Studio",
+            "market_avg_fmt": "AED 62,060",
+            "benchmark_n": 5,
+            "benchmark_source": "building_txn"
+          },
+          {
+            "community": "Jumeirah Village Circle",
+            "building": "Park Vista",
+            "beds": "Studio",
+            "property_type": "Apartment",
+            "price_fmt": "AED 30,000",
+            "pct_drop": 51.7,
+            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-119726234.html",
+            "bed_label": "Studio",
+            "market_avg_fmt": "AED 62,060",
+            "benchmark_n": 5,
+            "benchmark_source": "building_txn"
           }
         ],
         "hot_listings_by_type": {
@@ -261668,24 +261624,11 @@
               "beds": "3 Bed",
               "property_type": "Apartment",
               "price_fmt": "AED 170,000",
-              "pct_drop": 55.9,
+              "pct_drop": 55.8,
               "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-dubai-harbour-damac-bay-damac-bay-tower-b-122938071.html",
               "bed_label": "3 Bed",
-              "market_avg_fmt": "AED 385,076",
-              "benchmark_n": 133,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "DIFC",
-              "building": "Park Tower A",
-              "beds": "2 Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 115,000",
-              "pct_drop": 55.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-difc-park-towers-park-tower-a-115463542.html",
-              "bed_label": "2 Bed",
-              "market_avg_fmt": "AED 259,056",
-              "benchmark_n": 13,
+              "market_avg_fmt": "AED 384,773",
+              "benchmark_n": 132,
               "benchmark_source": "community_txn"
             },
             {
@@ -261709,19 +261652,6 @@
               "price_fmt": "AED 300,000",
               "pct_drop": 53.6,
               "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-121556799.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 647,070",
-              "benchmark_n": 24,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Business Bay",
-              "building": "Escape Tower",
-              "beds": "4+ Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 300,000",
-              "pct_drop": 53.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-115462175.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 647,070",
               "benchmark_n": 24,
@@ -261817,6 +261747,32 @@
               "market_avg_fmt": "AED 148,952",
               "benchmark_n": 235,
               "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Jumeirah Village Circle",
+              "building": "Park Vista",
+              "beds": "Studio",
+              "property_type": "Apartment",
+              "price_fmt": "AED 30,000",
+              "pct_drop": 51.7,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-121976104.html",
+              "bed_label": "Studio",
+              "market_avg_fmt": "AED 62,060",
+              "benchmark_n": 5,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Jumeirah Village Circle",
+              "building": "Park Vista",
+              "beds": "Studio",
+              "property_type": "Apartment",
+              "price_fmt": "AED 30,000",
+              "pct_drop": 51.7,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-119726234.html",
+              "bed_label": "Studio",
+              "market_avg_fmt": "AED 62,060",
+              "benchmark_n": 5,
+              "benchmark_source": "building_txn"
             }
           ],
           "villa": [
@@ -261887,32 +261843,6 @@
             },
             {
               "community": "Umm Suqeim",
-              "building": "Umm Suqeim 1 Villas",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 280,000",
-              "pct_drop": 90,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115498715.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.79M",
-              "benchmark_n": 12,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Umm Suqeim",
-              "building": "Umm Suqeim 1 Villas",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 290,000",
-              "pct_drop": 89.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115468886.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.79M",
-              "benchmark_n": 12,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Umm Suqeim",
               "building": "Umm Suqeim 3 Villas",
               "beds": "4+ Bed",
               "property_type": "Villa",
@@ -261932,19 +261862,6 @@
               "price_fmt": "AED 300,000",
               "pct_drop": 89.3,
               "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115908339.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.79M",
-              "benchmark_n": 12,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Umm Suqeim",
-              "building": "Umm Suqeim 1 Villas",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 300,000",
-              "pct_drop": 89.3,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115477737.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 2.79M",
               "benchmark_n": 12,
@@ -262140,6 +262057,45 @@
               "price_fmt": "AED 320,000",
               "pct_drop": 88.5,
               "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-115933351.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 2.79M",
+              "benchmark_n": 12,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 2 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 320,000",
+              "pct_drop": 88.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-115945439.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 2.79M",
+              "benchmark_n": 12,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 1 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 320,000",
+              "pct_drop": 88.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-118571373.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 2.79M",
+              "benchmark_n": 12,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 2 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 320,000",
+              "pct_drop": 88.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-117252421.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 2.79M",
               "benchmark_n": 12,
@@ -262362,19 +262318,6 @@
               "property_type": "Townhouse",
               "price_fmt": "AED 110,000",
               "pct_drop": 45.7,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-115462887.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 202,546",
-              "benchmark_n": 20,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Camelia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 110,000",
-              "pct_drop": 45.7,
               "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-119735222.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 202,546",
@@ -262471,6 +262414,19 @@
               "market_avg_fmt": "AED 202,546",
               "benchmark_n": 20,
               "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Damac Hills 2",
+              "building": "Camelia",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 115,000",
+              "pct_drop": 43.2,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-116803658.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 202,546",
+              "benchmark_n": 20,
+              "benchmark_source": "building_txn"
             }
           ]
         },
@@ -262491,14 +262447,9 @@
         "total": 295437,
         "data_type": "sales",
         "new_this_week": 0,
-        "new_prev_7_days": 2474,
+        "new_prev_7_days": 44,
         "wow_new_pct": -100,
         "listings_added_by_day": [
-          {
-            "date": "2026-08-05",
-            "label": "5 Aug",
-            "count": 0
-          },
           {
             "date": "2026-08-06",
             "label": "6 Aug",
@@ -262528,14 +262479,14 @@
             "date": "2026-08-11",
             "label": "11 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-12",
+            "label": "12 Aug",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-07-29",
-            "label": "29 Jul",
-            "count": 2430
-          },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
@@ -262565,21 +262516,26 @@
             "date": "2026-08-04",
             "label": "4 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-05",
+            "label": "5 Aug",
+            "count": 0
           }
         ],
-        "listings_added_period": "5 Aug – 11 Aug 2026 (Dubai)",
-        "listings_added_period_prior": "29 Jul – 4 Aug 2026 (Dubai)",
+        "listings_added_period": "6 Aug – 12 Aug 2026 (Dubai)",
+        "listings_added_period_prior": "30 Jul – 5 Aug 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
-          "avg_per_day_prior": 353.4,
+          "avg_per_day_prior": 6.3,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "5 Aug",
+            "label": "6 Aug",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "29 Jul",
-            "count": 2430
+            "label": "30 Jul",
+            "count": 44
           }
         },
         "by_beds": {
@@ -262713,36 +262669,7 @@
         "by_emirate": {
           "Dubai": 295437
         },
-        "asking_vs_txn_by_beds": {
-          "1": {
-            "delta_pct": 31.2,
-            "asking_avg": 1757456,
-            "txn_avg": 1339643,
-            "asking_fmt": "AED 1.76M",
-            "txn_fmt": "AED 1.34M"
-          },
-          "2": {
-            "delta_pct": 22.2,
-            "asking_avg": 3207540,
-            "txn_avg": 2625223,
-            "asking_fmt": "AED 3.21M",
-            "txn_fmt": "AED 2.63M"
-          },
-          "3": {
-            "delta_pct": 39.1,
-            "asking_avg": 6027124,
-            "txn_avg": 4334198,
-            "asking_fmt": "AED 6.03M",
-            "txn_fmt": "AED 4.33M"
-          },
-          "Studio": {
-            "delta_pct": 39.9,
-            "asking_avg": 995292,
-            "txn_avg": 711430,
-            "asking_fmt": "AED 995,292",
-            "txn_fmt": "AED 711,430"
-          }
-        },
+        "asking_vs_txn_by_beds": {},
         "source": "https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales_listings.csv",
         "filter_area": null,
         "filter_community": null,
@@ -289613,19 +289540,6 @@
           },
           {
             "community": "Jumeirah",
-            "building": "La Rive Building 2",
-            "beds": "2 Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 3.38M",
-            "pct_drop": 90.1,
-            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-2-115481894.html",
-            "bed_label": "2 Bed",
-            "market_avg_fmt": "AED 34.22M",
-            "benchmark_n": 13,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "Jumeirah",
             "building": "La Cote Building 2",
             "beds": "2 Bed",
             "property_type": "Apartment",
@@ -289886,15 +289800,28 @@
           },
           {
             "community": "Jumeirah",
-            "building": "La Sirene Building 2",
+            "building": "La Rive Building 4",
             "beds": "2 Bed",
             "property_type": "Apartment",
             "price_fmt": "AED 4.2M",
             "pct_drop": 87.7,
-            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-115483210.html",
+            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-4-116386882.html",
             "bed_label": "2 Bed",
             "market_avg_fmt": "AED 34.22M",
             "benchmark_n": 13,
+            "benchmark_source": "community_txn"
+          },
+          {
+            "community": "Business Bay",
+            "building": "Elite Business Bay Residence",
+            "beds": "4+ Bed",
+            "property_type": "Apartment",
+            "price_fmt": "AED 3.2M",
+            "pct_drop": 87.1,
+            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-business-bay-elite-business-bay-residence-116834172.html",
+            "bed_label": "4+ Bed",
+            "market_avg_fmt": "AED 24.79M",
+            "benchmark_n": 25,
             "benchmark_source": "community_txn"
           }
         ],
@@ -289934,19 +289861,6 @@
               "price_fmt": "AED 3.3M",
               "pct_drop": 90.4,
               "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-2-117249364.html",
-              "bed_label": "2 Bed",
-              "market_avg_fmt": "AED 34.22M",
-              "benchmark_n": 13,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Jumeirah",
-              "building": "La Rive Building 2",
-              "beds": "2 Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 3.38M",
-              "pct_drop": 90.1,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-2-115481894.html",
               "bed_label": "2 Bed",
               "market_avg_fmt": "AED 34.22M",
               "benchmark_n": 13,
@@ -290214,15 +290128,28 @@
             },
             {
               "community": "Jumeirah",
-              "building": "La Sirene Building 2",
+              "building": "La Rive Building 4",
               "beds": "2 Bed",
               "property_type": "Apartment",
               "price_fmt": "AED 4.2M",
               "pct_drop": 87.7,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-115483210.html",
+              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-4-116386882.html",
               "bed_label": "2 Bed",
               "market_avg_fmt": "AED 34.22M",
               "benchmark_n": 13,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Business Bay",
+              "building": "Elite Business Bay Residence",
+              "beds": "4+ Bed",
+              "property_type": "Apartment",
+              "price_fmt": "AED 3.2M",
+              "pct_drop": 87.1,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-business-bay-elite-business-bay-residence-116834172.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 24.79M",
+              "benchmark_n": 25,
               "benchmark_source": "community_txn"
             }
           ],
@@ -290476,19 +290403,6 @@
             },
             {
               "community": "Mohammed Bin Rashid City",
-              "building": "Senses at the Fields",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 4M",
-              "pct_drop": 78.6,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/villa-for-sale-dubai-mohammed-bin-rashid-city-district-11-the-fields-senses-at-the-fields-115491908.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 18.68M",
-              "benchmark_n": 45,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Mohammed Bin Rashid City",
               "building": "District 11",
               "beds": "4+ Bed",
               "property_type": "Villa",
@@ -290551,6 +290465,19 @@
               "market_avg_fmt": "AED 18.68M",
               "benchmark_n": 45,
               "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Dubai Hills Estate",
+              "building": "Maple at Dubai Hills Estate",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 5.8M",
+              "pct_drop": 77.7,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/villa-for-sale-dubai-dubai-hills-estate-maple-at-dubai-hills-estate-maple-at-dubai-hills-estate-1-117261254.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 26.05M",
+              "benchmark_n": 110,
+              "benchmark_source": "community_txn"
             }
           ],
           "townhouse": [
@@ -290588,19 +290515,6 @@
               "price_fmt": "AED 1.3M",
               "pct_drop": 42.2,
               "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-hills-2-victoria-118150568.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.25M",
-              "benchmark_n": 94,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Avencia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 1.3M",
-              "pct_drop": 42.2,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-hills-2-avencia-115494432.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 2.25M",
               "benchmark_n": 94,
@@ -290750,19 +290664,6 @@
               "benchmark_source": "community_txn"
             },
             {
-              "community": "DAMAC Islands",
-              "building": "FIJI at Damac Islands",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 1.98M",
-              "pct_drop": 34.2,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-fiji-at-damac-islands-115463307.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3M",
-              "benchmark_n": 115,
-              "benchmark_source": "community_txn"
-            },
-            {
               "community": "Dubai Sports City",
               "building": "Marbella Village",
               "beds": "4+ Bed",
@@ -290789,19 +290690,6 @@
               "benchmark_source": "building_txn"
             },
             {
-              "community": "DAMAC Islands",
-              "building": "Bora Bora 3",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 2.25M",
-              "pct_drop": 32.3,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-bora-bora-bora-bora-3-115467160.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3.33M",
-              "benchmark_n": 4,
-              "benchmark_source": "building_txn"
-            },
-            {
               "community": "Mohammed Bin Rashid City",
               "building": "District 11",
               "beds": "4+ Bed",
@@ -290812,19 +290700,6 @@
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 4.97M",
               "benchmark_n": 21,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "DAMAC Islands",
-              "building": "Bali at Damac Islands",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 2.05M",
-              "pct_drop": 31.6,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-bali-at-damac-islands-115492800.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3M",
-              "benchmark_n": 115,
               "benchmark_source": "community_txn"
             },
             {
@@ -290867,13 +290742,65 @@
               "benchmark_source": "community_txn"
             },
             {
+              "community": "DAMAC Islands",
+              "building": "Fiji 2",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 2.17M",
+              "pct_drop": 30.9,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-fiji-2-121986323.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 3.13M",
+              "benchmark_n": 18,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Jumeirah Golf Estates",
+              "building": "Terra Golf Collection",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 9.45M",
+              "pct_drop": 30.7,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-jumeirah-golf-estates-terra-golf-collection-120663847.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 13.63M",
+              "benchmark_n": 8,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Mohammed Bin Rashid City",
+              "building": "District 11",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 3.45M",
+              "pct_drop": 30.6,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-mohammed-bin-rashid-city-district-11-elie-saab-vie-townhouses-118574158.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 4.97M",
+              "benchmark_n": 21,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Jumeirah Village Circle",
+              "building": "District 12",
+              "beds": "2 Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 2.1M",
+              "pct_drop": 30.3,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-jumeirah-village-circle-district-12-nakheel-townhouses-121984504.html",
+              "bed_label": "2 Bed",
+              "market_avg_fmt": "AED 3.01M",
+              "benchmark_n": 6,
+              "benchmark_source": "community_txn"
+            },
+            {
               "community": "Tilal Al Ghaf",
               "building": "Elan",
               "beds": "4+ Bed",
               "property_type": "Townhouse",
-              "price_fmt": "AED 4.25M",
-              "pct_drop": 31,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-tilal-al-ghaf-elan-115463222.html",
+              "price_fmt": "AED 4.3M",
+              "pct_drop": 30.2,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-tilal-al-ghaf-elan-120163819.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 6.16M",
               "benchmark_n": 59,
@@ -290899,11 +290826,6 @@
       "ok": true,
       "charts_30d": {
         "sale_volume": [
-          {
-            "date": "2026-07-12",
-            "label": "12 Jul",
-            "value": 21
-          },
           {
             "date": "2026-07-13",
             "label": "13 Jul",
@@ -291048,14 +290970,14 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 0
           }
         ],
         "psf": [
-          {
-            "date": "2026-07-12",
-            "label": "12 Jul",
-            "value": 1565
-          },
           {
             "date": "2026-07-13",
             "label": "13 Jul",
@@ -291200,43 +291122,43 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 1746
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 1746
           }
         ],
         "sale_volume_ma7": [
           {
-            "date": "2026-07-12",
-            "label": "12 Jul",
-            "value": 21
-          },
-          {
             "date": "2026-07-13",
             "label": "13 Jul",
-            "value": 126.5
+            "value": 232
           },
           {
             "date": "2026-07-14",
             "label": "14 Jul",
-            "value": 305.7
+            "value": 448
           },
           {
             "date": "2026-07-15",
             "label": "15 Jul",
-            "value": 379.8
+            "value": 499.3
           },
           {
             "date": "2026-07-16",
             "label": "16 Jul",
-            "value": 411.6
+            "value": 509.3
           },
           {
             "date": "2026-07-17",
             "label": "17 Jul",
-            "value": 433.8
+            "value": 516.4
           },
           {
             "date": "2026-07-18",
             "label": "18 Jul",
-            "value": 382.3
+            "value": 442.5
           },
           {
             "date": "2026-07-19",
@@ -291352,43 +291274,43 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 0
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-07-12",
-            "label": "12 Jul",
-            "value": 1565
-          },
-          {
             "date": "2026-07-13",
             "label": "13 Jul",
-            "value": 1601
+            "value": 1637
           },
           {
             "date": "2026-07-14",
             "label": "14 Jul",
-            "value": 1680.3
+            "value": 1738
           },
           {
             "date": "2026-07-15",
             "label": "15 Jul",
-            "value": 1708.8
+            "value": 1756.7
           },
           {
             "date": "2026-07-16",
             "label": "16 Jul",
-            "value": 1719
+            "value": 1757.5
           },
           {
             "date": "2026-07-17",
             "label": "17 Jul",
-            "value": 1707.8
+            "value": 1736.4
           },
           {
             "date": "2026-07-18",
             "label": "18 Jul",
-            "value": 1681.4
+            "value": 1700.8
           },
           {
             "date": "2026-07-19",
@@ -291504,14 +291426,14 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 1746
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 1746
           }
         ],
         "sale_volume_weekly": [
-          {
-            "date": "2026-07-06",
-            "label": "Wk 6 Jul",
-            "value": 21
-          },
           {
             "date": "2026-07-13",
             "label": "Wk 13 Jul",
@@ -291529,13 +291451,6 @@
           }
         ],
         "psf_weekly": [
-          {
-            "date": "2026-07-06",
-            "label": "Wk 6 Jul",
-            "median": 1565,
-            "p25": 1288,
-            "p75": 1738
-          },
           {
             "date": "2026-07-13",
             "label": "Wk 13 Jul",
@@ -291560,7 +291475,7 @@
         ],
         "wow_volume_pct": -41.5,
         "wow_psf_pct": 3.4,
-        "window_label": "2026-07-12 → 2026-08-10 (Dubai, 30 days)",
+        "window_label": "2026-07-13 → 2026-08-11 (Dubai, 30 days)",
         "window_days": 30
       },
       "recent_sales_transactions": [
@@ -291842,118 +291757,118 @@
       ],
       "weekly": {
         "sale_volume": {
-          "value": "7109",
-          "chg_wow": "-39.0%",
+          "value": "6877",
+          "chg_wow": "-41.2%",
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026",
+          "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "sale_value_aed": {
-          "value": "AED 14.90B",
-          "chg_wow": "-48.4%",
+          "value": "AED 14.31B",
+          "chg_wow": "-50.8%",
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026",
+          "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "rent_volume": {
-          "value": "22052",
-          "chg_wow": "-49.9%",
+          "value": "20942",
+          "chg_wow": "-52.7%",
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026",
+          "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
         },
         "rent_value_aed": {
-          "value": "AED 1704.10M",
-          "chg_wow": "-50.3%",
+          "value": "AED 1635.15M",
+          "chg_wow": "-52.6%",
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026",
+          "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "note": "Sum of annualised rent (AED) for the week — contract rent not used."
         },
-        "period_label": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026",
+        "period_label": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026",
         "rent_new_vs_renewal": {
-          "new_count": "13280",
-          "renewal_count": "8772",
+          "new_count": "12368",
+          "renewal_count": "8574",
           "other_count": "0",
-          "new_pct": "60.2",
-          "renewal_pct": "39.8",
+          "new_pct": "59.1",
+          "renewal_pct": "40.9",
           "other_pct": null,
-          "new_chg_wow": "-51.1%",
-          "renewal_chg_wow": "-47.8%",
-          "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026",
+          "new_chg_wow": "-55.2%",
+          "renewal_chg_wow": "-48.7%",
+          "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "column": "rent recurrence"
         }
       },
       "prices": {
-        "apt_psf_aed": "1824",
-        "villa_psf_aed": "2211",
-        "townhouse_psf_aed": "1277",
+        "apt_psf_aed": "1830",
+        "villa_psf_aed": "2247",
+        "townhouse_psf_aed": "1271",
         "apt_avg_aed": "AED 1.56M",
-        "villa_avg_aed": "AED 12.56M",
-        "townhouse_avg_aed": "AED 3.37M",
-        "apt_avg_aed_num": 1558826.4808417086,
-        "villa_avg_aed_num": 12560814.554404145,
-        "townhouse_avg_aed_num": 3370166.3466386553,
-        "apt_avg_aed_yield_ref_num": 1570142.4097863848,
-        "villa_avg_aed_yield_ref_num": 9217776.30592992,
-        "townhouse_avg_aed_yield_ref_num": 3341294.219193021,
+        "villa_avg_aed": "AED 13M",
+        "townhouse_avg_aed": "AED 3.36M",
+        "apt_avg_aed_num": 1561215.9436528496,
+        "villa_avg_aed_num": 12995676.354651162,
+        "townhouse_avg_aed_num": 3360731.9935064935,
+        "apt_avg_aed_yield_ref_num": 1568982.0563251288,
+        "villa_avg_aed_yield_ref_num": 9130779.987671234,
+        "townhouse_avg_aed_yield_ref_num": 3321772.003895381,
         "yield_ref_lookback_days": "90",
         "price_index_chg_yoy": "N/A",
-        "price_period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026",
+        "price_period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026",
         "price_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "market_split": {
-        "offplan_pct": "72",
-        "secondary_pct": "28",
+        "offplan_pct": "73",
+        "secondary_pct": "27",
         "offplan_chg_yoy": "N/A",
         "dominant_segment": "Off-plan",
-        "split_period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026",
+        "split_period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026",
         "note": "Off-plan is detected from Select Data Points = Oqood in your sales CSV."
       },
       "top_areas": [
         {
           "area": "Dubai South",
-          "vol": "1064",
-          "avg_psf": "1705",
+          "vol": "1038",
+          "avg_psf": "1703",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026"
+          "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026"
         },
         {
           "area": "Downtown Jebel Ali",
-          "vol": "675",
-          "avg_psf": "1655",
+          "vol": "661",
+          "avg_psf": "1659",
           "trend": "up",
-          "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026"
+          "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026"
         },
         {
           "area": "Jumeirah Village Circle",
-          "vol": "515",
-          "avg_psf": "1354",
+          "vol": "504",
+          "avg_psf": "1358",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026"
+          "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026"
         },
         {
           "area": "Azizi Milan",
-          "vol": "395",
-          "avg_psf": "1698",
+          "vol": "393",
+          "avg_psf": "1699",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026"
+          "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026"
         },
         {
           "area": "Dubai Residence Complex",
-          "vol": "262",
-          "avg_psf": "1366",
+          "vol": "256",
+          "avg_psf": "1365",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026"
+          "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026"
         }
       ],
       "top_areas_mode": "area",
@@ -291961,7 +291876,7 @@
       "yields": {
         "apt_gross_yield": "4.9",
         "villa_gross_yield": "1.7",
-        "townhouse_gross_yield": "4.6",
+        "townhouse_gross_yield": "4.7",
         "best_yield_area": "N/A",
         "best_yield_pct": "N/A",
         "yield_vs_mortgage": "N/A",
@@ -291978,17 +291893,17 @@
         "supply_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "rental": {
-        "apt_1br_avg_aed": "64186",
+        "apt_1br_avg_aed": "64139",
         "apt_2br_avg_aed": "89407",
-        "villa_3br_avg_aed": "148930",
+        "villa_3br_avg_aed": "148770",
         "rental_index_chg_yoy": "N/A",
         "ejari_registrations_weekly": "N/A",
         "vacancy_rate": "N/A",
         "landlord_vs_tenant": "balanced",
         "note": "Rental metrics use Annualised Rental Price (AED) only. Weekly count/value + new vs renewal (Rent Recurrence) + bed averages.",
         "rental_source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
-        "rental_period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026",
-        "studio_avg_aed": "40136",
+        "rental_period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026",
+        "studio_avg_aed": "40068",
         "txn_by_building_bed": {
           "hub canal 1|1|apt": {
             "avg": 60138,
@@ -292087,8 +292002,8 @@
             "n": 3
           },
           "dec towers|Studio|apt": {
-            "avg": 59131,
-            "n": 68
+            "avg": 58650,
+            "n": 66
           },
           "city walk building 3a|1|apt": {
             "avg": 155965,
@@ -292583,8 +292498,8 @@
             "n": 158
           },
           "sparkle towers|1|apt": {
-            "avg": 111604,
-            "n": 79
+            "avg": 111432,
+            "n": 78
           },
           "syann park 1|1|apt": {
             "avg": 60322,
@@ -293079,8 +292994,8 @@
             "n": 17
           },
           "torch|1|apt": {
-            "avg": 87905,
-            "n": 103
+            "avg": 87995,
+            "n": 102
           },
           "al khair 3 building|2|apt": {
             "avg": 105000,
@@ -293131,8 +293046,8 @@
             "n": 38
           },
           "park island|2|apt": {
-            "avg": 153809,
-            "n": 124
+            "avg": 153778,
+            "n": 123
           },
           "chaimaa premiere|Studio|apt": {
             "avg": 43833,
@@ -294527,8 +294442,8 @@
             "n": 73
           },
           "52 42 towers|2|apt": {
-            "avg": 186833,
-            "n": 122
+            "avg": 186651,
+            "n": 121
           },
           "jumeirah garden building 4|1|apt": {
             "avg": 80000,
@@ -294831,8 +294746,8 @@
             "n": 25
           },
           "dec towers|2|apt": {
-            "avg": 118703,
-            "n": 64
+            "avg": 118665,
+            "n": 63
           },
           "al khail gate 1-26|1|apt": {
             "avg": 42664,
@@ -295443,8 +295358,8 @@
             "n": 3
           },
           "marina diamonds|1|apt": {
-            "avg": 72728,
-            "n": 292
+            "avg": 72789,
+            "n": 291
           },
           "building x-08|Studio|apt": {
             "avg": 30000,
@@ -296443,8 +296358,8 @@
             "n": 19
           },
           "dream towers|1|apt": {
-            "avg": 67854,
-            "n": 183
+            "avg": 67886,
+            "n": 181
           },
           "amargo|3|townhouse": {
             "avg": 80953,
@@ -298115,8 +298030,8 @@
             "n": 9
           },
           "marina promenade|2|apt": {
-            "avg": 167024,
-            "n": 156
+            "avg": 167044,
+            "n": 155
           },
           "canal front residences cf2|2|apt": {
             "avg": 212500,
@@ -299355,8 +299270,8 @@
             "n": 32
           },
           "marina diamonds|Studio|apt": {
-            "avg": 56142,
-            "n": 162
+            "avg": 56088,
+            "n": 160
           },
           "jewelz by danube|1|apt": {
             "avg": 68588,
@@ -301559,8 +301474,8 @@
             "n": 7
           },
           "dec towers|1|apt": {
-            "avg": 78230,
-            "n": 72
+            "avg": 78205,
+            "n": 71
           },
           "building 42|Studio|apt": {
             "avg": 32461,
@@ -304403,8 +304318,8 @@
             "n": 9
           },
           "damac heights|3|apt": {
-            "avg": 243705,
-            "n": 33
+            "avg": 243508,
+            "n": 32
           },
           "al helal al zahby 2|1|apt": {
             "avg": 47604,
@@ -305463,8 +305378,8 @@
             "n": 6
           },
           "silverene|1|apt": {
-            "avg": 105944,
-            "n": 146
+            "avg": 105916,
+            "n": 145
           },
           "imperial residence|Studio|apt": {
             "avg": 43388,
@@ -305704,7 +305619,7 @@
           },
           "emaar 6 towers|3|apt": {
             "avg": 259961,
-            "n": 133
+            "n": 132
           },
           "al quoz 4|Studio|apt": {
             "avg": 28626,
@@ -308123,8 +308038,8 @@
             "n": 3
           },
           "sunrise bay tower 1|2|apt": {
-            "avg": 204474,
-            "n": 25
+            "avg": 202539,
+            "n": 24
           },
           "golf horizon b|1|apt": {
             "avg": 65000,
@@ -308915,8 +308830,8 @@
             "n": 5
           },
           "23 marina|3|apt": {
-            "avg": 216970,
-            "n": 51
+            "avg": 217918,
+            "n": 50
           },
           "zaya hameni|2|apt": {
             "avg": 119778,
@@ -309715,8 +309630,8 @@
             "n": 47
           },
           "liv marina tower|1|apt": {
-            "avg": 157417,
-            "n": 51
+            "avg": 157065,
+            "n": 50
           },
           "sb building|1|apt": {
             "avg": 64789,
@@ -311543,8 +311458,8 @@
             "n": 15
           },
           "time place tower|1|apt": {
-            "avg": 83217,
-            "n": 80
+            "avg": 82990,
+            "n": 79
           },
           "saif bin sharaf building|1|apt": {
             "avg": 44882,
@@ -313939,8 +313854,8 @@
             "n": 9
           },
           "grand bleu tower 1|3|apt": {
-            "avg": 522793,
-            "n": 14
+            "avg": 530315,
+            "n": 13
           },
           "sapphire|1|apt": {
             "avg": 163270,
@@ -316195,8 +316110,8 @@
             "n": 45
           },
           "stella maris|2|apt": {
-            "avg": 230762,
-            "n": 45
+            "avg": 229643,
+            "n": 44
           },
           "building b04|1|apt": {
             "avg": 57895,
@@ -316431,8 +316346,8 @@
             "n": 11
           },
           "jw marriott hotel marina|Studio|apt": {
-            "avg": 133771,
-            "n": 26
+            "avg": 131522,
+            "n": 25
           },
           "building 104|Studio|apt": {
             "avg": 43875,
@@ -317883,8 +317798,8 @@
             "n": 3
           },
           "marina residence|2|apt": {
-            "avg": 120055,
-            "n": 17
+            "avg": 119746,
+            "n": 16
           },
           "al manali building|1|apt": {
             "avg": 67875,
@@ -320483,8 +320398,8 @@
             "n": 9
           },
           "marina view|Studio|apt": {
-            "avg": 63211,
-            "n": 56
+            "avg": 63124,
+            "n": 55
           },
           "azizi riviera 67|1|apt": {
             "avg": 54000,
@@ -323667,8 +323582,8 @@
             "n": 4
           },
           "beach vista tower 1|1|apt": {
-            "avg": 143799,
-            "n": 23
+            "avg": 144250,
+            "n": 22
           },
           "gmm tower 1|2|apt": {
             "avg": 78283,
@@ -325175,8 +325090,8 @@
             "n": 6
           },
           "marina terrace|3|apt": {
-            "avg": 184789,
-            "n": 19
+            "avg": 186000,
+            "n": 18
           },
           "arbor view|1|apt": {
             "avg": 94821,
@@ -327586,18 +327501,6 @@
             "avg": 155675,
             "n": 38
           },
-          "ariyana tower|1|apt": {
-            "avg": 56894,
-            "n": 11
-          },
-          "ocean heights|3|apt": {
-            "avg": 186361,
-            "n": 21
-          },
-          "trident waterfront|4+|apt": {
-            "avg": 390000,
-            "n": 3
-          },
           "marina pearl|Studio|apt": {
             "avg": 58313,
             "n": 13
@@ -327622,9 +327525,17 @@
             "avg": 164406,
             "n": 12
           },
+          "ariyana tower|1|apt": {
+            "avg": 55983,
+            "n": 10
+          },
           "marina arcade tower|3|apt": {
             "avg": 212503,
             "n": 11
+          },
+          "ocean heights|3|apt": {
+            "avg": 186680,
+            "n": 20
           },
           "residences at marina gate|4+|apt": {
             "avg": 863750,
@@ -328605,8 +328516,8 @@
             "n": 249
           },
           "dubai marina|Studio|apt": {
-            "avg": 68741,
-            "n": 953
+            "avg": 68618,
+            "n": 947
           },
           "business bay|2|apt": {
             "avg": 134396,
@@ -328765,8 +328676,8 @@
             "n": 349
           },
           "dubai marina|2|apt": {
-            "avg": 150835,
-            "n": 4319
+            "avg": 150800,
+            "n": 4313
           },
           "downtown dubai|1|apt": {
             "avg": 115204,
@@ -328869,8 +328780,8 @@
             "n": 99
           },
           "dubai marina|1|apt": {
-            "avg": 98330,
-            "n": 5686
+            "avg": 98341,
+            "n": 5676
           },
           "arjan|1|apt": {
             "avg": 65970,
@@ -329425,8 +329336,8 @@
             "n": 127
           },
           "dubai marina|3|apt": {
-            "avg": 233392,
-            "n": 1206
+            "avg": 233641,
+            "n": 1199
           },
           "remraam|1|apt": {
             "avg": 56240,
@@ -329481,8 +329392,8 @@
             "n": 11
           },
           "dubai marina|4+|apt": {
-            "avg": 346861,
-            "n": 229
+            "avg": 345970,
+            "n": 228
           },
           "city walk|2|apt": {
             "avg": 231719,
@@ -329769,8 +329680,8 @@
             "n": 37
           },
           "dubai harbour|2|apt": {
-            "avg": 232502,
-            "n": 465
+            "avg": 232462,
+            "n": 464
           },
           "dubai sports city|4+|townhouse": {
             "avg": 346031,
@@ -330009,8 +329920,8 @@
             "n": 43
           },
           "dubai harbour|1|apt": {
-            "avg": 143594,
-            "n": 531
+            "avg": 143612,
+            "n": 530
           },
           "al badaa|4+|villa": {
             "avg": 281667,
@@ -330301,8 +330212,8 @@
             "n": 3
           },
           "dubai harbour|3|apt": {
-            "avg": 385076,
-            "n": 133
+            "avg": 384773,
+            "n": 132
           },
           "al marmoom|Studio|apt": {
             "avg": 54643,
@@ -331245,17 +331156,17 @@
         "financing_conditions": "N/A",
         "mortgage_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
-      "owner_briefing": "Rolling 30 days through today (13 Jul 2026 – 11 Aug 2026, Dubai): 7,109 transactions in your CSV worth AED 14.90B. Prior 30 days (13 Jun 2026 – 12 Jul 2026): 11,663 deals. Off-plan share 72% (Oqood-tagged rows).",
+      "owner_briefing": "Rolling 30 days through today (14 Jul 2026 – 12 Aug 2026, Dubai): 6,877 transactions in your CSV worth AED 14.31B. Prior 30 days (14 Jun 2026 – 13 Jul 2026): 11,686 deals. Off-plan share 73% (Oqood-tagged rows).",
       "data_freshness": "Transactions through 29 Jul 2026 · snapshot build (30d)",
       "sources_used": [
         "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)",
         "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
       ],
       "sale_txn_avg_by_beds": {
-        "studio": 689553,
-        "1br": 1329409,
-        "2br": 2592105,
-        "3br": 4683525
+        "studio": 689432,
+        "1br": 1336471,
+        "2br": 2594579,
+        "3br": 4764082
       },
       "monthly": {
         "cur_label": "August 2026",
@@ -331295,7 +331206,7 @@
           }
         },
         "mom_avg_by_beds_pct": {},
-        "cur_days_elapsed": 11
+        "cur_days_elapsed": 12
       },
       "sale_txn_by_building_bed": {
         "tempo|1|apt": {
@@ -335139,8 +335050,8 @@
           "n": 6
         },
         "vida residences at creek beach|2|apt": {
-          "avg": 3045625,
-          "n": 16
+          "avg": 3042000,
+          "n": 15
         },
         "icon tower 2|2|apt": {
           "avg": 1387120,
@@ -336803,8 +336714,8 @@
           "n": 6
         },
         "creek crescent|2|apt": {
-          "avg": 2658214,
-          "n": 14
+          "avg": 2655769,
+          "n": 13
         },
         "breez by danube|2|apt": {
           "avg": 4179774,
@@ -341795,8 +341706,8 @@
           "n": 7
         },
         "cove building 6|2|apt": {
-          "avg": 2450413,
-          "n": 7
+          "avg": 2417148,
+          "n": 6
         },
         "damac towers by paramount a|1|apt": {
           "avg": 1403102,
@@ -343883,8 +343794,8 @@
           "n": 5
         },
         "creek waters 2|2|apt": {
-          "avg": 2680790,
-          "n": 22
+          "avg": 2684637,
+          "n": 21
         },
         "executive towers j|1|apt": {
           "avg": 1636440,
@@ -344495,8 +344406,8 @@
           "n": 3
         },
         "creekside 18 b|2|apt": {
-          "avg": 2662222,
-          "n": 9
+          "avg": 2682500,
+          "n": 8
         },
         "laya mansion|Studio|apt": {
           "avg": 538333,
@@ -344895,8 +344806,8 @@
           "n": 3
         },
         "17 icon bay building 1|2|apt": {
-          "avg": 2376766,
-          "n": 12
+          "avg": 2367835,
+          "n": 11
         },
         "riva residence|3|apt": {
           "avg": 5629333,
@@ -350561,8 +350472,8 @@
           "n": 402
         },
         "dubai creek harbour|2|apt": {
-          "avg": 3152463,
-          "n": 1678
+          "avg": 3154197,
+          "n": 1672
         },
         "al furjan|Studio|apt": {
           "avg": 562809,
@@ -353000,39 +352911,39 @@
       "sale_hot_listings_lookback_days": "365",
       "sale_hot_listings_min_txn": "3",
       "property_type_activity": {
-        "period": "Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026",
+        "period": "Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026",
         "entries": {
           "apt": {
             "label": "Apartment",
-            "sale_vol": 6368,
-            "sale_pct": 90,
-            "sale_wow": "-36.3%",
+            "sale_vol": 6176,
+            "sale_pct": 91,
+            "sale_wow": "-38.2%",
             "sale_trend": "down",
-            "rent_vol": 20350,
+            "rent_vol": 19284,
             "rent_pct": 92,
-            "rent_wow": "-49.8%",
+            "rent_wow": "-52.8%",
             "rent_trend": "down"
           },
           "villa": {
             "label": "Villa",
-            "sale_vol": 193,
+            "sale_vol": 172,
             "sale_pct": 3,
-            "sale_wow": "-73.1%",
+            "sale_wow": "-76.7%",
             "sale_trend": "down",
-            "rent_vol": 889,
+            "rent_vol": 869,
             "rent_pct": 4,
-            "rent_wow": "-49.1%",
+            "rent_wow": "-50.5%",
             "rent_trend": "down"
           },
           "townhouse": {
             "label": "Townhouse",
-            "sale_vol": 476,
+            "sale_vol": 462,
             "sale_pct": 7,
-            "sale_wow": "-41.5%",
+            "sale_wow": "-44.0%",
             "sale_trend": "down",
-            "rent_vol": 813,
+            "rent_vol": 789,
             "rent_pct": 4,
-            "rent_wow": "-51.2%",
+            "rent_wow": "-52.5%",
             "rent_trend": "down"
           }
         },
@@ -380531,11 +380442,6 @@
       "rental_charts_30d": {
         "rent_volume": [
           {
-            "date": "2026-07-12",
-            "label": "12 Jul",
-            "value": 597
-          },
-          {
             "date": "2026-07-13",
             "label": "13 Jul",
             "value": 1110
@@ -380679,43 +380585,43 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 0
           }
         ],
         "rent_volume_ma7": [
           {
-            "date": "2026-07-12",
-            "label": "12 Jul",
-            "value": 597
-          },
-          {
             "date": "2026-07-13",
             "label": "13 Jul",
-            "value": 854
+            "value": 1110
           },
           {
             "date": "2026-07-14",
             "label": "14 Jul",
-            "value": 722
+            "value": 784
           },
           {
             "date": "2026-07-15",
             "label": "15 Jul",
-            "value": 1549
+            "value": 1867
           },
           {
             "date": "2026-07-16",
             "label": "16 Jul",
-            "value": 1494
+            "value": 1718
           },
           {
             "date": "2026-07-17",
             "label": "17 Jul",
-            "value": 1412
+            "value": 1575
           },
           {
             "date": "2026-07-18",
             "label": "18 Jul",
-            "value": 1338
+            "value": 1462
           },
           {
             "date": "2026-07-19",
@@ -380831,14 +380737,14 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 0
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 0
           }
         ],
         "rent_avg_aed": [
-          {
-            "date": "2026-07-12",
-            "label": "12 Jul",
-            "value": 83415
-          },
           {
             "date": "2026-07-13",
             "label": "13 Jul",
@@ -380983,43 +380889,43 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 83949
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 83949
           }
         ],
         "rent_avg_aed_ma7": [
           {
-            "date": "2026-07-12",
-            "label": "12 Jul",
-            "value": 83415
-          },
-          {
             "date": "2026-07-13",
             "label": "13 Jul",
-            "value": 72767
+            "value": 62118
           },
           {
             "date": "2026-07-14",
             "label": "14 Jul",
-            "value": 81352
+            "value": 80321
           },
           {
             "date": "2026-07-15",
             "label": "15 Jul",
-            "value": 86188
+            "value": 87112
           },
           {
             "date": "2026-07-16",
             "label": "16 Jul",
-            "value": 82465
+            "value": 82228
           },
           {
             "date": "2026-07-17",
             "label": "17 Jul",
-            "value": 79935
+            "value": 79239
           },
           {
             "date": "2026-07-18",
             "label": "18 Jul",
-            "value": 78583
+            "value": 77777
           },
           {
             "date": "2026-07-19",
@@ -381135,14 +381041,14 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 83949
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 83949
           }
         ],
         "psf": [
-          {
-            "date": "2026-07-12",
-            "label": "12 Jul",
-            "value": 88
-          },
           {
             "date": "2026-07-13",
             "label": "13 Jul",
@@ -381287,43 +381193,43 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": null
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": null
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-07-12",
-            "label": "12 Jul",
-            "value": 88
-          },
-          {
             "date": "2026-07-13",
             "label": "13 Jul",
-            "value": 93
+            "value": 98
           },
           {
             "date": "2026-07-14",
             "label": "14 Jul",
-            "value": 92
+            "value": 94
           },
           {
             "date": "2026-07-15",
             "label": "15 Jul",
-            "value": 92
+            "value": 93
           },
           {
             "date": "2026-07-16",
             "label": "16 Jul",
-            "value": 96
+            "value": 98
           },
           {
             "date": "2026-07-17",
             "label": "17 Jul",
-            "value": 97
+            "value": 98
           },
           {
             "date": "2026-07-18",
             "label": "18 Jul",
-            "value": 97
+            "value": 98
           },
           {
             "date": "2026-07-19",
@@ -381439,56 +381345,61 @@
             "date": "2026-08-10",
             "label": "10 Aug",
             "value": 92
+          },
+          {
+            "date": "2026-08-11",
+            "label": "11 Aug",
+            "value": 92
           }
         ],
         "rent_volume_weekly": [
           {
-            "label": "12 Jul–18 Jul",
-            "value": 9366
+            "label": "13 Jul–19 Jul",
+            "value": 9109
           },
           {
-            "label": "19 Jul–25 Jul",
-            "value": 9677
+            "label": "20 Jul–26 Jul",
+            "value": 9879
           },
           {
-            "label": "26 Jul–1 Aug",
-            "value": 3606
+            "label": "27 Jul–2 Aug",
+            "value": 3064
           },
           {
-            "label": "2 Aug–8 Aug",
+            "label": "3 Aug–9 Aug",
             "value": 0
           },
           {
-            "label": "4 Aug–10 Aug",
+            "label": "5 Aug–11 Aug",
             "value": 0
           }
         ],
         "psf_weekly": [
           {
-            "label": "12 Jul–18 Jul",
+            "label": "13 Jul–19 Jul",
             "median": 97
           },
           {
-            "label": "19 Jul–25 Jul",
+            "label": "20 Jul–26 Jul",
+            "median": 94
+          },
+          {
+            "label": "27 Jul–2 Aug",
             "median": 92
           },
           {
-            "label": "26 Jul–1 Aug",
-            "median": 92
-          },
-          {
-            "label": "2 Aug–8 Aug",
+            "label": "3 Aug–9 Aug",
             "median": null
           },
           {
-            "label": "4 Aug–10 Aug",
+            "label": "5 Aug–11 Aug",
             "median": null
           }
         ],
         "wow_volume_pct": -100,
-        "wow_rent_pct": 4,
-        "wow_psf_pct": 0.8,
-        "window_label": "2026-07-12 → 2026-08-10 (Dubai, 30 days)",
+        "wow_rent_pct": 1.1,
+        "wow_psf_pct": 0.5,
+        "window_label": "2026-07-13 → 2026-08-11 (Dubai, 30 days)",
         "window_days": 30
       },
       "rental_monthly": {
@@ -381500,42 +381411,42 @@
         "cur_psf_avg": null,
         "prev_psf_avg": 98,
         "mom_psf_pct": null,
-        "cur_days_elapsed": 11
+        "cur_days_elapsed": 12
       },
       "rental_top_areas": [
         {
           "area": "Deira",
-          "vol": "4571",
-          "avg_rent_aed": "33857",
-          "avg_rent_label": "34K",
+          "vol": "4184",
+          "avg_rent_aed": "34822",
+          "avg_rent_label": "35K",
           "trend": "flat"
         },
         {
           "area": "Bur Dubai",
-          "vol": "1512",
-          "avg_rent_aed": "59409",
-          "avg_rent_label": "59K",
+          "vol": "1439",
+          "avg_rent_aed": "60374",
+          "avg_rent_label": "60K",
           "trend": "flat"
         },
         {
           "area": "Jumeirah Village Circle",
-          "vol": "860",
-          "avg_rent_aed": "73195",
+          "vol": "838",
+          "avg_rent_aed": "73346",
           "avg_rent_label": "73K",
           "trend": "flat"
         },
         {
           "area": "Al Nahda",
-          "vol": "755",
-          "avg_rent_aed": "49495",
+          "vol": "734",
+          "avg_rent_aed": "49460",
           "avg_rent_label": "49K",
           "trend": "flat"
         },
         {
           "area": "Al Quoz",
-          "vol": "686",
-          "avg_rent_aed": "33893",
-          "avg_rent_label": "34K",
+          "vol": "649",
+          "avg_rent_aed": "34541",
+          "avg_rent_label": "35K",
           "trend": "flat"
         }
       ],
@@ -381767,19 +381678,14 @@
           "recurrence": "New"
         }
       ],
-      "rental_owner_briefing": "Rolling 30 days (Last 30 days (Dubai) — 13 Jul 2026 – 11 Aug 2026, Dubai): 22,052 rental registrations in your CSV, annualised value AED 1704.10M. Prior 30 days: 43,973 registrations. New contracts 60.2% of split.",
+      "rental_owner_briefing": "Rolling 30 days (Last 30 days (Dubai) — 14 Jul 2026 – 12 Aug 2026, Dubai): 20,942 rental registrations in your CSV, annualised value AED 1635.15M. Prior 30 days: 44,288 registrations. New contracts 59.1% of split.",
       "listings": {
         "total": 308320,
         "data_type": "rental",
         "new_this_week": 0,
-        "new_prev_7_days": 3500,
+        "new_prev_7_days": 68,
         "wow_new_pct": -100,
         "listings_added_by_day": [
-          {
-            "date": "2026-08-05",
-            "label": "5 Aug",
-            "count": 0
-          },
           {
             "date": "2026-08-06",
             "label": "6 Aug",
@@ -381809,14 +381715,14 @@
             "date": "2026-08-11",
             "label": "11 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-12",
+            "label": "12 Aug",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-07-29",
-            "label": "29 Jul",
-            "count": 3432
-          },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
@@ -381846,21 +381752,26 @@
             "date": "2026-08-04",
             "label": "4 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-05",
+            "label": "5 Aug",
+            "count": 0
           }
         ],
-        "listings_added_period": "5 Aug – 11 Aug 2026 (Dubai)",
-        "listings_added_period_prior": "29 Jul – 4 Aug 2026 (Dubai)",
+        "listings_added_period": "6 Aug – 12 Aug 2026 (Dubai)",
+        "listings_added_period_prior": "30 Jul – 5 Aug 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
-          "avg_per_day_prior": 500,
+          "avg_per_day_prior": 9.7,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "5 Aug",
+            "label": "6 Aug",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "29 Jul",
-            "count": 3432
+            "label": "30 Jul",
+            "count": 68
           }
         },
         "by_beds": {
@@ -381996,11 +381907,11 @@
         },
         "asking_vs_txn_by_beds": {
           "1": {
-            "delta_pct": 50.4,
+            "delta_pct": 50.5,
             "asking_avg": 96561,
-            "txn_avg": 64186,
+            "txn_avg": 64139,
             "asking_fmt": "AED 96,561",
-            "txn_fmt": "AED 64,186"
+            "txn_fmt": "AED 64,139"
           },
           "2": {
             "delta_pct": 86,
@@ -382010,18 +381921,18 @@
             "txn_fmt": "AED 89,407"
           },
           "3": {
-            "delta_pct": 66.1,
+            "delta_pct": 66.3,
             "asking_avg": 247409,
-            "txn_avg": 148930,
+            "txn_avg": 148770,
             "asking_fmt": "AED 247,409",
-            "txn_fmt": "AED 148,930"
+            "txn_fmt": "AED 148,770"
           },
           "Studio": {
-            "delta_pct": 45.1,
+            "delta_pct": 45.4,
             "asking_avg": 58241,
-            "txn_avg": 40136,
+            "txn_avg": 40068,
             "asking_fmt": "AED 58,241",
-            "txn_fmt": "AED 40,136"
+            "txn_fmt": "AED 40,068"
           }
         },
         "source": "https://raw.githubusercontent.com/caruanakyle98/intel-data/main/listings.csv",
@@ -407905,24 +407816,11 @@
             "beds": "3 Bed",
             "property_type": "Apartment",
             "price_fmt": "AED 170,000",
-            "pct_drop": 55.9,
+            "pct_drop": 55.8,
             "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-dubai-harbour-damac-bay-damac-bay-tower-b-122938071.html",
             "bed_label": "3 Bed",
-            "market_avg_fmt": "AED 385,076",
-            "benchmark_n": 133,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "DIFC",
-            "building": "Park Tower A",
-            "beds": "2 Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 115,000",
-            "pct_drop": 55.6,
-            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-difc-park-towers-park-tower-a-115463542.html",
-            "bed_label": "2 Bed",
-            "market_avg_fmt": "AED 259,056",
-            "benchmark_n": 13,
+            "market_avg_fmt": "AED 384,773",
+            "benchmark_n": 132,
             "benchmark_source": "community_txn"
           },
           {
@@ -407946,19 +407844,6 @@
             "price_fmt": "AED 300,000",
             "pct_drop": 53.6,
             "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-121556799.html",
-            "bed_label": "4+ Bed",
-            "market_avg_fmt": "AED 647,070",
-            "benchmark_n": 24,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "Business Bay",
-            "building": "Escape Tower",
-            "beds": "4+ Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 300,000",
-            "pct_drop": 53.6,
-            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-115462175.html",
             "bed_label": "4+ Bed",
             "market_avg_fmt": "AED 647,070",
             "benchmark_n": 24,
@@ -408054,6 +407939,32 @@
             "market_avg_fmt": "AED 148,952",
             "benchmark_n": 235,
             "benchmark_source": "community_txn"
+          },
+          {
+            "community": "Jumeirah Village Circle",
+            "building": "Park Vista",
+            "beds": "Studio",
+            "property_type": "Apartment",
+            "price_fmt": "AED 30,000",
+            "pct_drop": 51.7,
+            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-121976104.html",
+            "bed_label": "Studio",
+            "market_avg_fmt": "AED 62,060",
+            "benchmark_n": 5,
+            "benchmark_source": "building_txn"
+          },
+          {
+            "community": "Jumeirah Village Circle",
+            "building": "Park Vista",
+            "beds": "Studio",
+            "property_type": "Apartment",
+            "price_fmt": "AED 30,000",
+            "pct_drop": 51.7,
+            "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-119726234.html",
+            "bed_label": "Studio",
+            "market_avg_fmt": "AED 62,060",
+            "benchmark_n": 5,
+            "benchmark_source": "building_txn"
           }
         ],
         "hot_listings_by_type": {
@@ -408233,24 +408144,11 @@
               "beds": "3 Bed",
               "property_type": "Apartment",
               "price_fmt": "AED 170,000",
-              "pct_drop": 55.9,
+              "pct_drop": 55.8,
               "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-dubai-harbour-damac-bay-damac-bay-tower-b-122938071.html",
               "bed_label": "3 Bed",
-              "market_avg_fmt": "AED 385,076",
-              "benchmark_n": 133,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "DIFC",
-              "building": "Park Tower A",
-              "beds": "2 Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 115,000",
-              "pct_drop": 55.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-difc-park-towers-park-tower-a-115463542.html",
-              "bed_label": "2 Bed",
-              "market_avg_fmt": "AED 259,056",
-              "benchmark_n": 13,
+              "market_avg_fmt": "AED 384,773",
+              "benchmark_n": 132,
               "benchmark_source": "community_txn"
             },
             {
@@ -408274,19 +408172,6 @@
               "price_fmt": "AED 300,000",
               "pct_drop": 53.6,
               "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-121556799.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 647,070",
-              "benchmark_n": 24,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Business Bay",
-              "building": "Escape Tower",
-              "beds": "4+ Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 300,000",
-              "pct_drop": 53.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-business-bay-escape-tower-115462175.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 647,070",
               "benchmark_n": 24,
@@ -408382,6 +408267,32 @@
               "market_avg_fmt": "AED 148,952",
               "benchmark_n": 235,
               "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Jumeirah Village Circle",
+              "building": "Park Vista",
+              "beds": "Studio",
+              "property_type": "Apartment",
+              "price_fmt": "AED 30,000",
+              "pct_drop": 51.7,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-121976104.html",
+              "bed_label": "Studio",
+              "market_avg_fmt": "AED 62,060",
+              "benchmark_n": 5,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Jumeirah Village Circle",
+              "building": "Park Vista",
+              "beds": "Studio",
+              "property_type": "Apartment",
+              "price_fmt": "AED 30,000",
+              "pct_drop": 51.7,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/apartment-for-rent-dubai-jumeirah-village-circle-district-13-park-vista-119726234.html",
+              "bed_label": "Studio",
+              "market_avg_fmt": "AED 62,060",
+              "benchmark_n": 5,
+              "benchmark_source": "building_txn"
             }
           ],
           "villa": [
@@ -408452,32 +408363,6 @@
             },
             {
               "community": "Umm Suqeim",
-              "building": "Umm Suqeim 1 Villas",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 280,000",
-              "pct_drop": 90,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115498715.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.79M",
-              "benchmark_n": 12,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Umm Suqeim",
-              "building": "Umm Suqeim 1 Villas",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 290,000",
-              "pct_drop": 89.6,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115468886.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.79M",
-              "benchmark_n": 12,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Umm Suqeim",
               "building": "Umm Suqeim 3 Villas",
               "beds": "4+ Bed",
               "property_type": "Villa",
@@ -408497,19 +408382,6 @@
               "price_fmt": "AED 300,000",
               "pct_drop": 89.3,
               "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115908339.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.79M",
-              "benchmark_n": 12,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Umm Suqeim",
-              "building": "Umm Suqeim 1 Villas",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 300,000",
-              "pct_drop": 89.3,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-115477737.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 2.79M",
               "benchmark_n": 12,
@@ -408705,6 +408577,45 @@
               "price_fmt": "AED 320,000",
               "pct_drop": 88.5,
               "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-115933351.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 2.79M",
+              "benchmark_n": 12,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 2 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 320,000",
+              "pct_drop": 88.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-115945439.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 2.79M",
+              "benchmark_n": 12,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 1 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 320,000",
+              "pct_drop": 88.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-1-umm-suqeim-1-villas-118571373.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 2.79M",
+              "benchmark_n": 12,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Umm Suqeim",
+              "building": "Umm Suqeim 2 Villas",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 320,000",
+              "pct_drop": 88.5,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/villa-for-rent-dubai-umm-suqeim-umm-suqeim-2-umm-suqeim-2-villas-117252421.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 2.79M",
               "benchmark_n": 12,
@@ -408927,19 +408838,6 @@
               "property_type": "Townhouse",
               "price_fmt": "AED 110,000",
               "pct_drop": 45.7,
-              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-115462887.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 202,546",
-              "benchmark_n": 20,
-              "benchmark_source": "building_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Camelia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 110,000",
-              "pct_drop": 45.7,
               "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-119735222.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 202,546",
@@ -409036,6 +408934,19 @@
               "market_avg_fmt": "AED 202,546",
               "benchmark_n": 20,
               "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Damac Hills 2",
+              "building": "Camelia",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 115,000",
+              "pct_drop": 43.2,
+              "link": "https://www.propertyfinder.ae/en/plp/rent/townhouse-for-rent-dubai-damac-hills-2-camelia-116803658.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 202,546",
+              "benchmark_n": 20,
+              "benchmark_source": "building_txn"
             }
           ]
         },
@@ -409056,14 +408967,9 @@
         "total": 295437,
         "data_type": "sales",
         "new_this_week": 0,
-        "new_prev_7_days": 2474,
+        "new_prev_7_days": 44,
         "wow_new_pct": -100,
         "listings_added_by_day": [
-          {
-            "date": "2026-08-05",
-            "label": "5 Aug",
-            "count": 0
-          },
           {
             "date": "2026-08-06",
             "label": "6 Aug",
@@ -409093,14 +408999,14 @@
             "date": "2026-08-11",
             "label": "11 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-12",
+            "label": "12 Aug",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-07-29",
-            "label": "29 Jul",
-            "count": 2430
-          },
           {
             "date": "2026-07-30",
             "label": "30 Jul",
@@ -409130,21 +409036,26 @@
             "date": "2026-08-04",
             "label": "4 Aug",
             "count": 0
+          },
+          {
+            "date": "2026-08-05",
+            "label": "5 Aug",
+            "count": 0
           }
         ],
-        "listings_added_period": "5 Aug – 11 Aug 2026 (Dubai)",
-        "listings_added_period_prior": "29 Jul – 4 Aug 2026 (Dubai)",
+        "listings_added_period": "6 Aug – 12 Aug 2026 (Dubai)",
+        "listings_added_period_prior": "30 Jul – 5 Aug 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
-          "avg_per_day_prior": 353.4,
+          "avg_per_day_prior": 6.3,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "5 Aug",
+            "label": "6 Aug",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "29 Jul",
-            "count": 2430
+            "label": "30 Jul",
+            "count": 44
           }
         },
         "by_beds": {
@@ -409280,32 +409191,32 @@
         },
         "asking_vs_txn_by_beds": {
           "1": {
-            "delta_pct": 32.2,
+            "delta_pct": 31.5,
             "asking_avg": 1757456,
-            "txn_avg": 1329409,
+            "txn_avg": 1336471,
             "asking_fmt": "AED 1.76M",
-            "txn_fmt": "AED 1.33M"
+            "txn_fmt": "AED 1.34M"
           },
           "2": {
-            "delta_pct": 23.7,
+            "delta_pct": 23.6,
             "asking_avg": 3207540,
-            "txn_avg": 2592105,
+            "txn_avg": 2594579,
             "asking_fmt": "AED 3.21M",
             "txn_fmt": "AED 2.59M"
           },
           "3": {
-            "delta_pct": 28.7,
+            "delta_pct": 26.5,
             "asking_avg": 6027124,
-            "txn_avg": 4683525,
+            "txn_avg": 4764082,
             "asking_fmt": "AED 6.03M",
-            "txn_fmt": "AED 4.68M"
+            "txn_fmt": "AED 4.76M"
           },
           "Studio": {
-            "delta_pct": 44.3,
+            "delta_pct": 44.4,
             "asking_avg": 995292,
-            "txn_avg": 689553,
+            "txn_avg": 689432,
             "asking_fmt": "AED 995,292",
-            "txn_fmt": "AED 689,553"
+            "txn_fmt": "AED 689,432"
           }
         },
         "source": "https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales_listings.csv",
@@ -436178,19 +436089,6 @@
           },
           {
             "community": "Jumeirah",
-            "building": "La Rive Building 2",
-            "beds": "2 Bed",
-            "property_type": "Apartment",
-            "price_fmt": "AED 3.38M",
-            "pct_drop": 90.1,
-            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-2-115481894.html",
-            "bed_label": "2 Bed",
-            "market_avg_fmt": "AED 34.22M",
-            "benchmark_n": 13,
-            "benchmark_source": "community_txn"
-          },
-          {
-            "community": "Jumeirah",
             "building": "La Cote Building 2",
             "beds": "2 Bed",
             "property_type": "Apartment",
@@ -436451,15 +436349,28 @@
           },
           {
             "community": "Jumeirah",
-            "building": "La Sirene Building 2",
+            "building": "La Rive Building 4",
             "beds": "2 Bed",
             "property_type": "Apartment",
             "price_fmt": "AED 4.2M",
             "pct_drop": 87.7,
-            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-115483210.html",
+            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-4-116386882.html",
             "bed_label": "2 Bed",
             "market_avg_fmt": "AED 34.22M",
             "benchmark_n": 13,
+            "benchmark_source": "community_txn"
+          },
+          {
+            "community": "Business Bay",
+            "building": "Elite Business Bay Residence",
+            "beds": "4+ Bed",
+            "property_type": "Apartment",
+            "price_fmt": "AED 3.2M",
+            "pct_drop": 87.1,
+            "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-business-bay-elite-business-bay-residence-116834172.html",
+            "bed_label": "4+ Bed",
+            "market_avg_fmt": "AED 24.79M",
+            "benchmark_n": 25,
             "benchmark_source": "community_txn"
           }
         ],
@@ -436499,19 +436410,6 @@
               "price_fmt": "AED 3.3M",
               "pct_drop": 90.4,
               "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-2-117249364.html",
-              "bed_label": "2 Bed",
-              "market_avg_fmt": "AED 34.22M",
-              "benchmark_n": 13,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Jumeirah",
-              "building": "La Rive Building 2",
-              "beds": "2 Bed",
-              "property_type": "Apartment",
-              "price_fmt": "AED 3.38M",
-              "pct_drop": 90.1,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-2-115481894.html",
               "bed_label": "2 Bed",
               "market_avg_fmt": "AED 34.22M",
               "benchmark_n": 13,
@@ -436779,15 +436677,28 @@
             },
             {
               "community": "Jumeirah",
-              "building": "La Sirene Building 2",
+              "building": "La Rive Building 4",
               "beds": "2 Bed",
               "property_type": "Apartment",
               "price_fmt": "AED 4.2M",
               "pct_drop": 87.7,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-sirene-la-sirene-building-2-115483210.html",
+              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-jumeirah-la-mer-port-de-la-mer-la-rive-la-rive-building-4-116386882.html",
               "bed_label": "2 Bed",
               "market_avg_fmt": "AED 34.22M",
               "benchmark_n": 13,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Business Bay",
+              "building": "Elite Business Bay Residence",
+              "beds": "4+ Bed",
+              "property_type": "Apartment",
+              "price_fmt": "AED 3.2M",
+              "pct_drop": 87.1,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/apartment-for-sale-dubai-business-bay-elite-business-bay-residence-116834172.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 24.79M",
+              "benchmark_n": 25,
               "benchmark_source": "community_txn"
             }
           ],
@@ -437041,19 +436952,6 @@
             },
             {
               "community": "Mohammed Bin Rashid City",
-              "building": "Senses at the Fields",
-              "beds": "4+ Bed",
-              "property_type": "Villa",
-              "price_fmt": "AED 4M",
-              "pct_drop": 78.6,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/villa-for-sale-dubai-mohammed-bin-rashid-city-district-11-the-fields-senses-at-the-fields-115491908.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 18.68M",
-              "benchmark_n": 45,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Mohammed Bin Rashid City",
               "building": "District 11",
               "beds": "4+ Bed",
               "property_type": "Villa",
@@ -437116,6 +437014,19 @@
               "market_avg_fmt": "AED 18.68M",
               "benchmark_n": 45,
               "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Dubai Hills Estate",
+              "building": "Maple at Dubai Hills Estate",
+              "beds": "4+ Bed",
+              "property_type": "Villa",
+              "price_fmt": "AED 5.8M",
+              "pct_drop": 77.7,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/villa-for-sale-dubai-dubai-hills-estate-maple-at-dubai-hills-estate-maple-at-dubai-hills-estate-1-117261254.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 26.05M",
+              "benchmark_n": 110,
+              "benchmark_source": "community_txn"
             }
           ],
           "townhouse": [
@@ -437153,19 +437064,6 @@
               "price_fmt": "AED 1.3M",
               "pct_drop": 42.2,
               "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-hills-2-victoria-118150568.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 2.25M",
-              "benchmark_n": 94,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "Damac Hills 2",
-              "building": "Avencia",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 1.3M",
-              "pct_drop": 42.2,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-hills-2-avencia-115494432.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 2.25M",
               "benchmark_n": 94,
@@ -437315,19 +437213,6 @@
               "benchmark_source": "community_txn"
             },
             {
-              "community": "DAMAC Islands",
-              "building": "FIJI at Damac Islands",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 1.98M",
-              "pct_drop": 34.2,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-fiji-at-damac-islands-115463307.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3M",
-              "benchmark_n": 115,
-              "benchmark_source": "community_txn"
-            },
-            {
               "community": "Dubai Sports City",
               "building": "Marbella Village",
               "beds": "4+ Bed",
@@ -437354,19 +437239,6 @@
               "benchmark_source": "building_txn"
             },
             {
-              "community": "DAMAC Islands",
-              "building": "Bora Bora 3",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 2.25M",
-              "pct_drop": 32.3,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-bora-bora-bora-bora-3-115467160.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3.33M",
-              "benchmark_n": 4,
-              "benchmark_source": "building_txn"
-            },
-            {
               "community": "Mohammed Bin Rashid City",
               "building": "District 11",
               "beds": "4+ Bed",
@@ -437377,19 +437249,6 @@
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 4.97M",
               "benchmark_n": 21,
-              "benchmark_source": "community_txn"
-            },
-            {
-              "community": "DAMAC Islands",
-              "building": "Bali at Damac Islands",
-              "beds": "4+ Bed",
-              "property_type": "Townhouse",
-              "price_fmt": "AED 2.05M",
-              "pct_drop": 31.6,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-bali-at-damac-islands-115492800.html",
-              "bed_label": "4+ Bed",
-              "market_avg_fmt": "AED 3M",
-              "benchmark_n": 115,
               "benchmark_source": "community_txn"
             },
             {
@@ -437432,13 +437291,65 @@
               "benchmark_source": "community_txn"
             },
             {
+              "community": "DAMAC Islands",
+              "building": "Fiji 2",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 2.17M",
+              "pct_drop": 30.9,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-damac-islands-fiji-2-121986323.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 3.13M",
+              "benchmark_n": 18,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Jumeirah Golf Estates",
+              "building": "Terra Golf Collection",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 9.45M",
+              "pct_drop": 30.7,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-jumeirah-golf-estates-terra-golf-collection-120663847.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 13.63M",
+              "benchmark_n": 8,
+              "benchmark_source": "building_txn"
+            },
+            {
+              "community": "Mohammed Bin Rashid City",
+              "building": "District 11",
+              "beds": "4+ Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 3.45M",
+              "pct_drop": 30.6,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-mohammed-bin-rashid-city-district-11-elie-saab-vie-townhouses-118574158.html",
+              "bed_label": "4+ Bed",
+              "market_avg_fmt": "AED 4.97M",
+              "benchmark_n": 21,
+              "benchmark_source": "community_txn"
+            },
+            {
+              "community": "Jumeirah Village Circle",
+              "building": "District 12",
+              "beds": "2 Bed",
+              "property_type": "Townhouse",
+              "price_fmt": "AED 2.1M",
+              "pct_drop": 30.3,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-jumeirah-village-circle-district-12-nakheel-townhouses-121984504.html",
+              "bed_label": "2 Bed",
+              "market_avg_fmt": "AED 3.01M",
+              "benchmark_n": 6,
+              "benchmark_source": "community_txn"
+            },
+            {
               "community": "Tilal Al Ghaf",
               "building": "Elan",
               "beds": "4+ Bed",
               "property_type": "Townhouse",
-              "price_fmt": "AED 4.25M",
-              "pct_drop": 31,
-              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-tilal-al-ghaf-elan-115463222.html",
+              "price_fmt": "AED 4.3M",
+              "pct_drop": 30.2,
+              "link": "https://www.propertyfinder.ae/en/plp/buy/townhouse-for-sale-dubai-tilal-al-ghaf-elan-120163819.html",
               "bed_label": "4+ Bed",
               "market_avg_fmt": "AED 6.16M",
               "benchmark_n": 59,
@@ -437461,5 +437372,5 @@
       }
     }
   },
-  "generated_at": "2026-08-11T05:57:06.983Z"
+  "generated_at": "2026-08-12T03:39:45.356Z"
 }
