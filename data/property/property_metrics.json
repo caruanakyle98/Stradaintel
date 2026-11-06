@@ -6,11 +6,6 @@
       "charts_30d": {
         "sale_volume": [
           {
-            "date": "2026-10-29",
-            "label": "29 Oct",
-            "value": 0
-          },
-          {
             "date": "2026-10-30",
             "label": "30 Oct",
             "value": 0
@@ -38,16 +33,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": 0
           }
         ],
         "psf": [
           {
-            "date": "2026-10-29",
-            "label": "29 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-30",
             "label": "30 Oct",
             "value": null
@@ -75,16 +70,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
         "sale_volume_ma7": [
           {
-            "date": "2026-10-29",
-            "label": "29 Oct",
-            "value": 0
-          },
-          {
             "date": "2026-10-30",
             "label": "30 Oct",
             "value": 0
@@ -112,16 +107,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": 0
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-10-29",
-            "label": "29 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-30",
             "label": "30 Oct",
             "value": null
@@ -149,6 +144,11 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
@@ -156,7 +156,7 @@
         "psf_weekly": [],
         "wow_volume_pct": null,
         "wow_psf_pct": null,
-        "window_label": "2026-10-29 → 2026-11-04 (Dubai, 7 days)",
+        "window_label": "2026-10-30 → 2026-11-05 (Dubai, 7 days)",
         "window_days": 7
       },
       "recent_sales_transactions": [
@@ -443,7 +443,7 @@
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
           "trend": "flat",
-          "period": "Last 7 days (Dubai) — 30 Oct 2026 – 5 Nov 2026",
+          "period": "Last 7 days (Dubai) — 31 Oct 2026 – 6 Nov 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "sale_value_aed": {
@@ -452,7 +452,7 @@
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
           "trend": "flat",
-          "period": "Last 7 days (Dubai) — 30 Oct 2026 – 5 Nov 2026",
+          "period": "Last 7 days (Dubai) — 31 Oct 2026 – 6 Nov 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "rent_volume": {
@@ -461,7 +461,7 @@
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
           "trend": "flat",
-          "period": "Last 7 days (Dubai) — 30 Oct 2026 – 5 Nov 2026",
+          "period": "Last 7 days (Dubai) — 31 Oct 2026 – 6 Nov 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
         },
         "rent_value_aed": {
@@ -470,11 +470,11 @@
           "chg_period_label": "vs prior 7 days",
           "chg_yoy": "N/A",
           "trend": "flat",
-          "period": "Last 7 days (Dubai) — 30 Oct 2026 – 5 Nov 2026",
+          "period": "Last 7 days (Dubai) — 31 Oct 2026 – 6 Nov 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "note": "Sum of annualised rent (AED) for the week — contract rent not used."
         },
-        "period_label": "Last 7 days (Dubai) — 30 Oct 2026 – 5 Nov 2026"
+        "period_label": "Last 7 days (Dubai) — 31 Oct 2026 – 6 Nov 2026"
       },
       "prices": {
         "apt_psf_aed": "N/A",
@@ -491,7 +491,7 @@
         "townhouse_avg_aed_yield_ref_num": null,
         "yield_ref_lookback_days": "90",
         "price_index_chg_yoy": "N/A",
-        "price_period": "Last 7 days (Dubai) — 30 Oct 2026 – 5 Nov 2026",
+        "price_period": "Last 7 days (Dubai) — 31 Oct 2026 – 6 Nov 2026",
         "price_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "market_split": {
@@ -499,14 +499,14 @@
         "secondary_pct": "N/A",
         "offplan_chg_yoy": "N/A",
         "dominant_segment": "N/A",
-        "split_period": "Last 7 days (Dubai) — 30 Oct 2026 – 5 Nov 2026",
+        "split_period": "Last 7 days (Dubai) — 31 Oct 2026 – 6 Nov 2026",
         "note": "Off-plan is detected from Select Data Points = Oqood in your sales CSV."
       },
       "top_areas": [],
       "top_areas_mode": "area",
       "top_areas_empty_hint": null,
       "yields": {
-        "apt_gross_yield": "3.1",
+        "apt_gross_yield": "3.2",
         "villa_gross_yield": "N/A",
         "townhouse_gross_yield": "N/A",
         "best_yield_area": "N/A",
@@ -534,7 +534,7 @@
         "landlord_vs_tenant": "balanced",
         "note": "Rental metrics use Annualised Rental Price (AED) only. Weekly count/value + new vs renewal (Rent Recurrence) + bed averages.",
         "rental_source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
-        "rental_period": "Last 7 days (Dubai) — 30 Oct 2026 – 5 Nov 2026",
+        "rental_period": "Last 7 days (Dubai) — 31 Oct 2026 – 6 Nov 2026",
         "txn_by_building_bed": {
           "hub canal 1|1|apt": {
             "avg": 60031,
@@ -1125,12 +1125,12 @@
             "n": 256
           },
           "emaar 6 towers|2|apt": {
-            "avg": 186553,
-            "n": 130
+            "avg": 186681,
+            "n": 129
           },
           "sparkle towers|1|apt": {
-            "avg": 103183,
-            "n": 66
+            "avg": 102771,
+            "n": 65
           },
           "syann park 1|1|apt": {
             "avg": 59377,
@@ -1625,8 +1625,8 @@
             "n": 17
           },
           "torch|1|apt": {
-            "avg": 86672,
-            "n": 87
+            "avg": 86642,
+            "n": 86
           },
           "al khair 3 building|2|apt": {
             "avg": 105000,
@@ -1677,8 +1677,8 @@
             "n": 41
           },
           "park island|2|apt": {
-            "avg": 149744,
-            "n": 111
+            "avg": 149620,
+            "n": 109
           },
           "chaimaa premiere|Studio|apt": {
             "avg": 43359,
@@ -2673,8 +2673,8 @@
             "n": 181
           },
           "residences at marina gate|1|apt": {
-            "avg": 136096,
-            "n": 267
+            "avg": 135963,
+            "n": 265
           },
           "bella rose|Studio|apt": {
             "avg": 46259,
@@ -4017,8 +4017,8 @@
             "n": 3
           },
           "marina diamonds|1|apt": {
-            "avg": 70784,
-            "n": 263
+            "avg": 70806,
+            "n": 262
           },
           "building x-08|Studio|apt": {
             "avg": 30857,
@@ -4045,8 +4045,8 @@
             "n": 43
           },
           "torch|2|apt": {
-            "avg": 121296,
-            "n": 147
+            "avg": 120072,
+            "n": 146
           },
           "pulse residence park | the pulse residence park b4|1|apt": {
             "avg": 51522,
@@ -4077,8 +4077,8 @@
             "n": 18
           },
           "princess tower|1|apt": {
-            "avg": 82368,
-            "n": 142
+            "avg": 82304,
+            "n": 141
           },
           "grand|2|apt": {
             "avg": 184123,
@@ -4173,8 +4173,8 @@
             "n": 10
           },
           "silverene|2|apt": {
-            "avg": 156489,
-            "n": 63
+            "avg": 155787,
+            "n": 62
           },
           "villa myra|Studio|apt": {
             "avg": 47640,
@@ -5125,8 +5125,8 @@
             "n": 29
           },
           "marina diamonds|2|apt": {
-            "avg": 100896,
-            "n": 116
+            "avg": 100643,
+            "n": 115
           },
           "building 100|1|apt": {
             "avg": 66500,
@@ -7885,8 +7885,8 @@
             "n": 3
           },
           "park island|1|apt": {
-            "avg": 103159,
-            "n": 169
+            "avg": 102939,
+            "n": 168
           },
           "afnan 5|2|apt": {
             "avg": 90673,
@@ -8333,8 +8333,8 @@
             "n": 4
           },
           "grand bleu tower 1|1|apt": {
-            "avg": 137945,
-            "n": 53
+            "avg": 136879,
+            "n": 52
           },
           "executive towers|3|apt": {
             "avg": 205524,
@@ -8437,8 +8437,8 @@
             "n": 12
           },
           "marina crown|2|apt": {
-            "avg": 128387,
-            "n": 36
+            "avg": 128824,
+            "n": 35
           },
           "masaken al muraqqabat 04|1|apt": {
             "avg": 60553,
@@ -11833,8 +11833,8 @@
             "n": 4
           },
           "no. 9|1|apt": {
-            "avg": 106224,
-            "n": 42
+            "avg": 105888,
+            "n": 41
           },
           "grenland residence|2|apt": {
             "avg": 105176,
@@ -13665,8 +13665,8 @@
             "n": 5
           },
           "opal tower marina|2|apt": {
-            "avg": 125045,
-            "n": 63
+            "avg": 125232,
+            "n": 62
           },
           "spica residential|1|apt": {
             "avg": 59136,
@@ -14241,8 +14241,8 @@
             "n": 6
           },
           "silverene|1|apt": {
-            "avg": 105262,
-            "n": 113
+            "avg": 105238,
+            "n": 112
           },
           "imperial residence|Studio|apt": {
             "avg": 43388,
@@ -14841,8 +14841,8 @@
             "n": 3
           },
           "beach isle tower 1|1|apt": {
-            "avg": 140599,
-            "n": 56
+            "avg": 140603,
+            "n": 55
           },
           "mazaya 6|2|apt": {
             "avg": 75667,
@@ -15385,8 +15385,8 @@
             "n": 3
           },
           "al habtoor tower at marina walk|1|apt": {
-            "avg": 93547,
-            "n": 33
+            "avg": 93130,
+            "n": 31
           },
           "building n-10|Studio|apt": {
             "avg": 31940,
@@ -15869,8 +15869,8 @@
             "n": 26
           },
           "banyan tree residences hillside dubai|1|apt": {
-            "avg": 140520,
-            "n": 36
+            "avg": 140335,
+            "n": 35
           },
           "mag 535|1|apt": {
             "avg": 50510,
@@ -16413,8 +16413,8 @@
             "n": 4
           },
           "marinascape|2|apt": {
-            "avg": 155392,
-            "n": 28
+            "avg": 153554,
+            "n": 27
           },
           "azizi park avenue ii|1|apt": {
             "avg": 74230,
@@ -21189,8 +21189,8 @@
             "n": 12
           },
           "silverene|Studio|apt": {
-            "avg": 80548,
-            "n": 38
+            "avg": 80563,
+            "n": 37
           },
           "damac majestine|1|apt": {
             "avg": 82921,
@@ -22273,8 +22273,8 @@
             "n": 11
           },
           "23 marina|2|apt": {
-            "avg": 139394,
-            "n": 18
+            "avg": 139064,
+            "n": 17
           },
           "gardens building 89|1|apt": {
             "avg": 80500,
@@ -24205,8 +24205,8 @@
             "n": 5
           },
           "beach vista tower 1|2|apt": {
-            "avg": 214321,
-            "n": 45
+            "avg": 213169,
+            "n": 44
           },
           "carson a|1|apt": {
             "avg": 62867,
@@ -25361,8 +25361,8 @@
             "n": 47
           },
           "stella maris|2|apt": {
-            "avg": 213286,
-            "n": 36
+            "avg": 212237,
+            "n": 35
           },
           "building b04|1|apt": {
             "avg": 57895,
@@ -27673,8 +27673,8 @@
             "n": 7
           },
           "banyan tree residences|2|apt": {
-            "avg": 416017,
-            "n": 19
+            "avg": 413574,
+            "n": 18
           },
           "nad al sheba 1|2|apt": {
             "avg": 117000,
@@ -28509,8 +28509,8 @@
             "n": 21
           },
           "sunrise bay tower 1|1|apt": {
-            "avg": 123171,
-            "n": 45
+            "avg": 121993,
+            "n": 44
           },
           "dunes 7|Studio|apt": {
             "avg": 40543,
@@ -29933,8 +29933,8 @@
             "n": 10
           },
           "marina view|Studio|apt": {
-            "avg": 60375,
-            "n": 47
+            "avg": 60144,
+            "n": 46
           },
           "azizi riviera 67|1|apt": {
             "avg": 54833,
@@ -30129,8 +30129,8 @@
             "n": 13
           },
           "sunrise bay tower 2|1|apt": {
-            "avg": 117206,
-            "n": 23
+            "avg": 116351,
+            "n": 22
           },
           "shorooq building 4|1|apt": {
             "avg": 54840,
@@ -32265,8 +32265,8 @@
             "n": 6
           },
           "royal oceanic|2|apt": {
-            "avg": 143199,
-            "n": 19
+            "avg": 142821,
+            "n": 18
           },
           "lootah building|1|apt": {
             "avg": 41929,
@@ -35133,8 +35133,8 @@
             "n": 3
           },
           "marina tower|3|apt": {
-            "avg": 202846,
-            "n": 13
+            "avg": 203083,
+            "n": 12
           },
           "pantheon elysee|2|apt": {
             "avg": 90000,
@@ -35901,8 +35901,8 @@
             "n": 5
           },
           "bluewaters 8|2|apt": {
-            "avg": 448747,
-            "n": 15
+            "avg": 430800,
+            "n": 14
           },
           "central building|2|apt": {
             "avg": 67750,
@@ -36945,8 +36945,8 @@
             "n": 9
           },
           "marina vista tower 2|2|apt": {
-            "avg": 197387,
-            "n": 55
+            "avg": 197338,
+            "n": 54
           },
           "beach vista tower 2|3|apt": {
             "avg": 427643,
@@ -37896,13 +37896,13 @@
             "avg": 111667,
             "n": 3
           },
-          "dubai marina moon|1|apt": {
-            "avg": 155918,
-            "n": 24
-          },
           "damac heights|4+|apt": {
             "avg": 250199,
             "n": 4
+          },
+          "dubai marina moon|1|apt": {
+            "avg": 156393,
+            "n": 23
           },
           "marina pearl|Studio|apt": {
             "avg": 57158,
@@ -39448,10 +39448,6 @@
             "avg": 40667,
             "n": 3
           },
-          "bluewaters 3|1|apt": {
-            "avg": 313683,
-            "n": 4
-          },
           "bluewaters 7|1|apt": {
             "avg": 325333,
             "n": 3
@@ -39459,6 +39455,10 @@
           "bluewaters 3|2|apt": {
             "avg": 441778,
             "n": 9
+          },
+          "bluewaters 3|1|apt": {
+            "avg": 328244,
+            "n": 3
           },
           "bluewaters 5|1|apt": {
             "avg": 281407,
@@ -39579,8 +39579,8 @@
             "n": 287
           },
           "dubai marina|Studio|apt": {
-            "avg": 64925,
-            "n": 776
+            "avg": 64898,
+            "n": 774
           },
           "business bay|2|apt": {
             "avg": 133503,
@@ -39691,8 +39691,8 @@
             "n": 264
           },
           "bluewaters island|1|apt": {
-            "avg": 344486,
-            "n": 58
+            "avg": 345793,
+            "n": 57
           },
           "deira|2|apt": {
             "avg": 71125,
@@ -39739,8 +39739,8 @@
             "n": 412
           },
           "dubai marina|2|apt": {
-            "avg": 148210,
-            "n": 3611
+            "avg": 148123,
+            "n": 3599
           },
           "downtown dubai|1|apt": {
             "avg": 114182,
@@ -39843,8 +39843,8 @@
             "n": 122
           },
           "dubai marina|1|apt": {
-            "avg": 95055,
-            "n": 4789
+            "avg": 95001,
+            "n": 4777
           },
           "arjan|1|apt": {
             "avg": 65937,
@@ -40199,8 +40199,8 @@
             "n": 89
           },
           "jumeirah lakes towers|1|apt": {
-            "avg": 83322,
-            "n": 967
+            "avg": 83256,
+            "n": 966
           },
           "layan community|2|apt": {
             "avg": 82298,
@@ -40399,8 +40399,8 @@
             "n": 141
           },
           "dubai marina|3|apt": {
-            "avg": 229021,
-            "n": 1053
+            "avg": 229049,
+            "n": 1052
           },
           "remraam|1|apt": {
             "avg": 55638,
@@ -40743,8 +40743,8 @@
             "n": 38
           },
           "dubai harbour|2|apt": {
-            "avg": 218021,
-            "n": 579
+            "avg": 217971,
+            "n": 577
           },
           "dubai sports city|4+|townhouse": {
             "avg": 348946,
@@ -40983,8 +40983,8 @@
             "n": 49
           },
           "dubai harbour|1|apt": {
-            "avg": 133347,
-            "n": 653
+            "avg": 133176,
+            "n": 649
           },
           "al badaa|4+|villa": {
             "avg": 281667,
@@ -41323,8 +41323,8 @@
             "n": 27
           },
           "bluewaters island|2|apt": {
-            "avg": 431071,
-            "n": 83
+            "avg": 427394,
+            "n": 81
           },
           "umm suqeim|4+|villa": {
             "avg": 2442206,
@@ -42319,7 +42319,7 @@
         "financing_conditions": "N/A",
         "mortgage_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
-      "owner_briefing": "Rolling 7 days through today (30 Oct 2026 – 5 Nov 2026, Dubai): 0 transactions in your CSV worth AED N/A. Prior 7 days (23 Oct 2026 – 29 Oct 2026): 0 deals. Off-plan share N/A (Oqood-tagged rows).",
+      "owner_briefing": "Rolling 7 days through today (31 Oct 2026 – 6 Nov 2026, Dubai): 0 transactions in your CSV worth AED N/A. Prior 7 days (24 Oct 2026 – 30 Oct 2026): 0 deals. Off-plan share N/A (Oqood-tagged rows).",
       "data_freshness": "Transactions through 11 Sept 2026 · snapshot build (7d)",
       "sources_used": [
         "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)",
@@ -42343,7 +42343,7 @@
         "cur_avg_by_beds": {},
         "prev_avg_by_beds": {},
         "mom_avg_by_beds_pct": {},
-        "cur_days_elapsed": 5
+        "cur_days_elapsed": 6
       },
       "sale_txn_by_building_bed": {
         "tempo|1|apt": {
@@ -46763,8 +46763,8 @@
           "n": 5
         },
         "vida residences dubai marina|2|apt": {
-          "avg": 4066667,
-          "n": 6
+          "avg": 4220000,
+          "n": 5
         },
         "lakeside tower c|1|apt": {
           "avg": 621941,
@@ -47583,8 +47583,8 @@
           "n": 13
         },
         "address harbour point tower 1|2|apt": {
-          "avg": 4755000,
-          "n": 7
+          "avg": 4797500,
+          "n": 6
         },
         "sway residences|Studio|apt": {
           "avg": 1026600,
@@ -49775,8 +49775,8 @@
           "n": 4
         },
         "serenia living tower 1|2|apt": {
-          "avg": 8676250,
-          "n": 16
+          "avg": 8676667,
+          "n": 15
         },
         "whitestone residence|2|apt": {
           "avg": 1968643,
@@ -51563,8 +51563,8 @@
           "n": 19
         },
         "montiva tower|1|apt": {
-          "avg": 2126549,
-          "n": 47
+          "avg": 2132890,
+          "n": 45
         },
         "olivo park residences|1|apt": {
           "avg": 1010521,
@@ -51575,8 +51575,8 @@
           "n": 4
         },
         "montiva tower|2|apt": {
-          "avg": 2869966,
-          "n": 45
+          "avg": 2859948,
+          "n": 42
         },
         "waref residences|Studio|apt": {
           "avg": 817588,
@@ -51711,12 +51711,12 @@
           "n": 3
         },
         "lyvia by palace|1|apt": {
-          "avg": 2176741,
-          "n": 214
+          "avg": 2181920,
+          "n": 200
         },
         "lyvia by palace|2|apt": {
-          "avg": 3107201,
-          "n": 171
+          "avg": 3105554,
+          "n": 163
         },
         "altan tower|1|apt": {
           "avg": 1848507,
@@ -52843,8 +52843,8 @@
           "n": 9
         },
         "grand bleu tower 2|2|apt": {
-          "avg": 5553571,
-          "n": 14
+          "avg": 5457692,
+          "n": 13
         },
         "equiti apartments|1|apt": {
           "avg": 706667,
@@ -54811,8 +54811,8 @@
           "n": 3
         },
         "palace beach residence tower 1|1|apt": {
-          "avg": 2513500,
-          "n": 20
+          "avg": 2501053,
+          "n": 19
         },
         "bonnington tower|2|apt": {
           "avg": 1393056,
@@ -55867,8 +55867,8 @@
           "n": 14
         },
         "montiva tower|3|apt": {
-          "avg": 4104253,
-          "n": 18
+          "avg": 4099451,
+          "n": 17
         },
         "skyvue|1|apt": {
           "avg": 1635631,
@@ -61966,10 +61966,6 @@
           "avg": 7580000,
           "n": 4
         },
-        "17 icon bay building 1|3|apt": {
-          "avg": 3811667,
-          "n": 3
-        },
         "canopy building 1|2|apt": {
           "avg": 2428094,
           "n": 26
@@ -62197,8 +62193,8 @@
           "n": 21
         },
         "palm jumeirah|2|apt": {
-          "avg": 6713840,
-          "n": 206
+          "avg": 6704298,
+          "n": 205
         },
         "valley|4+|townhouse": {
           "avg": 3834405,
@@ -62237,8 +62233,8 @@
           "n": 250
         },
         "dubai creek harbour|1|apt": {
-          "avg": 1945310,
-          "n": 1300
+          "avg": 1943533,
+          "n": 1284
         },
         "jumeirah village circle|1|apt": {
           "avg": 1093429,
@@ -62253,8 +62249,8 @@
           "n": 423
         },
         "dubai creek harbour|2|apt": {
-          "avg": 3206306,
-          "n": 1310
+          "avg": 3206167,
+          "n": 1298
         },
         "al furjan|Studio|apt": {
           "avg": 562881,
@@ -62277,8 +62273,8 @@
           "n": 41
         },
         "dubai creek harbour|3|apt": {
-          "avg": 4708558,
-          "n": 474
+          "avg": 4711484,
+          "n": 472
         },
         "dubai residence complex|1|apt": {
           "avg": 1021272,
@@ -62309,8 +62305,8 @@
           "n": 274
         },
         "dubai marina|2|apt": {
-          "avg": 2824060,
-          "n": 350
+          "avg": 2822697,
+          "n": 349
         },
         "town square|1|apt": {
           "avg": 1028905,
@@ -62461,8 +62457,8 @@
           "n": 30
         },
         "dubai harbour|2|apt": {
-          "avg": 7018679,
-          "n": 220
+          "avg": 7019678,
+          "n": 219
         },
         "living legends|1|apt": {
           "avg": 969889,
@@ -62937,8 +62933,8 @@
           "n": 53
         },
         "dubai harbour|1|apt": {
-          "avg": 3036191,
-          "n": 185
+          "avg": 3037747,
+          "n": 184
         },
         "al barsha south fourth|Studio|apt": {
           "avg": 750571,
@@ -64760,7 +64756,7 @@
       "sale_hot_listings_lookback_days": "365",
       "sale_hot_listings_min_txn": "3",
       "property_type_activity": {
-        "period": "Last 7 days (Dubai) — 30 Oct 2026 – 5 Nov 2026",
+        "period": "Last 7 days (Dubai) — 31 Oct 2026 – 6 Nov 2026",
         "entries": {
           "apt": {
             "label": "Apartment",
@@ -92761,11 +92757,6 @@
       "rental_charts_30d": {
         "rent_volume": [
           {
-            "date": "2026-10-29",
-            "label": "29 Oct",
-            "value": 0
-          },
-          {
             "date": "2026-10-30",
             "label": "30 Oct",
             "value": 0
@@ -92793,16 +92784,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": 0
           }
         ],
         "rent_volume_ma7": [
           {
-            "date": "2026-10-29",
-            "label": "29 Oct",
-            "value": 0
-          },
-          {
             "date": "2026-10-30",
             "label": "30 Oct",
             "value": 0
@@ -92830,16 +92821,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": 0
           }
         ],
         "rent_avg_aed": [
           {
-            "date": "2026-10-29",
-            "label": "29 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-30",
             "label": "30 Oct",
             "value": null
@@ -92867,16 +92858,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
         "rent_avg_aed_ma7": [
           {
-            "date": "2026-10-29",
-            "label": "29 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-30",
             "label": "30 Oct",
             "value": null
@@ -92904,16 +92895,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
         "psf": [
           {
-            "date": "2026-10-29",
-            "label": "29 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-30",
             "label": "30 Oct",
             "value": null
@@ -92941,16 +92932,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-10-29",
-            "label": "29 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-30",
             "label": "30 Oct",
             "value": null
@@ -92979,24 +92970,29 @@
             "date": "2026-11-04",
             "label": "4 Nov",
             "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
+            "value": null
           }
         ],
         "rent_volume_weekly": [
           {
-            "label": "29 Oct–4 Nov",
+            "label": "30 Oct–5 Nov",
             "value": 0
           }
         ],
         "psf_weekly": [
           {
-            "label": "29 Oct–4 Nov",
+            "label": "30 Oct–5 Nov",
             "median": null
           }
         ],
         "wow_volume_pct": null,
         "wow_rent_pct": null,
         "wow_psf_pct": null,
-        "window_label": "2026-10-29 → 2026-11-04 (Dubai, 7 days)",
+        "window_label": "2026-10-30 → 2026-11-05 (Dubai, 7 days)",
         "window_days": 7
       },
       "rental_monthly": {
@@ -93008,7 +93004,7 @@
         "cur_psf_avg": null,
         "prev_psf_avg": 163,
         "mom_psf_pct": null,
-        "cur_days_elapsed": 5
+        "cur_days_elapsed": 6
       },
       "rental_top_areas": [],
       "rental_top_areas_mode": "area",
@@ -93239,7 +93235,7 @@
           "recurrence": "New"
         }
       ],
-      "rental_owner_briefing": "Rolling 7 days (Last 7 days (Dubai) — 30 Oct 2026 – 5 Nov 2026, Dubai): 0 rental registrations in your CSV, annualised value AED N/A. Prior 7 days: 0 registrations.",
+      "rental_owner_briefing": "Rolling 7 days (Last 7 days (Dubai) — 31 Oct 2026 – 6 Nov 2026, Dubai): 0 rental registrations in your CSV, annualised value AED N/A. Prior 7 days: 0 registrations.",
       "listings": {
         "total": 53056,
         "data_type": "rental",
@@ -93247,11 +93243,6 @@
         "new_prev_7_days": 0,
         "wow_new_pct": null,
         "listings_added_by_day": [
-          {
-            "date": "2026-10-30",
-            "label": "30 Oct",
-            "count": 0
-          },
           {
             "date": "2026-10-31",
             "label": "31 Oct",
@@ -93281,14 +93272,14 @@
             "date": "2026-11-05",
             "label": "5 Nov",
             "count": 0
+          },
+          {
+            "date": "2026-11-06",
+            "label": "6 Nov",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-10-23",
-            "label": "23 Oct",
-            "count": 0
-          },
           {
             "date": "2026-10-24",
             "label": "24 Oct",
@@ -93318,20 +93309,25 @@
             "date": "2026-10-29",
             "label": "29 Oct",
             "count": 0
+          },
+          {
+            "date": "2026-10-30",
+            "label": "30 Oct",
+            "count": 0
           }
         ],
-        "listings_added_period": "30 Oct – 5 Nov 2026 (Dubai)",
-        "listings_added_period_prior": "23 Oct – 29 Oct 2026 (Dubai)",
+        "listings_added_period": "31 Oct – 6 Nov 2026 (Dubai)",
+        "listings_added_period_prior": "24 Oct – 30 Oct 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
           "avg_per_day_prior": 0,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "30 Oct",
+            "label": "31 Oct",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "23 Oct",
+            "label": "24 Oct",
             "count": 0
           }
         },
@@ -110801,11 +110797,6 @@
         "wow_new_pct": null,
         "listings_added_by_day": [
           {
-            "date": "2026-10-30",
-            "label": "30 Oct",
-            "count": 0
-          },
-          {
             "date": "2026-10-31",
             "label": "31 Oct",
             "count": 0
@@ -110834,14 +110825,14 @@
             "date": "2026-11-05",
             "label": "5 Nov",
             "count": 0
+          },
+          {
+            "date": "2026-11-06",
+            "label": "6 Nov",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-10-23",
-            "label": "23 Oct",
-            "count": 0
-          },
           {
             "date": "2026-10-24",
             "label": "24 Oct",
@@ -110871,20 +110862,25 @@
             "date": "2026-10-29",
             "label": "29 Oct",
             "count": 0
+          },
+          {
+            "date": "2026-10-30",
+            "label": "30 Oct",
+            "count": 0
           }
         ],
-        "listings_added_period": "30 Oct – 5 Nov 2026 (Dubai)",
-        "listings_added_period_prior": "23 Oct – 29 Oct 2026 (Dubai)",
+        "listings_added_period": "31 Oct – 6 Nov 2026 (Dubai)",
+        "listings_added_period_prior": "24 Oct – 30 Oct 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
           "avg_per_day_prior": 0,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "30 Oct",
+            "label": "31 Oct",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "23 Oct",
+            "label": "24 Oct",
             "count": 0
           }
         },
@@ -130247,11 +130243,6 @@
       "charts_30d": {
         "sale_volume": [
           {
-            "date": "2026-10-22",
-            "label": "22 Oct",
-            "value": 0
-          },
-          {
             "date": "2026-10-23",
             "label": "23 Oct",
             "value": 0
@@ -130314,16 +130305,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": 0
           }
         ],
         "psf": [
           {
-            "date": "2026-10-22",
-            "label": "22 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-23",
             "label": "23 Oct",
             "value": null
@@ -130386,16 +130377,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
         "sale_volume_ma7": [
           {
-            "date": "2026-10-22",
-            "label": "22 Oct",
-            "value": 0
-          },
-          {
             "date": "2026-10-23",
             "label": "23 Oct",
             "value": 0
@@ -130458,16 +130449,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": 0
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-10-22",
-            "label": "22 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-23",
             "label": "23 Oct",
             "value": null
@@ -130530,6 +130521,11 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
@@ -130537,7 +130533,7 @@
         "psf_weekly": [],
         "wow_volume_pct": null,
         "wow_psf_pct": null,
-        "window_label": "2026-10-22 → 2026-11-04 (Dubai, 14 days)",
+        "window_label": "2026-10-23 → 2026-11-05 (Dubai, 14 days)",
         "window_days": 14
       },
       "recent_sales_transactions": [
@@ -130824,7 +130820,7 @@
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "flat",
-          "period": "Last 14 days (Dubai) — 23 Oct 2026 – 5 Nov 2026",
+          "period": "Last 14 days (Dubai) — 24 Oct 2026 – 6 Nov 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "sale_value_aed": {
@@ -130833,7 +130829,7 @@
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "flat",
-          "period": "Last 14 days (Dubai) — 23 Oct 2026 – 5 Nov 2026",
+          "period": "Last 14 days (Dubai) — 24 Oct 2026 – 6 Nov 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "rent_volume": {
@@ -130842,7 +130838,7 @@
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 23 Oct 2026 – 5 Nov 2026",
+          "period": "Last 14 days (Dubai) — 24 Oct 2026 – 6 Nov 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
         },
         "rent_value_aed": {
@@ -130851,11 +130847,11 @@
           "chg_period_label": "vs prior 14 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 14 days (Dubai) — 23 Oct 2026 – 5 Nov 2026",
+          "period": "Last 14 days (Dubai) — 24 Oct 2026 – 6 Nov 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "note": "Sum of annualised rent (AED) for the week — contract rent not used."
         },
-        "period_label": "Last 14 days (Dubai) — 23 Oct 2026 – 5 Nov 2026"
+        "period_label": "Last 14 days (Dubai) — 24 Oct 2026 – 6 Nov 2026"
       },
       "prices": {
         "apt_psf_aed": "N/A",
@@ -130872,7 +130868,7 @@
         "townhouse_avg_aed_yield_ref_num": null,
         "yield_ref_lookback_days": "90",
         "price_index_chg_yoy": "N/A",
-        "price_period": "Last 14 days (Dubai) — 23 Oct 2026 – 5 Nov 2026",
+        "price_period": "Last 14 days (Dubai) — 24 Oct 2026 – 6 Nov 2026",
         "price_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "market_split": {
@@ -130880,14 +130876,14 @@
         "secondary_pct": "N/A",
         "offplan_chg_yoy": "N/A",
         "dominant_segment": "N/A",
-        "split_period": "Last 14 days (Dubai) — 23 Oct 2026 – 5 Nov 2026",
+        "split_period": "Last 14 days (Dubai) — 24 Oct 2026 – 6 Nov 2026",
         "note": "Off-plan is detected from Select Data Points = Oqood in your sales CSV."
       },
       "top_areas": [],
       "top_areas_mode": "area",
       "top_areas_empty_hint": null,
       "yields": {
-        "apt_gross_yield": "3.1",
+        "apt_gross_yield": "3.2",
         "villa_gross_yield": "N/A",
         "townhouse_gross_yield": "N/A",
         "best_yield_area": "N/A",
@@ -130915,7 +130911,7 @@
         "landlord_vs_tenant": "balanced",
         "note": "Rental metrics use Annualised Rental Price (AED) only. Weekly count/value + new vs renewal (Rent Recurrence) + bed averages.",
         "rental_source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
-        "rental_period": "Last 14 days (Dubai) — 23 Oct 2026 – 5 Nov 2026",
+        "rental_period": "Last 14 days (Dubai) — 24 Oct 2026 – 6 Nov 2026",
         "txn_by_building_bed": {
           "hub canal 1|1|apt": {
             "avg": 60031,
@@ -131506,12 +131502,12 @@
             "n": 256
           },
           "emaar 6 towers|2|apt": {
-            "avg": 186553,
-            "n": 130
+            "avg": 186681,
+            "n": 129
           },
           "sparkle towers|1|apt": {
-            "avg": 103183,
-            "n": 66
+            "avg": 102771,
+            "n": 65
           },
           "syann park 1|1|apt": {
             "avg": 59377,
@@ -132006,8 +132002,8 @@
             "n": 17
           },
           "torch|1|apt": {
-            "avg": 86672,
-            "n": 87
+            "avg": 86642,
+            "n": 86
           },
           "al khair 3 building|2|apt": {
             "avg": 105000,
@@ -132058,8 +132054,8 @@
             "n": 41
           },
           "park island|2|apt": {
-            "avg": 149744,
-            "n": 111
+            "avg": 149620,
+            "n": 109
           },
           "chaimaa premiere|Studio|apt": {
             "avg": 43359,
@@ -133054,8 +133050,8 @@
             "n": 181
           },
           "residences at marina gate|1|apt": {
-            "avg": 136096,
-            "n": 267
+            "avg": 135963,
+            "n": 265
           },
           "bella rose|Studio|apt": {
             "avg": 46259,
@@ -134398,8 +134394,8 @@
             "n": 3
           },
           "marina diamonds|1|apt": {
-            "avg": 70784,
-            "n": 263
+            "avg": 70806,
+            "n": 262
           },
           "building x-08|Studio|apt": {
             "avg": 30857,
@@ -134426,8 +134422,8 @@
             "n": 43
           },
           "torch|2|apt": {
-            "avg": 121296,
-            "n": 147
+            "avg": 120072,
+            "n": 146
           },
           "pulse residence park | the pulse residence park b4|1|apt": {
             "avg": 51522,
@@ -134458,8 +134454,8 @@
             "n": 18
           },
           "princess tower|1|apt": {
-            "avg": 82368,
-            "n": 142
+            "avg": 82304,
+            "n": 141
           },
           "grand|2|apt": {
             "avg": 184123,
@@ -134554,8 +134550,8 @@
             "n": 10
           },
           "silverene|2|apt": {
-            "avg": 156489,
-            "n": 63
+            "avg": 155787,
+            "n": 62
           },
           "villa myra|Studio|apt": {
             "avg": 47640,
@@ -135506,8 +135502,8 @@
             "n": 29
           },
           "marina diamonds|2|apt": {
-            "avg": 100896,
-            "n": 116
+            "avg": 100643,
+            "n": 115
           },
           "building 100|1|apt": {
             "avg": 66500,
@@ -138266,8 +138262,8 @@
             "n": 3
           },
           "park island|1|apt": {
-            "avg": 103159,
-            "n": 169
+            "avg": 102939,
+            "n": 168
           },
           "afnan 5|2|apt": {
             "avg": 90673,
@@ -138714,8 +138710,8 @@
             "n": 4
           },
           "grand bleu tower 1|1|apt": {
-            "avg": 137945,
-            "n": 53
+            "avg": 136879,
+            "n": 52
           },
           "executive towers|3|apt": {
             "avg": 205524,
@@ -138818,8 +138814,8 @@
             "n": 12
           },
           "marina crown|2|apt": {
-            "avg": 128387,
-            "n": 36
+            "avg": 128824,
+            "n": 35
           },
           "masaken al muraqqabat 04|1|apt": {
             "avg": 60553,
@@ -142214,8 +142210,8 @@
             "n": 4
           },
           "no. 9|1|apt": {
-            "avg": 106224,
-            "n": 42
+            "avg": 105888,
+            "n": 41
           },
           "grenland residence|2|apt": {
             "avg": 105176,
@@ -144046,8 +144042,8 @@
             "n": 5
           },
           "opal tower marina|2|apt": {
-            "avg": 125045,
-            "n": 63
+            "avg": 125232,
+            "n": 62
           },
           "spica residential|1|apt": {
             "avg": 59136,
@@ -144622,8 +144618,8 @@
             "n": 6
           },
           "silverene|1|apt": {
-            "avg": 105262,
-            "n": 113
+            "avg": 105238,
+            "n": 112
           },
           "imperial residence|Studio|apt": {
             "avg": 43388,
@@ -145222,8 +145218,8 @@
             "n": 3
           },
           "beach isle tower 1|1|apt": {
-            "avg": 140599,
-            "n": 56
+            "avg": 140603,
+            "n": 55
           },
           "mazaya 6|2|apt": {
             "avg": 75667,
@@ -145766,8 +145762,8 @@
             "n": 3
           },
           "al habtoor tower at marina walk|1|apt": {
-            "avg": 93547,
-            "n": 33
+            "avg": 93130,
+            "n": 31
           },
           "building n-10|Studio|apt": {
             "avg": 31940,
@@ -146250,8 +146246,8 @@
             "n": 26
           },
           "banyan tree residences hillside dubai|1|apt": {
-            "avg": 140520,
-            "n": 36
+            "avg": 140335,
+            "n": 35
           },
           "mag 535|1|apt": {
             "avg": 50510,
@@ -146794,8 +146790,8 @@
             "n": 4
           },
           "marinascape|2|apt": {
-            "avg": 155392,
-            "n": 28
+            "avg": 153554,
+            "n": 27
           },
           "azizi park avenue ii|1|apt": {
             "avg": 74230,
@@ -151570,8 +151566,8 @@
             "n": 12
           },
           "silverene|Studio|apt": {
-            "avg": 80548,
-            "n": 38
+            "avg": 80563,
+            "n": 37
           },
           "damac majestine|1|apt": {
             "avg": 82921,
@@ -152654,8 +152650,8 @@
             "n": 11
           },
           "23 marina|2|apt": {
-            "avg": 139394,
-            "n": 18
+            "avg": 139064,
+            "n": 17
           },
           "gardens building 89|1|apt": {
             "avg": 80500,
@@ -154586,8 +154582,8 @@
             "n": 5
           },
           "beach vista tower 1|2|apt": {
-            "avg": 214321,
-            "n": 45
+            "avg": 213169,
+            "n": 44
           },
           "carson a|1|apt": {
             "avg": 62867,
@@ -155742,8 +155738,8 @@
             "n": 47
           },
           "stella maris|2|apt": {
-            "avg": 213286,
-            "n": 36
+            "avg": 212237,
+            "n": 35
           },
           "building b04|1|apt": {
             "avg": 57895,
@@ -158054,8 +158050,8 @@
             "n": 7
           },
           "banyan tree residences|2|apt": {
-            "avg": 416017,
-            "n": 19
+            "avg": 413574,
+            "n": 18
           },
           "nad al sheba 1|2|apt": {
             "avg": 117000,
@@ -158890,8 +158886,8 @@
             "n": 21
           },
           "sunrise bay tower 1|1|apt": {
-            "avg": 123171,
-            "n": 45
+            "avg": 121993,
+            "n": 44
           },
           "dunes 7|Studio|apt": {
             "avg": 40543,
@@ -160314,8 +160310,8 @@
             "n": 10
           },
           "marina view|Studio|apt": {
-            "avg": 60375,
-            "n": 47
+            "avg": 60144,
+            "n": 46
           },
           "azizi riviera 67|1|apt": {
             "avg": 54833,
@@ -160510,8 +160506,8 @@
             "n": 13
           },
           "sunrise bay tower 2|1|apt": {
-            "avg": 117206,
-            "n": 23
+            "avg": 116351,
+            "n": 22
           },
           "shorooq building 4|1|apt": {
             "avg": 54840,
@@ -162646,8 +162642,8 @@
             "n": 6
           },
           "royal oceanic|2|apt": {
-            "avg": 143199,
-            "n": 19
+            "avg": 142821,
+            "n": 18
           },
           "lootah building|1|apt": {
             "avg": 41929,
@@ -165514,8 +165510,8 @@
             "n": 3
           },
           "marina tower|3|apt": {
-            "avg": 202846,
-            "n": 13
+            "avg": 203083,
+            "n": 12
           },
           "pantheon elysee|2|apt": {
             "avg": 90000,
@@ -166282,8 +166278,8 @@
             "n": 5
           },
           "bluewaters 8|2|apt": {
-            "avg": 448747,
-            "n": 15
+            "avg": 430800,
+            "n": 14
           },
           "central building|2|apt": {
             "avg": 67750,
@@ -167326,8 +167322,8 @@
             "n": 9
           },
           "marina vista tower 2|2|apt": {
-            "avg": 197387,
-            "n": 55
+            "avg": 197338,
+            "n": 54
           },
           "beach vista tower 2|3|apt": {
             "avg": 427643,
@@ -168277,13 +168273,13 @@
             "avg": 111667,
             "n": 3
           },
-          "dubai marina moon|1|apt": {
-            "avg": 155918,
-            "n": 24
-          },
           "damac heights|4+|apt": {
             "avg": 250199,
             "n": 4
+          },
+          "dubai marina moon|1|apt": {
+            "avg": 156393,
+            "n": 23
           },
           "marina pearl|Studio|apt": {
             "avg": 57158,
@@ -169829,10 +169825,6 @@
             "avg": 40667,
             "n": 3
           },
-          "bluewaters 3|1|apt": {
-            "avg": 313683,
-            "n": 4
-          },
           "bluewaters 7|1|apt": {
             "avg": 325333,
             "n": 3
@@ -169840,6 +169832,10 @@
           "bluewaters 3|2|apt": {
             "avg": 441778,
             "n": 9
+          },
+          "bluewaters 3|1|apt": {
+            "avg": 328244,
+            "n": 3
           },
           "bluewaters 5|1|apt": {
             "avg": 281407,
@@ -169960,8 +169956,8 @@
             "n": 287
           },
           "dubai marina|Studio|apt": {
-            "avg": 64925,
-            "n": 776
+            "avg": 64898,
+            "n": 774
           },
           "business bay|2|apt": {
             "avg": 133503,
@@ -170072,8 +170068,8 @@
             "n": 264
           },
           "bluewaters island|1|apt": {
-            "avg": 344486,
-            "n": 58
+            "avg": 345793,
+            "n": 57
           },
           "deira|2|apt": {
             "avg": 71125,
@@ -170120,8 +170116,8 @@
             "n": 412
           },
           "dubai marina|2|apt": {
-            "avg": 148210,
-            "n": 3611
+            "avg": 148123,
+            "n": 3599
           },
           "downtown dubai|1|apt": {
             "avg": 114182,
@@ -170224,8 +170220,8 @@
             "n": 122
           },
           "dubai marina|1|apt": {
-            "avg": 95055,
-            "n": 4789
+            "avg": 95001,
+            "n": 4777
           },
           "arjan|1|apt": {
             "avg": 65937,
@@ -170580,8 +170576,8 @@
             "n": 89
           },
           "jumeirah lakes towers|1|apt": {
-            "avg": 83322,
-            "n": 967
+            "avg": 83256,
+            "n": 966
           },
           "layan community|2|apt": {
             "avg": 82298,
@@ -170780,8 +170776,8 @@
             "n": 141
           },
           "dubai marina|3|apt": {
-            "avg": 229021,
-            "n": 1053
+            "avg": 229049,
+            "n": 1052
           },
           "remraam|1|apt": {
             "avg": 55638,
@@ -171124,8 +171120,8 @@
             "n": 38
           },
           "dubai harbour|2|apt": {
-            "avg": 218021,
-            "n": 579
+            "avg": 217971,
+            "n": 577
           },
           "dubai sports city|4+|townhouse": {
             "avg": 348946,
@@ -171364,8 +171360,8 @@
             "n": 49
           },
           "dubai harbour|1|apt": {
-            "avg": 133347,
-            "n": 653
+            "avg": 133176,
+            "n": 649
           },
           "al badaa|4+|villa": {
             "avg": 281667,
@@ -171704,8 +171700,8 @@
             "n": 27
           },
           "bluewaters island|2|apt": {
-            "avg": 431071,
-            "n": 83
+            "avg": 427394,
+            "n": 81
           },
           "umm suqeim|4+|villa": {
             "avg": 2442206,
@@ -172700,7 +172696,7 @@
         "financing_conditions": "N/A",
         "mortgage_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
-      "owner_briefing": "Rolling 14 days through today (23 Oct 2026 – 5 Nov 2026, Dubai): 0 transactions in your CSV worth AED N/A. Prior 14 days (9 Oct 2026 – 22 Oct 2026): 0 deals. Off-plan share N/A (Oqood-tagged rows).",
+      "owner_briefing": "Rolling 14 days through today (24 Oct 2026 – 6 Nov 2026, Dubai): 0 transactions in your CSV worth AED N/A. Prior 14 days (10 Oct 2026 – 23 Oct 2026): 0 deals. Off-plan share N/A (Oqood-tagged rows).",
       "data_freshness": "Transactions through 11 Sept 2026 · snapshot build (14d)",
       "sources_used": [
         "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)",
@@ -172724,7 +172720,7 @@
         "cur_avg_by_beds": {},
         "prev_avg_by_beds": {},
         "mom_avg_by_beds_pct": {},
-        "cur_days_elapsed": 5
+        "cur_days_elapsed": 6
       },
       "sale_txn_by_building_bed": {
         "tempo|1|apt": {
@@ -177144,8 +177140,8 @@
           "n": 5
         },
         "vida residences dubai marina|2|apt": {
-          "avg": 4066667,
-          "n": 6
+          "avg": 4220000,
+          "n": 5
         },
         "lakeside tower c|1|apt": {
           "avg": 621941,
@@ -177964,8 +177960,8 @@
           "n": 13
         },
         "address harbour point tower 1|2|apt": {
-          "avg": 4755000,
-          "n": 7
+          "avg": 4797500,
+          "n": 6
         },
         "sway residences|Studio|apt": {
           "avg": 1026600,
@@ -180156,8 +180152,8 @@
           "n": 4
         },
         "serenia living tower 1|2|apt": {
-          "avg": 8676250,
-          "n": 16
+          "avg": 8676667,
+          "n": 15
         },
         "whitestone residence|2|apt": {
           "avg": 1968643,
@@ -181944,8 +181940,8 @@
           "n": 19
         },
         "montiva tower|1|apt": {
-          "avg": 2126549,
-          "n": 47
+          "avg": 2132890,
+          "n": 45
         },
         "olivo park residences|1|apt": {
           "avg": 1010521,
@@ -181956,8 +181952,8 @@
           "n": 4
         },
         "montiva tower|2|apt": {
-          "avg": 2869966,
-          "n": 45
+          "avg": 2859948,
+          "n": 42
         },
         "waref residences|Studio|apt": {
           "avg": 817588,
@@ -182092,12 +182088,12 @@
           "n": 3
         },
         "lyvia by palace|1|apt": {
-          "avg": 2176741,
-          "n": 214
+          "avg": 2181920,
+          "n": 200
         },
         "lyvia by palace|2|apt": {
-          "avg": 3107201,
-          "n": 171
+          "avg": 3105554,
+          "n": 163
         },
         "altan tower|1|apt": {
           "avg": 1848507,
@@ -183224,8 +183220,8 @@
           "n": 9
         },
         "grand bleu tower 2|2|apt": {
-          "avg": 5553571,
-          "n": 14
+          "avg": 5457692,
+          "n": 13
         },
         "equiti apartments|1|apt": {
           "avg": 706667,
@@ -185192,8 +185188,8 @@
           "n": 3
         },
         "palace beach residence tower 1|1|apt": {
-          "avg": 2513500,
-          "n": 20
+          "avg": 2501053,
+          "n": 19
         },
         "bonnington tower|2|apt": {
           "avg": 1393056,
@@ -186248,8 +186244,8 @@
           "n": 14
         },
         "montiva tower|3|apt": {
-          "avg": 4104253,
-          "n": 18
+          "avg": 4099451,
+          "n": 17
         },
         "skyvue|1|apt": {
           "avg": 1635631,
@@ -192347,10 +192343,6 @@
           "avg": 7580000,
           "n": 4
         },
-        "17 icon bay building 1|3|apt": {
-          "avg": 3811667,
-          "n": 3
-        },
         "canopy building 1|2|apt": {
           "avg": 2428094,
           "n": 26
@@ -192578,8 +192570,8 @@
           "n": 21
         },
         "palm jumeirah|2|apt": {
-          "avg": 6713840,
-          "n": 206
+          "avg": 6704298,
+          "n": 205
         },
         "valley|4+|townhouse": {
           "avg": 3834405,
@@ -192618,8 +192610,8 @@
           "n": 250
         },
         "dubai creek harbour|1|apt": {
-          "avg": 1945310,
-          "n": 1300
+          "avg": 1943533,
+          "n": 1284
         },
         "jumeirah village circle|1|apt": {
           "avg": 1093429,
@@ -192634,8 +192626,8 @@
           "n": 423
         },
         "dubai creek harbour|2|apt": {
-          "avg": 3206306,
-          "n": 1310
+          "avg": 3206167,
+          "n": 1298
         },
         "al furjan|Studio|apt": {
           "avg": 562881,
@@ -192658,8 +192650,8 @@
           "n": 41
         },
         "dubai creek harbour|3|apt": {
-          "avg": 4708558,
-          "n": 474
+          "avg": 4711484,
+          "n": 472
         },
         "dubai residence complex|1|apt": {
           "avg": 1021272,
@@ -192690,8 +192682,8 @@
           "n": 274
         },
         "dubai marina|2|apt": {
-          "avg": 2824060,
-          "n": 350
+          "avg": 2822697,
+          "n": 349
         },
         "town square|1|apt": {
           "avg": 1028905,
@@ -192842,8 +192834,8 @@
           "n": 30
         },
         "dubai harbour|2|apt": {
-          "avg": 7018679,
-          "n": 220
+          "avg": 7019678,
+          "n": 219
         },
         "living legends|1|apt": {
           "avg": 969889,
@@ -193318,8 +193310,8 @@
           "n": 53
         },
         "dubai harbour|1|apt": {
-          "avg": 3036191,
-          "n": 185
+          "avg": 3037747,
+          "n": 184
         },
         "al barsha south fourth|Studio|apt": {
           "avg": 750571,
@@ -195141,7 +195133,7 @@
       "sale_hot_listings_lookback_days": "365",
       "sale_hot_listings_min_txn": "3",
       "property_type_activity": {
-        "period": "Last 14 days (Dubai) — 23 Oct 2026 – 5 Nov 2026",
+        "period": "Last 14 days (Dubai) — 24 Oct 2026 – 6 Nov 2026",
         "entries": {
           "apt": {
             "label": "Apartment",
@@ -223142,11 +223134,6 @@
       "rental_charts_30d": {
         "rent_volume": [
           {
-            "date": "2026-10-22",
-            "label": "22 Oct",
-            "value": 0
-          },
-          {
             "date": "2026-10-23",
             "label": "23 Oct",
             "value": 0
@@ -223209,16 +223196,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": 0
           }
         ],
         "rent_volume_ma7": [
           {
-            "date": "2026-10-22",
-            "label": "22 Oct",
-            "value": 0
-          },
-          {
             "date": "2026-10-23",
             "label": "23 Oct",
             "value": 0
@@ -223281,16 +223268,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": 0
           }
         ],
         "rent_avg_aed": [
           {
-            "date": "2026-10-22",
-            "label": "22 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-23",
             "label": "23 Oct",
             "value": null
@@ -223353,16 +223340,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
         "rent_avg_aed_ma7": [
           {
-            "date": "2026-10-22",
-            "label": "22 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-23",
             "label": "23 Oct",
             "value": null
@@ -223425,16 +223412,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
         "psf": [
           {
-            "date": "2026-10-22",
-            "label": "22 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-23",
             "label": "23 Oct",
             "value": null
@@ -223497,16 +223484,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-10-22",
-            "label": "22 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-23",
             "label": "23 Oct",
             "value": null
@@ -223570,32 +223557,37 @@
             "date": "2026-11-04",
             "label": "4 Nov",
             "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
+            "value": null
           }
         ],
         "rent_volume_weekly": [
           {
-            "label": "22 Oct–28 Oct",
+            "label": "23 Oct–29 Oct",
             "value": 0
           },
           {
-            "label": "29 Oct–4 Nov",
+            "label": "30 Oct–5 Nov",
             "value": 0
           }
         ],
         "psf_weekly": [
           {
-            "label": "22 Oct–28 Oct",
+            "label": "23 Oct–29 Oct",
             "median": null
           },
           {
-            "label": "29 Oct–4 Nov",
+            "label": "30 Oct–5 Nov",
             "median": null
           }
         ],
         "wow_volume_pct": null,
         "wow_rent_pct": null,
         "wow_psf_pct": null,
-        "window_label": "2026-10-22 → 2026-11-04 (Dubai, 14 days)",
+        "window_label": "2026-10-23 → 2026-11-05 (Dubai, 14 days)",
         "window_days": 14
       },
       "rental_monthly": {
@@ -223607,7 +223599,7 @@
         "cur_psf_avg": null,
         "prev_psf_avg": 163,
         "mom_psf_pct": null,
-        "cur_days_elapsed": 5
+        "cur_days_elapsed": 6
       },
       "rental_top_areas": [],
       "rental_top_areas_mode": "area",
@@ -223838,7 +223830,7 @@
           "recurrence": "New"
         }
       ],
-      "rental_owner_briefing": "Rolling 14 days (Last 14 days (Dubai) — 23 Oct 2026 – 5 Nov 2026, Dubai): 0 rental registrations in your CSV, annualised value AED N/A. Prior 14 days: 56 registrations.",
+      "rental_owner_briefing": "Rolling 14 days (Last 14 days (Dubai) — 24 Oct 2026 – 6 Nov 2026, Dubai): 0 rental registrations in your CSV, annualised value AED N/A. Prior 14 days: 54 registrations.",
       "listings": {
         "total": 53056,
         "data_type": "rental",
@@ -223846,11 +223838,6 @@
         "new_prev_7_days": 0,
         "wow_new_pct": null,
         "listings_added_by_day": [
-          {
-            "date": "2026-10-30",
-            "label": "30 Oct",
-            "count": 0
-          },
           {
             "date": "2026-10-31",
             "label": "31 Oct",
@@ -223880,14 +223867,14 @@
             "date": "2026-11-05",
             "label": "5 Nov",
             "count": 0
+          },
+          {
+            "date": "2026-11-06",
+            "label": "6 Nov",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-10-23",
-            "label": "23 Oct",
-            "count": 0
-          },
           {
             "date": "2026-10-24",
             "label": "24 Oct",
@@ -223917,20 +223904,25 @@
             "date": "2026-10-29",
             "label": "29 Oct",
             "count": 0
+          },
+          {
+            "date": "2026-10-30",
+            "label": "30 Oct",
+            "count": 0
           }
         ],
-        "listings_added_period": "30 Oct – 5 Nov 2026 (Dubai)",
-        "listings_added_period_prior": "23 Oct – 29 Oct 2026 (Dubai)",
+        "listings_added_period": "31 Oct – 6 Nov 2026 (Dubai)",
+        "listings_added_period_prior": "24 Oct – 30 Oct 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
           "avg_per_day_prior": 0,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "30 Oct",
+            "label": "31 Oct",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "23 Oct",
+            "label": "24 Oct",
             "count": 0
           }
         },
@@ -241400,11 +241392,6 @@
         "wow_new_pct": null,
         "listings_added_by_day": [
           {
-            "date": "2026-10-30",
-            "label": "30 Oct",
-            "count": 0
-          },
-          {
             "date": "2026-10-31",
             "label": "31 Oct",
             "count": 0
@@ -241433,14 +241420,14 @@
             "date": "2026-11-05",
             "label": "5 Nov",
             "count": 0
+          },
+          {
+            "date": "2026-11-06",
+            "label": "6 Nov",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-10-23",
-            "label": "23 Oct",
-            "count": 0
-          },
           {
             "date": "2026-10-24",
             "label": "24 Oct",
@@ -241470,20 +241457,25 @@
             "date": "2026-10-29",
             "label": "29 Oct",
             "count": 0
+          },
+          {
+            "date": "2026-10-30",
+            "label": "30 Oct",
+            "count": 0
           }
         ],
-        "listings_added_period": "30 Oct – 5 Nov 2026 (Dubai)",
-        "listings_added_period_prior": "23 Oct – 29 Oct 2026 (Dubai)",
+        "listings_added_period": "31 Oct – 6 Nov 2026 (Dubai)",
+        "listings_added_period_prior": "24 Oct – 30 Oct 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
           "avg_per_day_prior": 0,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "30 Oct",
+            "label": "31 Oct",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "23 Oct",
+            "label": "24 Oct",
             "count": 0
           }
         },
@@ -260846,11 +260838,6 @@
       "charts_30d": {
         "sale_volume": [
           {
-            "date": "2026-10-06",
-            "label": "6 Oct",
-            "value": 0
-          },
-          {
             "date": "2026-10-07",
             "label": "7 Oct",
             "value": 0
@@ -260993,16 +260980,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": 0
           }
         ],
         "psf": [
           {
-            "date": "2026-10-06",
-            "label": "6 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-07",
             "label": "7 Oct",
             "value": null
@@ -261145,16 +261132,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
         "sale_volume_ma7": [
           {
-            "date": "2026-10-06",
-            "label": "6 Oct",
-            "value": 0
-          },
-          {
             "date": "2026-10-07",
             "label": "7 Oct",
             "value": 0
@@ -261297,16 +261284,16 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": 0
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-10-06",
-            "label": "6 Oct",
-            "value": null
-          },
-          {
             "date": "2026-10-07",
             "label": "7 Oct",
             "value": null
@@ -261449,6 +261436,11 @@
           {
             "date": "2026-11-04",
             "label": "4 Nov",
+            "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
             "value": null
           }
         ],
@@ -261456,7 +261448,7 @@
         "psf_weekly": [],
         "wow_volume_pct": null,
         "wow_psf_pct": null,
-        "window_label": "2026-10-06 → 2026-11-04 (Dubai, 30 days)",
+        "window_label": "2026-10-07 → 2026-11-05 (Dubai, 30 days)",
         "window_days": 30
       },
       "recent_sales_transactions": [
@@ -261743,7 +261735,7 @@
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026",
+          "period": "Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "sale_value_aed": {
@@ -261752,39 +261744,39 @@
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026",
+          "period": "Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026",
           "source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
         },
         "rent_volume": {
-          "value": "64",
-          "chg_wow": "-83.8%",
+          "value": "60",
+          "chg_wow": "-82.8%",
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026",
+          "period": "Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)"
         },
         "rent_value_aed": {
-          "value": "AED 11.48M",
-          "chg_wow": "-82.1%",
+          "value": "AED 10.89M",
+          "chg_wow": "-81.1%",
           "chg_period_label": "vs prior 30 days",
           "chg_yoy": "N/A",
           "trend": "down",
-          "period": "Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026",
+          "period": "Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "note": "Sum of annualised rent (AED) for the week — contract rent not used."
         },
-        "period_label": "Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026",
+        "period_label": "Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026",
         "rent_new_vs_renewal": {
-          "new_count": "58",
-          "renewal_count": "6",
+          "new_count": "55",
+          "renewal_count": "5",
           "other_count": "0",
-          "new_pct": "90.6",
-          "renewal_pct": "9.4",
+          "new_pct": "91.7",
+          "renewal_pct": "8.3",
           "other_pct": null,
-          "new_chg_wow": "-81.5%",
-          "renewal_chg_wow": "-92.7%",
-          "period": "Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026",
+          "new_chg_wow": "-80.1%",
+          "renewal_chg_wow": "-93.2%",
+          "period": "Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026",
           "source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
           "column": "rent recurrence"
         }
@@ -261804,7 +261796,7 @@
         "townhouse_avg_aed_yield_ref_num": null,
         "yield_ref_lookback_days": "90",
         "price_index_chg_yoy": "N/A",
-        "price_period": "Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026",
+        "price_period": "Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026",
         "price_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "market_split": {
@@ -261812,14 +261804,14 @@
         "secondary_pct": "N/A",
         "offplan_chg_yoy": "N/A",
         "dominant_segment": "N/A",
-        "split_period": "Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026",
+        "split_period": "Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026",
         "note": "Off-plan is detected from Select Data Points = Oqood in your sales CSV."
       },
       "top_areas": [],
       "top_areas_mode": "area",
       "top_areas_empty_hint": null,
       "yields": {
-        "apt_gross_yield": "3.1",
+        "apt_gross_yield": "3.2",
         "villa_gross_yield": "N/A",
         "townhouse_gross_yield": "N/A",
         "best_yield_area": "N/A",
@@ -261838,8 +261830,8 @@
         "supply_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
       "rental": {
-        "apt_1br_avg_aed": "123842",
-        "apt_2br_avg_aed": "206703",
+        "apt_1br_avg_aed": "124433",
+        "apt_2br_avg_aed": "205771",
         "villa_3br_avg_aed": "323159",
         "rental_index_chg_yoy": "N/A",
         "ejari_registrations_weekly": "N/A",
@@ -261847,7 +261839,7 @@
         "landlord_vs_tenant": "balanced",
         "note": "Rental metrics use Annualised Rental Price (AED) only. Weekly count/value + new vs renewal (Rent Recurrence) + bed averages.",
         "rental_source": "Rental CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/rentals.csv)",
-        "rental_period": "Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026",
+        "rental_period": "Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026",
         "txn_by_building_bed": {
           "hub canal 1|1|apt": {
             "avg": 60031,
@@ -262438,12 +262430,12 @@
             "n": 256
           },
           "emaar 6 towers|2|apt": {
-            "avg": 186553,
-            "n": 130
+            "avg": 186681,
+            "n": 129
           },
           "sparkle towers|1|apt": {
-            "avg": 103183,
-            "n": 66
+            "avg": 102771,
+            "n": 65
           },
           "syann park 1|1|apt": {
             "avg": 59377,
@@ -262938,8 +262930,8 @@
             "n": 17
           },
           "torch|1|apt": {
-            "avg": 86672,
-            "n": 87
+            "avg": 86642,
+            "n": 86
           },
           "al khair 3 building|2|apt": {
             "avg": 105000,
@@ -262990,8 +262982,8 @@
             "n": 41
           },
           "park island|2|apt": {
-            "avg": 149744,
-            "n": 111
+            "avg": 149620,
+            "n": 109
           },
           "chaimaa premiere|Studio|apt": {
             "avg": 43359,
@@ -263986,8 +263978,8 @@
             "n": 181
           },
           "residences at marina gate|1|apt": {
-            "avg": 136096,
-            "n": 267
+            "avg": 135963,
+            "n": 265
           },
           "bella rose|Studio|apt": {
             "avg": 46259,
@@ -265330,8 +265322,8 @@
             "n": 3
           },
           "marina diamonds|1|apt": {
-            "avg": 70784,
-            "n": 263
+            "avg": 70806,
+            "n": 262
           },
           "building x-08|Studio|apt": {
             "avg": 30857,
@@ -265358,8 +265350,8 @@
             "n": 43
           },
           "torch|2|apt": {
-            "avg": 121296,
-            "n": 147
+            "avg": 120072,
+            "n": 146
           },
           "pulse residence park | the pulse residence park b4|1|apt": {
             "avg": 51522,
@@ -265390,8 +265382,8 @@
             "n": 18
           },
           "princess tower|1|apt": {
-            "avg": 82368,
-            "n": 142
+            "avg": 82304,
+            "n": 141
           },
           "grand|2|apt": {
             "avg": 184123,
@@ -265486,8 +265478,8 @@
             "n": 10
           },
           "silverene|2|apt": {
-            "avg": 156489,
-            "n": 63
+            "avg": 155787,
+            "n": 62
           },
           "villa myra|Studio|apt": {
             "avg": 47640,
@@ -266438,8 +266430,8 @@
             "n": 29
           },
           "marina diamonds|2|apt": {
-            "avg": 100896,
-            "n": 116
+            "avg": 100643,
+            "n": 115
           },
           "building 100|1|apt": {
             "avg": 66500,
@@ -269198,8 +269190,8 @@
             "n": 3
           },
           "park island|1|apt": {
-            "avg": 103159,
-            "n": 169
+            "avg": 102939,
+            "n": 168
           },
           "afnan 5|2|apt": {
             "avg": 90673,
@@ -269646,8 +269638,8 @@
             "n": 4
           },
           "grand bleu tower 1|1|apt": {
-            "avg": 137945,
-            "n": 53
+            "avg": 136879,
+            "n": 52
           },
           "executive towers|3|apt": {
             "avg": 205524,
@@ -269750,8 +269742,8 @@
             "n": 12
           },
           "marina crown|2|apt": {
-            "avg": 128387,
-            "n": 36
+            "avg": 128824,
+            "n": 35
           },
           "masaken al muraqqabat 04|1|apt": {
             "avg": 60553,
@@ -273146,8 +273138,8 @@
             "n": 4
           },
           "no. 9|1|apt": {
-            "avg": 106224,
-            "n": 42
+            "avg": 105888,
+            "n": 41
           },
           "grenland residence|2|apt": {
             "avg": 105176,
@@ -274978,8 +274970,8 @@
             "n": 5
           },
           "opal tower marina|2|apt": {
-            "avg": 125045,
-            "n": 63
+            "avg": 125232,
+            "n": 62
           },
           "spica residential|1|apt": {
             "avg": 59136,
@@ -275554,8 +275546,8 @@
             "n": 6
           },
           "silverene|1|apt": {
-            "avg": 105262,
-            "n": 113
+            "avg": 105238,
+            "n": 112
           },
           "imperial residence|Studio|apt": {
             "avg": 43388,
@@ -276154,8 +276146,8 @@
             "n": 3
           },
           "beach isle tower 1|1|apt": {
-            "avg": 140599,
-            "n": 56
+            "avg": 140603,
+            "n": 55
           },
           "mazaya 6|2|apt": {
             "avg": 75667,
@@ -276698,8 +276690,8 @@
             "n": 3
           },
           "al habtoor tower at marina walk|1|apt": {
-            "avg": 93547,
-            "n": 33
+            "avg": 93130,
+            "n": 31
           },
           "building n-10|Studio|apt": {
             "avg": 31940,
@@ -277182,8 +277174,8 @@
             "n": 26
           },
           "banyan tree residences hillside dubai|1|apt": {
-            "avg": 140520,
-            "n": 36
+            "avg": 140335,
+            "n": 35
           },
           "mag 535|1|apt": {
             "avg": 50510,
@@ -277726,8 +277718,8 @@
             "n": 4
           },
           "marinascape|2|apt": {
-            "avg": 155392,
-            "n": 28
+            "avg": 153554,
+            "n": 27
           },
           "azizi park avenue ii|1|apt": {
             "avg": 74230,
@@ -282502,8 +282494,8 @@
             "n": 12
           },
           "silverene|Studio|apt": {
-            "avg": 80548,
-            "n": 38
+            "avg": 80563,
+            "n": 37
           },
           "damac majestine|1|apt": {
             "avg": 82921,
@@ -283586,8 +283578,8 @@
             "n": 11
           },
           "23 marina|2|apt": {
-            "avg": 139394,
-            "n": 18
+            "avg": 139064,
+            "n": 17
           },
           "gardens building 89|1|apt": {
             "avg": 80500,
@@ -285518,8 +285510,8 @@
             "n": 5
           },
           "beach vista tower 1|2|apt": {
-            "avg": 214321,
-            "n": 45
+            "avg": 213169,
+            "n": 44
           },
           "carson a|1|apt": {
             "avg": 62867,
@@ -286674,8 +286666,8 @@
             "n": 47
           },
           "stella maris|2|apt": {
-            "avg": 213286,
-            "n": 36
+            "avg": 212237,
+            "n": 35
           },
           "building b04|1|apt": {
             "avg": 57895,
@@ -288986,8 +288978,8 @@
             "n": 7
           },
           "banyan tree residences|2|apt": {
-            "avg": 416017,
-            "n": 19
+            "avg": 413574,
+            "n": 18
           },
           "nad al sheba 1|2|apt": {
             "avg": 117000,
@@ -289822,8 +289814,8 @@
             "n": 21
           },
           "sunrise bay tower 1|1|apt": {
-            "avg": 123171,
-            "n": 45
+            "avg": 121993,
+            "n": 44
           },
           "dunes 7|Studio|apt": {
             "avg": 40543,
@@ -291246,8 +291238,8 @@
             "n": 10
           },
           "marina view|Studio|apt": {
-            "avg": 60375,
-            "n": 47
+            "avg": 60144,
+            "n": 46
           },
           "azizi riviera 67|1|apt": {
             "avg": 54833,
@@ -291442,8 +291434,8 @@
             "n": 13
           },
           "sunrise bay tower 2|1|apt": {
-            "avg": 117206,
-            "n": 23
+            "avg": 116351,
+            "n": 22
           },
           "shorooq building 4|1|apt": {
             "avg": 54840,
@@ -293578,8 +293570,8 @@
             "n": 6
           },
           "royal oceanic|2|apt": {
-            "avg": 143199,
-            "n": 19
+            "avg": 142821,
+            "n": 18
           },
           "lootah building|1|apt": {
             "avg": 41929,
@@ -296446,8 +296438,8 @@
             "n": 3
           },
           "marina tower|3|apt": {
-            "avg": 202846,
-            "n": 13
+            "avg": 203083,
+            "n": 12
           },
           "pantheon elysee|2|apt": {
             "avg": 90000,
@@ -297214,8 +297206,8 @@
             "n": 5
           },
           "bluewaters 8|2|apt": {
-            "avg": 448747,
-            "n": 15
+            "avg": 430800,
+            "n": 14
           },
           "central building|2|apt": {
             "avg": 67750,
@@ -298258,8 +298250,8 @@
             "n": 9
           },
           "marina vista tower 2|2|apt": {
-            "avg": 197387,
-            "n": 55
+            "avg": 197338,
+            "n": 54
           },
           "beach vista tower 2|3|apt": {
             "avg": 427643,
@@ -299209,13 +299201,13 @@
             "avg": 111667,
             "n": 3
           },
-          "dubai marina moon|1|apt": {
-            "avg": 155918,
-            "n": 24
-          },
           "damac heights|4+|apt": {
             "avg": 250199,
             "n": 4
+          },
+          "dubai marina moon|1|apt": {
+            "avg": 156393,
+            "n": 23
           },
           "marina pearl|Studio|apt": {
             "avg": 57158,
@@ -300761,10 +300753,6 @@
             "avg": 40667,
             "n": 3
           },
-          "bluewaters 3|1|apt": {
-            "avg": 313683,
-            "n": 4
-          },
           "bluewaters 7|1|apt": {
             "avg": 325333,
             "n": 3
@@ -300772,6 +300760,10 @@
           "bluewaters 3|2|apt": {
             "avg": 441778,
             "n": 9
+          },
+          "bluewaters 3|1|apt": {
+            "avg": 328244,
+            "n": 3
           },
           "bluewaters 5|1|apt": {
             "avg": 281407,
@@ -300892,8 +300884,8 @@
             "n": 287
           },
           "dubai marina|Studio|apt": {
-            "avg": 64925,
-            "n": 776
+            "avg": 64898,
+            "n": 774
           },
           "business bay|2|apt": {
             "avg": 133503,
@@ -301004,8 +300996,8 @@
             "n": 264
           },
           "bluewaters island|1|apt": {
-            "avg": 344486,
-            "n": 58
+            "avg": 345793,
+            "n": 57
           },
           "deira|2|apt": {
             "avg": 71125,
@@ -301052,8 +301044,8 @@
             "n": 412
           },
           "dubai marina|2|apt": {
-            "avg": 148210,
-            "n": 3611
+            "avg": 148123,
+            "n": 3599
           },
           "downtown dubai|1|apt": {
             "avg": 114182,
@@ -301156,8 +301148,8 @@
             "n": 122
           },
           "dubai marina|1|apt": {
-            "avg": 95055,
-            "n": 4789
+            "avg": 95001,
+            "n": 4777
           },
           "arjan|1|apt": {
             "avg": 65937,
@@ -301512,8 +301504,8 @@
             "n": 89
           },
           "jumeirah lakes towers|1|apt": {
-            "avg": 83322,
-            "n": 967
+            "avg": 83256,
+            "n": 966
           },
           "layan community|2|apt": {
             "avg": 82298,
@@ -301712,8 +301704,8 @@
             "n": 141
           },
           "dubai marina|3|apt": {
-            "avg": 229021,
-            "n": 1053
+            "avg": 229049,
+            "n": 1052
           },
           "remraam|1|apt": {
             "avg": 55638,
@@ -302056,8 +302048,8 @@
             "n": 38
           },
           "dubai harbour|2|apt": {
-            "avg": 218021,
-            "n": 579
+            "avg": 217971,
+            "n": 577
           },
           "dubai sports city|4+|townhouse": {
             "avg": 348946,
@@ -302296,8 +302288,8 @@
             "n": 49
           },
           "dubai harbour|1|apt": {
-            "avg": 133347,
-            "n": 653
+            "avg": 133176,
+            "n": 649
           },
           "al badaa|4+|villa": {
             "avg": 281667,
@@ -302636,8 +302628,8 @@
             "n": 27
           },
           "bluewaters island|2|apt": {
-            "avg": 431071,
-            "n": 83
+            "avg": 427394,
+            "n": 81
           },
           "umm suqeim|4+|villa": {
             "avg": 2442206,
@@ -303632,7 +303624,7 @@
         "financing_conditions": "N/A",
         "mortgage_source": "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)"
       },
-      "owner_briefing": "Rolling 30 days through today (7 Oct 2026 – 5 Nov 2026, Dubai): 0 transactions in your CSV worth AED N/A. Prior 30 days (7 Sept 2026 – 6 Oct 2026): 18 deals. Off-plan share N/A (Oqood-tagged rows).",
+      "owner_briefing": "Rolling 30 days through today (8 Oct 2026 – 6 Nov 2026, Dubai): 0 transactions in your CSV worth AED N/A. Prior 30 days (8 Sept 2026 – 7 Oct 2026): 17 deals. Off-plan share N/A (Oqood-tagged rows).",
       "data_freshness": "Transactions through 11 Sept 2026 · snapshot build (30d)",
       "sources_used": [
         "Self-hosted CSV (https://raw.githubusercontent.com/caruanakyle98/intel-data/main/sales.csv)",
@@ -303656,7 +303648,7 @@
         "cur_avg_by_beds": {},
         "prev_avg_by_beds": {},
         "mom_avg_by_beds_pct": {},
-        "cur_days_elapsed": 5
+        "cur_days_elapsed": 6
       },
       "sale_txn_by_building_bed": {
         "tempo|1|apt": {
@@ -308076,8 +308068,8 @@
           "n": 5
         },
         "vida residences dubai marina|2|apt": {
-          "avg": 4066667,
-          "n": 6
+          "avg": 4220000,
+          "n": 5
         },
         "lakeside tower c|1|apt": {
           "avg": 621941,
@@ -308896,8 +308888,8 @@
           "n": 13
         },
         "address harbour point tower 1|2|apt": {
-          "avg": 4755000,
-          "n": 7
+          "avg": 4797500,
+          "n": 6
         },
         "sway residences|Studio|apt": {
           "avg": 1026600,
@@ -311088,8 +311080,8 @@
           "n": 4
         },
         "serenia living tower 1|2|apt": {
-          "avg": 8676250,
-          "n": 16
+          "avg": 8676667,
+          "n": 15
         },
         "whitestone residence|2|apt": {
           "avg": 1968643,
@@ -312876,8 +312868,8 @@
           "n": 19
         },
         "montiva tower|1|apt": {
-          "avg": 2126549,
-          "n": 47
+          "avg": 2132890,
+          "n": 45
         },
         "olivo park residences|1|apt": {
           "avg": 1010521,
@@ -312888,8 +312880,8 @@
           "n": 4
         },
         "montiva tower|2|apt": {
-          "avg": 2869966,
-          "n": 45
+          "avg": 2859948,
+          "n": 42
         },
         "waref residences|Studio|apt": {
           "avg": 817588,
@@ -313024,12 +313016,12 @@
           "n": 3
         },
         "lyvia by palace|1|apt": {
-          "avg": 2176741,
-          "n": 214
+          "avg": 2181920,
+          "n": 200
         },
         "lyvia by palace|2|apt": {
-          "avg": 3107201,
-          "n": 171
+          "avg": 3105554,
+          "n": 163
         },
         "altan tower|1|apt": {
           "avg": 1848507,
@@ -314156,8 +314148,8 @@
           "n": 9
         },
         "grand bleu tower 2|2|apt": {
-          "avg": 5553571,
-          "n": 14
+          "avg": 5457692,
+          "n": 13
         },
         "equiti apartments|1|apt": {
           "avg": 706667,
@@ -316124,8 +316116,8 @@
           "n": 3
         },
         "palace beach residence tower 1|1|apt": {
-          "avg": 2513500,
-          "n": 20
+          "avg": 2501053,
+          "n": 19
         },
         "bonnington tower|2|apt": {
           "avg": 1393056,
@@ -317180,8 +317172,8 @@
           "n": 14
         },
         "montiva tower|3|apt": {
-          "avg": 4104253,
-          "n": 18
+          "avg": 4099451,
+          "n": 17
         },
         "skyvue|1|apt": {
           "avg": 1635631,
@@ -323279,10 +323271,6 @@
           "avg": 7580000,
           "n": 4
         },
-        "17 icon bay building 1|3|apt": {
-          "avg": 3811667,
-          "n": 3
-        },
         "canopy building 1|2|apt": {
           "avg": 2428094,
           "n": 26
@@ -323510,8 +323498,8 @@
           "n": 21
         },
         "palm jumeirah|2|apt": {
-          "avg": 6713840,
-          "n": 206
+          "avg": 6704298,
+          "n": 205
         },
         "valley|4+|townhouse": {
           "avg": 3834405,
@@ -323550,8 +323538,8 @@
           "n": 250
         },
         "dubai creek harbour|1|apt": {
-          "avg": 1945310,
-          "n": 1300
+          "avg": 1943533,
+          "n": 1284
         },
         "jumeirah village circle|1|apt": {
           "avg": 1093429,
@@ -323566,8 +323554,8 @@
           "n": 423
         },
         "dubai creek harbour|2|apt": {
-          "avg": 3206306,
-          "n": 1310
+          "avg": 3206167,
+          "n": 1298
         },
         "al furjan|Studio|apt": {
           "avg": 562881,
@@ -323590,8 +323578,8 @@
           "n": 41
         },
         "dubai creek harbour|3|apt": {
-          "avg": 4708558,
-          "n": 474
+          "avg": 4711484,
+          "n": 472
         },
         "dubai residence complex|1|apt": {
           "avg": 1021272,
@@ -323622,8 +323610,8 @@
           "n": 274
         },
         "dubai marina|2|apt": {
-          "avg": 2824060,
-          "n": 350
+          "avg": 2822697,
+          "n": 349
         },
         "town square|1|apt": {
           "avg": 1028905,
@@ -323774,8 +323762,8 @@
           "n": 30
         },
         "dubai harbour|2|apt": {
-          "avg": 7018679,
-          "n": 220
+          "avg": 7019678,
+          "n": 219
         },
         "living legends|1|apt": {
           "avg": 969889,
@@ -324250,8 +324238,8 @@
           "n": 53
         },
         "dubai harbour|1|apt": {
-          "avg": 3036191,
-          "n": 185
+          "avg": 3037747,
+          "n": 184
         },
         "al barsha south fourth|Studio|apt": {
           "avg": 750571,
@@ -326073,7 +326061,7 @@
       "sale_hot_listings_lookback_days": "365",
       "sale_hot_listings_min_txn": "3",
       "property_type_activity": {
-        "period": "Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026",
+        "period": "Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026",
         "entries": {
           "apt": {
             "label": "Apartment",
@@ -326081,9 +326069,9 @@
             "sale_pct": 0,
             "sale_wow": "-100.0%",
             "sale_trend": "down",
-            "rent_vol": 64,
+            "rent_vol": 60,
             "rent_pct": 100,
-            "rent_wow": "-83.8%",
+            "rent_wow": "-82.8%",
             "rent_trend": "down"
           },
           "villa": {
@@ -354074,11 +354062,6 @@
       "rental_charts_30d": {
         "rent_volume": [
           {
-            "date": "2026-10-06",
-            "label": "6 Oct",
-            "value": 2
-          },
-          {
             "date": "2026-10-07",
             "label": "7 Oct",
             "value": 4
@@ -354222,23 +354205,23 @@
             "date": "2026-11-04",
             "label": "4 Nov",
             "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
+            "value": 0
           }
         ],
         "rent_volume_ma7": [
           {
-            "date": "2026-10-06",
-            "label": "6 Oct",
-            "value": 2
-          },
-          {
             "date": "2026-10-07",
             "label": "7 Oct",
-            "value": 3
+            "value": 4
           },
           {
             "date": "2026-10-08",
             "label": "8 Oct",
-            "value": 3
+            "value": 4
           },
           {
             "date": "2026-10-09",
@@ -354248,17 +354231,17 @@
           {
             "date": "2026-10-10",
             "label": "10 Oct",
-            "value": 6
+            "value": 7
           },
           {
             "date": "2026-10-11",
             "label": "11 Oct",
-            "value": 5
+            "value": 6
           },
           {
             "date": "2026-10-12",
             "label": "12 Oct",
-            "value": 5
+            "value": 6
           },
           {
             "date": "2026-10-13",
@@ -354374,14 +354357,14 @@
             "date": "2026-11-04",
             "label": "4 Nov",
             "value": 0
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
+            "value": 0
           }
         ],
         "rent_avg_aed": [
-          {
-            "date": "2026-10-06",
-            "label": "6 Oct",
-            "value": 117500
-          },
           {
             "date": "2026-10-07",
             "label": "7 Oct",
@@ -354526,43 +354509,43 @@
             "date": "2026-11-04",
             "label": "4 Nov",
             "value": 175000
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
+            "value": 175000
           }
         ],
         "rent_avg_aed_ma7": [
           {
-            "date": "2026-10-06",
-            "label": "6 Oct",
-            "value": 117500
-          },
-          {
             "date": "2026-10-07",
             "label": "7 Oct",
-            "value": 131875
+            "value": 146250
           },
           {
             "date": "2026-10-08",
             "label": "8 Oct",
-            "value": 163333
+            "value": 186250
           },
           {
             "date": "2026-10-09",
             "label": "9 Oct",
-            "value": 161875
+            "value": 176667
           },
           {
             "date": "2026-10-10",
             "label": "10 Oct",
-            "value": 162795
+            "value": 174119
           },
           {
             "date": "2026-10-11",
             "label": "11 Oct",
-            "value": 157746
+            "value": 165795
           },
           {
             "date": "2026-10-12",
             "label": "12 Oct",
-            "value": 166503
+            "value": 174670
           },
           {
             "date": "2026-10-13",
@@ -354678,14 +354661,14 @@
             "date": "2026-11-04",
             "label": "4 Nov",
             "value": 175000
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
+            "value": 175000
           }
         ],
         "psf": [
-          {
-            "date": "2026-10-06",
-            "label": "6 Oct",
-            "value": 149
-          },
           {
             "date": "2026-10-07",
             "label": "7 Oct",
@@ -354830,43 +354813,43 @@
             "date": "2026-11-04",
             "label": "4 Nov",
             "value": null
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
+            "value": null
           }
         ],
         "psf_ma7": [
           {
-            "date": "2026-10-06",
-            "label": "6 Oct",
-            "value": 149
-          },
-          {
             "date": "2026-10-07",
             "label": "7 Oct",
-            "value": 149
+            "value": 148
           },
           {
             "date": "2026-10-08",
             "label": "8 Oct",
-            "value": 153
+            "value": 156
           },
           {
             "date": "2026-10-09",
             "label": "9 Oct",
-            "value": 149
+            "value": 148
           },
           {
             "date": "2026-10-10",
             "label": "10 Oct",
-            "value": 149
+            "value": 150
           },
           {
             "date": "2026-10-11",
             "label": "11 Oct",
-            "value": 154
+            "value": 155
           },
           {
             "date": "2026-10-12",
             "label": "12 Oct",
-            "value": 157
+            "value": 158
           },
           {
             "date": "2026-10-13",
@@ -354982,56 +354965,61 @@
             "date": "2026-11-04",
             "label": "4 Nov",
             "value": 151
+          },
+          {
+            "date": "2026-11-05",
+            "label": "5 Nov",
+            "value": 151
           }
         ],
         "rent_volume_weekly": [
           {
-            "label": "6 Oct–12 Oct",
-            "value": 37
+            "label": "7 Oct–13 Oct",
+            "value": 38
           },
           {
-            "label": "13 Oct–19 Oct",
-            "value": 29
+            "label": "14 Oct–20 Oct",
+            "value": 26
           },
           {
-            "label": "20 Oct–26 Oct",
+            "label": "21 Oct–27 Oct",
             "value": 0
           },
           {
-            "label": "27 Oct–2 Nov",
+            "label": "28 Oct–3 Nov",
             "value": 0
           },
           {
-            "label": "29 Oct–4 Nov",
+            "label": "30 Oct–5 Nov",
             "value": 0
           }
         ],
         "psf_weekly": [
           {
-            "label": "6 Oct–12 Oct",
-            "median": 153
+            "label": "7 Oct–13 Oct",
+            "median": 163
           },
           {
-            "label": "13 Oct–19 Oct",
+            "label": "14 Oct–20 Oct",
             "median": 165
           },
           {
-            "label": "20 Oct–26 Oct",
+            "label": "21 Oct–27 Oct",
             "median": null
           },
           {
-            "label": "27 Oct–2 Nov",
+            "label": "28 Oct–3 Nov",
             "median": null
           },
           {
-            "label": "29 Oct–4 Nov",
+            "label": "30 Oct–5 Nov",
             "median": null
           }
         ],
         "wow_volume_pct": null,
         "wow_rent_pct": 0,
         "wow_psf_pct": 0,
-        "window_label": "2026-10-06 → 2026-11-04 (Dubai, 30 days)",
+        "window_label": "2026-10-07 → 2026-11-05 (Dubai, 30 days)",
         "window_days": 30
       },
       "rental_monthly": {
@@ -355043,14 +355031,14 @@
         "cur_psf_avg": null,
         "prev_psf_avg": 163,
         "mom_psf_pct": null,
-        "cur_days_elapsed": 5
+        "cur_days_elapsed": 6
       },
       "rental_top_areas": [
         {
           "area": "Dubai Harbour",
-          "vol": "64",
-          "avg_rent_aed": "179305",
-          "avg_rent_label": "179K",
+          "vol": "60",
+          "avg_rent_aed": "181508",
+          "avg_rent_label": "182K",
           "trend": "flat"
         }
       ],
@@ -355282,7 +355270,7 @@
           "recurrence": "New"
         }
       ],
-      "rental_owner_briefing": "Rolling 30 days (Last 30 days (Dubai) — 7 Oct 2026 – 5 Nov 2026, Dubai): 64 rental registrations in your CSV, annualised value AED 11.48M. Prior 30 days: 396 registrations. New contracts 90.6% of split.",
+      "rental_owner_briefing": "Rolling 30 days (Last 30 days (Dubai) — 8 Oct 2026 – 6 Nov 2026, Dubai): 60 rental registrations in your CSV, annualised value AED 10.89M. Prior 30 days: 349 registrations. New contracts 91.7% of split.",
       "listings": {
         "total": 53056,
         "data_type": "rental",
@@ -355290,11 +355278,6 @@
         "new_prev_7_days": 0,
         "wow_new_pct": null,
         "listings_added_by_day": [
-          {
-            "date": "2026-10-30",
-            "label": "30 Oct",
-            "count": 0
-          },
           {
             "date": "2026-10-31",
             "label": "31 Oct",
@@ -355324,14 +355307,14 @@
             "date": "2026-11-05",
             "label": "5 Nov",
             "count": 0
+          },
+          {
+            "date": "2026-11-06",
+            "label": "6 Nov",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-10-23",
-            "label": "23 Oct",
-            "count": 0
-          },
           {
             "date": "2026-10-24",
             "label": "24 Oct",
@@ -355361,20 +355344,25 @@
             "date": "2026-10-29",
             "label": "29 Oct",
             "count": 0
+          },
+          {
+            "date": "2026-10-30",
+            "label": "30 Oct",
+            "count": 0
           }
         ],
-        "listings_added_period": "30 Oct – 5 Nov 2026 (Dubai)",
-        "listings_added_period_prior": "23 Oct – 29 Oct 2026 (Dubai)",
+        "listings_added_period": "31 Oct – 6 Nov 2026 (Dubai)",
+        "listings_added_period_prior": "24 Oct – 30 Oct 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
           "avg_per_day_prior": 0,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "30 Oct",
+            "label": "31 Oct",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "23 Oct",
+            "label": "24 Oct",
             "count": 0
           }
         },
@@ -355504,18 +355492,18 @@
         },
         "asking_vs_txn_by_beds": {
           "1": {
-            "delta_pct": -22.8,
+            "delta_pct": -23.2,
             "asking_avg": 95574,
-            "txn_avg": 123842,
+            "txn_avg": 124433,
             "asking_fmt": "AED 95,574",
-            "txn_fmt": "AED 123,842"
+            "txn_fmt": "AED 124,433"
           },
           "2": {
-            "delta_pct": -21.9,
+            "delta_pct": -21.5,
             "asking_avg": 161474,
-            "txn_avg": 206703,
+            "txn_avg": 205771,
             "asking_fmt": "AED 161,474",
-            "txn_fmt": "AED 206,703"
+            "txn_fmt": "AED 205,771"
           },
           "3": {
             "delta_pct": -25,
@@ -372866,11 +372854,6 @@
         "wow_new_pct": null,
         "listings_added_by_day": [
           {
-            "date": "2026-10-30",
-            "label": "30 Oct",
-            "count": 0
-          },
-          {
             "date": "2026-10-31",
             "label": "31 Oct",
             "count": 0
@@ -372899,14 +372882,14 @@
             "date": "2026-11-05",
             "label": "5 Nov",
             "count": 0
+          },
+          {
+            "date": "2026-11-06",
+            "label": "6 Nov",
+            "count": 0
           }
         ],
         "listings_added_prev_by_day": [
-          {
-            "date": "2026-10-23",
-            "label": "23 Oct",
-            "count": 0
-          },
           {
             "date": "2026-10-24",
             "label": "24 Oct",
@@ -372936,20 +372919,25 @@
             "date": "2026-10-29",
             "label": "29 Oct",
             "count": 0
+          },
+          {
+            "date": "2026-10-30",
+            "label": "30 Oct",
+            "count": 0
           }
         ],
-        "listings_added_period": "30 Oct – 5 Nov 2026 (Dubai)",
-        "listings_added_period_prior": "23 Oct – 29 Oct 2026 (Dubai)",
+        "listings_added_period": "31 Oct – 6 Nov 2026 (Dubai)",
+        "listings_added_period_prior": "24 Oct – 30 Oct 2026 (Dubai)",
         "listings_flow": {
           "avg_per_day_current": 0,
           "avg_per_day_prior": 0,
           "pct_of_inventory_week": 0,
           "peak_day_current": {
-            "label": "30 Oct",
+            "label": "31 Oct",
             "count": 0
           },
           "peak_day_prior": {
-            "label": "23 Oct",
+            "label": "24 Oct",
             "count": 0
           }
         },
@@ -392308,5 +392296,5 @@
       }
     }
   },
-  "generated_at": "2026-11-05T12:54:31.519Z"
+  "generated_at": "2026-11-06T12:40:34.526Z"
 }
